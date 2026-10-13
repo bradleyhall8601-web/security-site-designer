@@ -2,7 +2,7 @@
 
 **Created by Brad Hall** · © 2026 Brad Hall. All rights reserved.
 
-Design CCTV, access control, intrusion and fire systems in three easy steps — floor plan, devices, quote & send — with live coverage, auto-design, wire-up, branded proposals, drawings, change orders and a customer presentation.
+Design CCTV, access control, intrusion and fire systems in three easy steps — floor plan, devices, quote & send — with live coverage, auto-design, one-tap *Fix everything*, wire-up, branded proposals, drawings, change orders and a customer presentation. The 🧰 Toolbox adds a lens & pixel calculator (IEC 62676-4), QR device labels, a camera list for your VMS, UPS runtime, conduit fill, IP plan and cable labels — and you can dictate site-walk and install notes.
 
 **Open the app:** https://bradleyhall8601-web.github.io/security-site-designer/
 

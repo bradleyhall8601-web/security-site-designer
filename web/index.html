@@ -767,6 +767,26 @@ body.nobom .mode[data-mode="bom"]{display:none}
   body.easy .trophymini{display:flex; align-items:center; gap:4px; margin-left:auto; flex:none; height:30px; padding:0 9px 0 7px; border:1px solid var(--line); border-radius:999px; background:var(--panel2); color:var(--fg); font:800 13px var(--f-ui)} .trophymini svg{width:17px; height:17px; color:var(--accent)} }
 .badges .badge .bok svg{stroke:#fff !important; color:#fff}
 .ezopt{padding-left:5px; padding-right:5px} .ezopt b{font-size:12.5px; line-height:1.25; letter-spacing:-.01em} .ezopt input.field{margin-top:auto} .ezopt i{min-height:0}
+/* toolbox, lens calculator, dictation */
+.tbgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px}
+.tbtile{display:flex; flex-direction:column; align-items:flex-start; gap:4px; text-align:left; padding:12px; min-height:112px; border:1px solid var(--line); border-radius:14px; background:var(--panel2); color:var(--fg); cursor:pointer; transition:transform .12s, border-color .12s, box-shadow .12s}
+.tbtile:hover:not(:disabled){transform:translateY(-2px); border-color:var(--accent); box-shadow:0 6px 18px rgba(0,0,0,.12)} .tbtile:disabled{opacity:.5; cursor:not-allowed}
+.tbtile .tbem{font-size:26px; line-height:1} .tbtile b{font:800 13.5px var(--f-ui)} .tbtile i{font-style:normal; font-size:12px; color:var(--muted)}
+.tbic{font-size:20px; line-height:1}
+.ezfixall{margin-top:8px; width:100%; justify-content:center}
+.lenscalc .unitrow{display:flex; gap:6px; align-items:center} .lenscalc .unitrow input{flex:1}
+.lcout{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:14px 0}
+.lcout > div{padding:12px 10px; border-radius:12px; background:var(--accent-bg); border:1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); text-align:center}
+.lcout b{display:block; font:800 20px var(--f-ui)} .lcout i{font-style:normal; font-size:11.5px; color:var(--muted)}
+.lclist h4{margin:6px 0 8px; font:700 12px var(--f-ui); text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.lcrow{display:flex; gap:10px; align-items:center; justify-content:space-between; padding:8px 0; border-top:1px solid var(--line2)} .lcname b{display:block; font-size:13px} .lcname i{font-style:normal; font-size:12px; color:var(--muted)}
+.micwrap{position:relative; display:block} .micwrap > .field{width:100%; padding-right:38px} .micwrap textarea{padding-right:38px}
+.micbtn{position:absolute; right:5px; top:5px; width:28px; height:28px; display:grid; place-items:center; border:0; border-radius:50%; background:transparent; color:var(--muted); cursor:pointer} .micbtn svg{width:17px; height:17px}
+.micbtn:hover{color:var(--accent); background:var(--accent-bg)} .micbtn.on{color:#fff; background:var(--err); animation:micpulse 1.1s infinite} @keyframes micpulse{50%{box-shadow:0 0 0 6px color-mix(in srgb, var(--err) 25%, transparent)}}
+@media (max-width:520px){ .lcout{grid-template-columns:1fr} .tbgrid{grid-template-columns:1fr 1fr} }
+@media (max-width:520px){ #toolboxBtn{display:none} }
+@media (max-width:1100px){ body.easy #steps .stp span{display:none} body.easy #steps .stp{padding:0 5px} body.easy #steps{flex:none} }
+body.easy #steps{flex:none; overflow:visible}
 </style>
 <div id="app">
   <header id="top"></header>
@@ -1016,7 +1036,7 @@ function estimatePrice(part) { if (!part) return null; if (EST_PRICE_BY_PART[par
 
 // Security Site Designer — created by Brad Hall. Copyright (c) 2026 Brad Hall. All rights reserved.
 const APP_CREATOR = {name:'Brad Hall', year:2026};
-const APP_VERSION = '3.7';
+const APP_VERSION = '3.8';
 // ===== UTILITIES =====
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -2336,7 +2356,7 @@ TOOLS.place = {
   down(e, p) { this.placeAt(p, e); },
   placeAt(p, e, productId) {
     const pid = productId || S.placeProduct; const pr = prod(pid); if (!pr) return; const ps = this.pose(p, e); let o;
-    tx('Place ' + (KINDS[pr.kind].label), () => { o = addObj(makeDevice(pid, ps.p[0], ps.p[1], {rot: ps.rot})); if (ps.wall) o.props.mount = 'Wall'; if (S.placeHfov && isCam(o)) o.props.hfov = S.placeHfov; });
+    tx('Place ' + (KINDS[pr.kind].label), () => { o = addObj(makeDevice(pid, ps.p[0], ps.p[1], {rot: ps.rot})); if (ps.wall) o.props.mount = 'Wall'; if (S.placeHfov && isCam(o)) o.props.hfov = S.placeHfov; }); try { funSound('pop'); } catch (e) {}
     S.sel = new Set([o.id]); onSelectionChanged(); smartAfterPlace(o, ps);
     if (S.project.settings.stickyTools === false) setTool('select');
     return o;
@@ -2741,6 +2761,7 @@ function buildChrome() {
       el('button', {class:'save ok', id:'saveStatus', text:'Saved', onclick:() => { if (S.saveState === 'error') saveNow(); else saveNow(); }}),
       el('button', {class:'btn checkbtn', id:'checkBtn', title:'Run design check', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`${icon('check')}<span class="hide-s">Check</span><span class="cnt ok" id="checkCnt">0</span>`}),
       el('button', {class:'btn primary', id:'exportBtn', onclick:() => openExport(), html:`${icon('export')}<span class="hide-s">Export</span>`}),
+      el('button', {class:'ib tbbtn', id:'toolboxBtn', 'aria-label':'Toolbox', 'data-tip':'Toolbox', 'data-desc':'Lens calculator, QR labels, VMS list, UPS, conduit, IP plan…', html:'<span aria-hidden="true" style="font-size:17px;line-height:1">🧰</span>', onclick:() => openToolbox()}),
       el('button', {class:'ib', id:'helpBtn', 'aria-label':'Help', 'data-tip':'Help', 'data-desc':'Guided tour and keyboard shortcuts', html:icon('help'), onclick:(e) => { const r = e.currentTarget.getBoundingClientRect(); popMenu(r.right - 220, r.bottom + 4, [{label:'Take the 1-minute tour', fn:startTour}, {label:'Keyboard shortcuts', key:'?', fn:openShortcuts}, {label:'About Security Site Designer', fn:() => openAbout()}, {label:'Open the example project', fn:openExample}]); }}),
       el('button', {class:'ib', id:'themeBtn', title:'Toggle light/dark', 'aria-label':'Toggle theme', onclick:toggleTheme}),
       el('button', {class:'ib', title:'Settings', 'aria-label':'Settings', html:icon('settings'), onclick:openSettings}),
@@ -3903,7 +3924,7 @@ function paletteCommands() {
     ['Open layers', '', () => { LEFT_TAB = 'layers'; renderLeft(); }], ['Show hidden objects', '', showAllHidden], ['Select all', 'Ctrl+A', selectAll], ['Zoom to fit', 'F', () => zoomToFit()],
     ['Undo', 'Ctrl+Z', undo], ['Redo', 'Ctrl+Y', redo], ['Save version', 'Ctrl+S', () => saveVersion('Manual save')], ['Version history', '', () => { REPORT_TAB = 'versions'; setMode('reports'); }],
     ['Toggle dark mode', '', toggleTheme], ['Toggle grid', '', () => toggleSetting('gridShow')], ['Toggle snap', '', () => toggleSetting('snap')], ['Settings', '', openSettings], ['Keyboard shortcuts', '?', openShortcuts], ['All projects', '', openDashboard], ['New project', '', () => openWizard()],
-    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
+    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Fix everything (cover weak rooms + wire)', '', () => fixEverything()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
     ['Ask the design assistant', '', () => { LEFT_TAB = 'assist'; renderLeft(); }], ['3D view', '', () => open3D((selObjs().find(isCam) || {}).id)], ['IP address plan', '', openIPDialog], ['Camera advisor: click a spot for camera advice', 'G', () => setTool('advisor')], ['Conduit fill calculator', '', () => openConduitDialog()], ['About Security Site Designer', '', openAbout], ['Cable labels', '', openLabelsDialog], ['Field mode: install & test tracking', '', () => setMode('field')], ['As-built / commissioning report (PDF)', '', exportAsBuiltPDF], ['Install sheet (Excel)', '', exportInstallXLSX], ...(TEAM.on ? [['Share with customer', '', openShareDialog], ['Company & team settings', '', () => openCompanyDialog(isAdmin() ? 'company' : 'team')]] : []), ['Bandwidth & storage report', '', () => { REPORT_TAB = 'bandwidth'; setMode('reports'); }], ['Riser diagram', '', () => { REPORT_TAB = 'riser'; setMode('reports'); }], ['Quote & labor', '', () => { S.bomTab = 'quote'; setMode('bom'); }], ['Export proposal PDF', '', () => exportProposal()], ['Import CAD drawing (DXF)', '', () => pickPlanFile()],
   ].map(([label, key, fn]) => ({kind:'Command', label, key, fn}));
   for (const as of loadAssemblies()) cmds.push({kind:'Assembly', label:`Place assembly: ${as.name}`, fn:() => useAssembly(as.id)});
@@ -4163,7 +4184,7 @@ async function boot() {
   exposeTestHooks();
 }
 function exposeTestHooks() {
-  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
+  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
   if (typeof TEAM !== 'undefined') { window.SSD.TEAM = TEAM; window.SSD.mergeProjects = mergeProjects; }
 }
 
@@ -5784,7 +5805,7 @@ function scoreRing(v) {
   const r = 30, c = 2 * Math.PI * r, f = v.score / 100; const col = v.score >= 90 ? 'var(--ok)' : v.score >= 60 ? 'var(--accent)' : 'var(--err)';
   return el('div', {class:'ring', role:'img', 'aria-label':`Design score ${v.score} out of 100, ${v.label}`, html:`<svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="${r}" class="rbg"/><circle cx="38" cy="38" r="${r}" class="rfg" style="stroke:${col};stroke-dasharray:${(c * f).toFixed(1)} ${c.toFixed(1)}"/></svg><b>${v.score}</b>`});
 }
-function maybeCelebrate(v) { const k = S.project.id; if (v.score >= 90 && v.devs && !EASY.celebrated.has(k)) { EASY.celebrated.add(k); confetti(); toast('Excellent design — every room covered and wired! 🎉', '', 4000); } }
+function maybeCelebrate(v) { const k = S.project.id; if (v.score >= 90 && v.devs && !EASY.celebrated.has(k)) { EASY.celebrated.add(k); confetti(); try { funSound('win'); } catch (e) {} toast('Excellent design — every room covered and wired! 🎉', '', 4000); } }
 function confetti() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; const cv = el('canvas', {class:'confetti', 'aria-hidden':'true'}); cv.width = innerWidth; cv.height = innerHeight; document.body.append(cv); const g = cv.getContext('2d');
   const cols = ['#e0a81c', '#2f7de1', '#0f8a5f', '#7c3aed', '#d12f2f', '#0891b2']; const P = Array.from({length:140}, () => ({x:innerWidth / 2 + (Math.random() - 0.5) * 200, y:innerHeight * 0.35, vx:(Math.random() - 0.5) * 14, vy:-Math.random() * 13 - 4, s:4 + Math.random() * 5, c:cols[(Math.random() * cols.length) | 0], r:Math.random() * 6}));
@@ -5826,6 +5847,7 @@ function ezStep2() {
   if (!v.devs) tips.push(el('p', {text:'Start with Auto-design — it picks and places cameras for every room in seconds.'}));
   for (const w of v.weak.slice(0, 3)) tips.push(el('button', {class:'eztip', onclick:() => ezFixRoom(w.r), html:`<b>${esc(w.r.name || 'Room')}</b> is ${Math.round(w.pct * 100)}% covered <span>Fix →</span>`}));
   if (v.loose.length) tips.push(el('button', {class:'eztip', onclick:wireItUp, html:`<b>${v.loose.length} device${v.loose.length > 1 ? 's' : ''}</b> not wired yet <span>Wire up →</span>`}));
+  if (v.weak.length + (v.loose.length ? 1 : 0) >= 2) tips.push(el('button', {class:'btn primary sm ezfixall', id:'ezFixAll', html:'✨ Fix everything for me', onclick:() => fixEverything()}));
   if (v.errs) tips.push(el('button', {class:'eztip', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`<b>${v.errs} problem${v.errs > 1 ? 's' : ''}</b> in the design check <span>Show →</span>`}));
   out.push(el('div', {class:'ezscore'}, [scoreRing(v), el('div', {}, [el('b', {text:`Design score · ${v.label}`}), el('p', {class:'note', text: v.rooms ? `${v.covered} of ${v.rooms} rooms covered at ${S.overlay.level || 'detection'} level` : `${v.devs} device${v.devs === 1 ? '' : 's'} placed`}), ...tips])]));
   out.push(ezCard({ic:'target', title:'✨ Auto-design cameras', text: onFloor().some(o => o.t === 'room') ? 'Covers every room on this floor' + (EASY.outside ? ' and the outside corners' : '') : 'Draw or find rooms in step 1 first', onclick:() => autoDesignFloor({outside:EASY.outside}), primary:!v.devs, id:'ezAuto'}));
@@ -5837,6 +5859,7 @@ function ezStep2() {
   out.push(el('div', {class:'ezsec'}, [el('h3', {text:'Doors'}), ezCard({ic:'door', title:'Secure a door', text:'Click a door on the plan, pick the package', onclick:() => setTool('securedoor'), id:'ezDoor'})]));
   out.push(el('div', {class:'ezsec'}, [el('h3', {text:'Alarm & fire'}), el('div', {class:'eztiles'}, [['pir','Motion','Rooms & halls'],['glassbreak','Glass-break','Near windows'],['keypad','Keypad','By the entry'],['smoke','Smoke','Every room'],['pull','Pull station','At exits'],['hornstrobe','Horn/strobe','Alarm signal']].map(([k, l, d]) => ezTile(k, l, d)))]));
   out.push(el('div', {class:'ezsec'}, [el('h3', {text:'Network & power'}), ezCard({ic:'cable', title:'🔌 Wire it all up', text:'Adds switch, recorder, controller & power, then runs every cable', onclick:wireItUp, id:'ezWire'}), el('button', {class:'btn sm ghost', id:'ezUPS', style:'margin-top:8px', html:icon('bolt') + 'Battery backup (UPS) runtime', onclick:() => openUPSDialog()})]));
+  out.push(ezCard({ic:'<span class="tbic">🧰</span>', title:'Toolbox', text:'Lens calculator, QR labels, VMS camera list, UPS, conduit, IP plan…', onclick:() => openToolbox(), id:'ezToolbox'}));
   out.push(ezNext('Next: quote & send', () => setStep(3)));
   return out;
 }
@@ -6026,7 +6049,7 @@ function renderEasyRight(Rp, sel) {
       body.append(F('Mounted at', bind(o, 'props.mountH', 'num', {step:0.5, label:'Mount height'}), 'ft'), F('Mount', bind(o, 'props.mount', 'select', {options:[['','—'],['Ceiling','Ceiling'],['Wall','Wall'],['Corner','Building corner'],['Pole','Pole'],['Pendant','Pendant']], label:'Mount type'})));
       body.append(el('div', {class:'ezsee'}, [el('h4', {class:'lbl3', text:'What it sees'}), resolutionPreview(o)]), el('p', {class:'note', text:`Sees faces to ${fmtLen(levelRange(o, 'identification'))}, people to ${fmtLen(levelRange(o, 'recognition'))}, motion to ${fmtLen(cp.range)}.`}));
     }
-    body.append(photosGroup(o));
+    body.append(photosGroup(o), F('Notes', bind(o, 'props.notes', 'textarea', {label:'Notes', placeholder:'Install notes for the tech — talk or type'})));
   } else if (o.t === 'door') {
     const parts = doorParts(o.id); body.append(F('Name', bind(o, 'name', 'text', {label:'Rename door'})), el('p', {class:'note', text: parts.length ? `${o.template || 'Secured'} · ${parts.length} devices` : 'Not secured yet.'}));
     body.append(el('div', {class:'ezgrid one'}, [['std-ext','Card reader door'], ['strike-reader','Card reader + strike'], ['exit-only','Exit only (alarmed)'], ['wireless','Wireless lock']].map(([id, l]) => ezCard({ic:'door', title:l, onclick:() => { applyDoorTemplate(o.id, id); renderEasyRight(Rp, selObjs()); }}))));
@@ -6204,7 +6227,7 @@ function ezStep3Extras(body) {
     const cov = el('label', {class:'ezcheck', style:'margin:6px 0 0'}, [el('input', {type:'checkbox', id:'ezCover', checked:S.project.proposalCover !== false, onchange:(e) => tx('Proposal cover', () => { touchMeta(); S.project.proposalCover = e.target.checked; })}), 'Proposal starts with a cover page (logo, plan picture, totals)']);
     grid.before(row, cov); }
   if (grid) grid.append(ezCard({ic:'eye', title:'Present to customer', text:'Full-screen walk-through — no costs shown', onclick:() => openPresent(), id:'ezPresent'}));
-  if (grid) grid.after(el('div', {class:'ezmore', id:'ezMore'}, [el('span', {class:'lbl3', text:'More files'}), el('button', {class:'btn sm', id:'ezSpecs', text:'Spec sheets', onclick:() => exportSpecSheets()}), el('button', {class:'btn sm', id:'ezCSV', text:'QuickBooks / Jobber CSV', onclick:() => exportEstimateCSV()}), el('button', {class:'btn sm', id:'ezDXF', text:'CAD (DXF)', onclick:() => exportDXF()}), el('button', {class:'btn sm', id:'ezKML', text:'Google Earth', onclick:() => exportKML()})]));
+  if (grid) grid.after(el('div', {class:'ezmore', id:'ezMore'}, [el('span', {class:'lbl3', text:'More files'}), el('button', {class:'btn sm', id:'ezSpecs', text:'Spec sheets', onclick:() => exportSpecSheets()}), el('button', {class:'btn sm', id:'ezCSV', text:'QuickBooks / Jobber CSV', onclick:() => exportEstimateCSV()}), el('button', {class:'btn sm', id:'ezDXF', text:'CAD (DXF)', onclick:() => exportDXF()}), el('button', {class:'btn sm', id:'ezKML', text:'Google Earth', onclick:() => exportKML()}), el('button', {class:'btn sm', id:'ezQR', text:'QR device labels', onclick:() => exportDeviceLabels()}), el('button', {class:'btn sm', id:'ezVMS', text:'VMS camera list', onclick:() => exportVMSList()})]));
   const snap = S.project.approvedSnap; const sec = el('div', {class:'ezsec', id:'ezApproval'});
   if (!snap) sec.append(el('h3', {text:'Customer decision'}), el('button', {class:'btn', id:'ezMarkApproved', html:icon('check') + 'Customer approved this quote', onclick:() => markApproved()}), el('p', {class:'note', text:'Locks in today’s design and price so any later change becomes a change order.'}));
   else { const co = changeOrder(); sec.append(el('h3', {text:'Approved ' + new Date(snap.ts).toLocaleDateString() + (snap.optionName ? ' · ' + snap.optionName : '')}));
@@ -6551,7 +6574,7 @@ function awardBadges(ids) {
   const before = badgeRank(Object.keys(have).length); for (const id of fresh) have[id] = Date.now(); saveBadges(have);
   const after = badgeRank(Object.keys(have).length); const b = BADGES.find(x => x.id === fresh[0]);
   badgePop(fresh.length === 1 ? b.em : '🏆', fresh.length === 1 ? `Badge unlocked: ${b.name}` : `${fresh.length} badges unlocked`, after !== before ? `New rank — ${after}!` : fresh.length === 1 ? b.how : 'Tap the trophy to see them');
-  updateTrophyChip(true); const mini = $('#trophyMini'); if (mini) { mini.querySelector('b').textContent = Object.keys(have).length; mini.setAttribute('aria-label', `Badges: ${Object.keys(have).length} of ${BADGES.length}`); }
+  updateTrophyChip(true); try { funSound(after !== before ? 'win' : 'badge'); } catch (e) {} const mini = $('#trophyMini'); if (mini) { mini.querySelector('b').textContent = Object.keys(have).length; mini.setAttribute('aria-label', `Badges: ${Object.keys(have).length} of ${BADGES.length}`); }
   if (after !== before && after === 'Legend') try { confetti(); } catch (e) {}
   return fresh;
 }
@@ -6594,6 +6617,152 @@ changeHooks.push(debounce(() => { try { checkBadges(); updateTrophyChip(); } cat
 // ---------- phone camera: snap the floor plan or site photos straight from the camera ----------
 const isTouchDevice = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
 function snapPlanPhoto() { const i = el('input', {type:'file', accept:'image/*', capture:'environment'}); i.addEventListener('change', () => { if (i.files.length) { importFiles(i.files); toast('Got it — next, set the scale with two points you know.', '', 4500); } }); i.click(); return i; }
+
+// ===== TOOLBOX · FIX EVERYTHING · LENS CALCULATOR · QR DEVICE LABELS · VMS CAMERA LIST · DICTATION · SOUNDS =====
+// Ideas from the tools integrators use every day (JVSG lens calculator, AXIS Site Designer VMS export,
+// System Surveyor site-walk notes and install handoff) — rebuilt simply, on this app's own data.
+LIBS.qr = ['https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.js', () => window.qrcode];
+const devRoom = (o) => onFloor(o.floor).find(r => r.t === 'room' && r.pts && G.inPoly([o.x, o.y], r.pts));
+const devList = () => Object.values(objs()).filter(o => o.t === 'dev' && !(prod(o.product) || {}).nobom).sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, {numeric:true}));
+
+// ---------- ✨ Fix everything: cover every weak room with the advisor's best pick, then wire it all up ----------
+const freshScore = () => { try { S.issues = runDesignCheck(); } catch (e) {} EASY.scoreCache = null; return designScore(); };
+async function fixEverything() {
+  if (!S.project || EASY.fixing) return; EASY.fixing = true; const before = freshScore().score; let fixed = 0; const d0 = S.undo.length; const keep = new Set($('#toasts').children); const t = toast('Fixing the weak spots…', '', 60000);
+  try {
+    for (let pass = 0; pass < 2; pass++) {
+      EASY.scoreCache = null; const weak = designScore().weak; if (!weak.length) break;
+      for (const w of weak.slice(0, 12)) { const r = w.r; const c = G.centroid(r.pts); const p = G.inPoly(c, r.pts) ? c : r.pts.reduce((a, q) => [a[0] + q[0] / r.pts.length, a[1] + q[1] / r.pts.length], [0, 0]);
+        await adviseAt(p); if (ADVISOR.opts.length) { placeOption(0); fixed++; } }
+    }
+    EASY.scoreCache = null; if (designScore().loose.length) wireItUp();
+  } catch (e) { reportError('Fix everything stopped', e); } finally { EASY.fixing = false; t.remove(); }
+  const after = freshScore().score; S.sel = new Set(); onSelectionChanged(); renderLeft(); requestDraw();
+  [...$('#toasts').children].forEach(n => { if (!keep.has(n)) n.remove(); }); // one clean summary instead of a toast per step
+  const steps = S.undo.length - d0, depth = S.undo.length;
+  const msg = fixed ? `✨ Fixed ${fixed} room${fixed > 1 ? 's' : ''} · score ${before} → ${after}` : `Nothing to fix · score ${after}`;
+  const t2 = el('div', {class:'toast undo', role:'status', id:'fixToast'}, [el('span', {text:msg}), steps ? el('button', {class:'btn sm', text:'Undo', onclick:() => { t2.remove(); if (S.undo.length !== depth) return toast('Something else changed since — use Ctrl+Z.', 'warn'); for (let i = 0; i < steps; i++) undo(); [...$('#toasts').children].forEach(n => n.remove()); EASY.scoreCache = null; renderLeft(); toast('Undid Fix everything'); }}) : null, el('button', {class:'x', 'aria-label':'Dismiss', html:'&times;', onclick:() => t2.remove()})]);
+  $('#toasts').append(t2); setTimeout(() => t2.remove(), 8000); if (after >= 90) try { funSound('win'); } catch (e) {}
+  return {before, after, fixed, steps};
+}
+
+// ---------- 🔭 Lens & pixel calculator (IEC 62676-4 pixel density) ----------
+// Physics only: scene width W = 2·d·tan(HFOV/2) and density = horizontal pixels ÷ W.
+function lensMath({distFt, ppm, resH}) {
+  const dM = distFt / FT_PER_M; const maxWidthM = resH / ppm; const hfov = 2 * Math.atan(maxWidthM / 2 / dM) * 180 / Math.PI;
+  return {maxWidthFt: maxWidthM * FT_PER_M, hfov, ppf: ppm / FT_PER_M};
+}
+function lensMatches({distFt, ppm, where}) {
+  const dM = distFt / FT_PER_M; const out = [];
+  for (const p of catalog.list) { const k = KINDS[p.kind]; if (!k || k.cat !== 'camera' || !p.res || !p.hfov || p.hfov >= 360 || p.kind === 'thermal') continue; if (where === 'outside' && p.env === 'indoor') continue;
+    const narrow = p.hfovMin || p.teleHfov || p.hfov; const res = p.res[0]; const width = 2 * dM * Math.tan(narrow / 2 * Math.PI / 180); const got = res / width; if (got < ppm) continue;
+    const need = lensMath({distFt, ppm, resH:res}).hfov; const set = Math.max(narrow, Math.min(p.hfovMax || p.hfov, need));
+    out.push({p, set:+set.toFixed(1), ppm:Math.round(res / (2 * dM * Math.tan(set / 2 * Math.PI / 180))), widthFt:+(2 * distFt * Math.tan(set / 2 * Math.PI / 180)).toFixed(1)}); }
+  return out.sort((a, b) => (b.p.verified ? 1 : 0) - (a.p.verified ? 1 : 0) || b.set - a.set || a.p.res[0] - b.p.res[0]).slice(0, 6);
+}
+function openLensCalc() {
+  const st = {goal:'identification', dist:30, res:1920, where:'inside', custom:40};
+  const sel = [...S.sel].map(id => objs()[id]).find(o => o && o.t === 'dev' && isCam(o)); if (sel) { st.res = camParams(sel).res || 1920; }
+  const goals = [...DORI.map(d => [d.key, `${d.label} · ${d.ppm} px/m`]), ['custom', 'Custom px/ft']];
+  const gSel = el('select', {class:'field', 'aria-label':'What you need to see', id:'lcGoal'}, goals.map(([v, l]) => el('option', {value:v, text:l, selected:v === st.goal})));
+  const dist = el('input', {class:'field num', type:'number', min:1, max:2000, step:1, value:st.dist, 'aria-label':'Distance to target in feet', id:'lcDist'});
+  const resSel = el('select', {class:'field', 'aria-label':'Camera resolution', id:'lcRes'}, [[1920, '2 MP · 1920 px wide'], [2560, '4 MP · 2560 px'], [2688, '4 MP · 2688 px'], [2592, '5 MP · 2592 px'], [3072, '5 MP · 3072 px'], [3840, '4K / 8 MP · 3840 px']].concat(sel && ![1920, 2560, 2688, 2592, 3072, 3840].includes(st.res) ? [[st.res, `Selected camera · ${st.res} px`]] : []).map(([v, l]) => el('option', {value:v, text:l, selected:+v === +st.res})));
+  const custom = el('input', {class:'field num', type:'number', min:1, max:500, value:st.custom, 'aria-label':'Custom pixels per foot', id:'lcCustom'});
+  const where = el('div', {class:'seg', role:'group', 'aria-label':'Where'}, [['inside', 'Inside'], ['outside', 'Outside']].map(([v, l]) => el('button', {class:'btn sm' + (v === st.where ? ' on' : ''), 'data-v':v, text:l, onclick:(e) => { st.where = v; where.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); calc(); }})));
+  const out = el('div', {class:'lcout', id:'lcOut', 'aria-live':'polite'}); const list = el('div', {class:'lclist', id:'lcList'});
+  const calc = () => {
+    st.goal = gSel.value; st.dist = Math.max(1, +dist.value || 1); st.res = +resSel.value; custom.parentElement.hidden = st.goal !== 'custom';
+    const ppm = st.goal === 'custom' ? Math.max(1, +custom.value || 1) * FT_PER_M : DORI.find(d => d.key === st.goal).ppm; const m = lensMath({distFt:st.dist, ppm, resH:st.res});
+    out.innerHTML = `<div><b>${m.hfov >= 120 ? '≥120' : m.hfov.toFixed(1)}°</b><i>widest view that still works</i></div><div><b>${m.maxWidthFt.toFixed(1)} ft</b><i>scene width at ${st.dist} ft</i></div><div><b>${Math.round(ppm)} px/m</b><i>${m.ppf.toFixed(1)} px/ft needed</i></div>`;
+    out.dataset.hfov = m.hfov.toFixed(2); out.dataset.width = m.maxWidthFt.toFixed(2);
+    const hits = lensMatches({distFt:st.dist, ppm, where:st.where}); list.innerHTML = '';
+    list.append(el('h4', {text: hits.length ? `Library cameras that reach ${Math.round(ppm)} px/m at ${st.dist} ft` : 'No camera in the library reaches that — move closer or pick a higher resolution'}));
+    for (const h of hits) list.append(el('div', {class:'lcrow', 'data-product':h.p.id}, [el('span', {class:'lcname', html:`<b>${esc(h.p.mfr === 'Generic' ? h.p.model : h.p.mfr + ' ' + h.p.model)}</b><i>set to ${h.set}° · ${h.ppm} px/m · ${h.widthFt} ft wide${h.p.verified ? ' · ✓ verified' : ''}</i>`}),
+      el('button', {class:'btn sm', text:'Place it', onclick:() => { d.close(); setTool('place', {product:h.p.id}); S.placeHfov = h.set; S.placeHfovFor = h.p.id; toast(`Click the plan to place it — it’s set to ${h.set}°.`, '', 4000); }})]));
+    if (sel && isCam(sel)) { const p = prod(sel.product) || {}; const lo = p.hfovMin || p.hfov, hi = p.hfovMax || p.hfov; const can = m.hfov >= lo - 0.01; apply.hidden = false; apply.disabled = !can; apply.textContent = can ? `Set ${sel.name} to ${Math.min(hi, m.hfov).toFixed(1)}°` : `${sel.name} can’t zoom that far (narrowest ${lo}°)`; }
+  };
+  const apply = el('button', {class:'btn', id:'lcApply', hidden:true, onclick:() => { const p = prod(sel.product) || {}; const lo = p.hfovMin || p.hfov, hi = p.hfovMax || p.hfov; const v = +Math.max(lo, Math.min(hi, +out.dataset.hfov)).toFixed(1); tx('Set view angle', () => updObj(sel.id, {props:{...sel.props, hfov:v}})); invalidateOcc && invalidateOcc(); requestDraw(); renderRight(); toast(`${sel.name} set to ${v}°`); d.close(); }});
+  [gSel, dist, resSel, custom].forEach(i => i.addEventListener('input', calc));
+  const body = el('div', {class:'lenscalc'}, [el('div', {class:'form'}, [el('label', {text:'I need to'}), gSel, el('label', {text:'Distance'}), el('div', {class:'unitrow'}, [dist, el('span', {text:'ft'})]), el('label', {text:'Camera'}), resSel, el('label', {text:'Where'}), where]), el('div', {class:'form', hidden:true}, [el('label', {text:'Pixels per foot'}), custom]), out, list,
+    el('p', {class:'note', text:'Pixel-density targets per IEC 62676-4 (25 / 62.5 / 125 / 250 px/m). Real images also depend on light, compression and focus.'})]);
+  const d = dialog({title:'Lens & pixel calculator', cls:'mid', body, footer:[apply, el('button', {class:'btn primary', text:'Done', onclick:() => d.close()})]});
+  calc(); return d;
+}
+
+// ---------- 🏷️ QR device labels (Avery 5160) — scan on site to see the device, model, IP and room ----------
+function deviceLabelText(o) { const p = prod(o.product) || {}; const r = devRoom(o); return [o.name, [p.mfr !== 'Generic' ? p.mfr : '', p.model].filter(Boolean).join(' '), p.part ? 'Part ' + p.part : '', o.props && o.props.ip ? 'IP ' + o.props.ip + (o.props.vlan ? ' VLAN ' + o.props.vlan : '') : '', [floorLabel(o.floor), r && r.name].filter(Boolean).join(' · '), S.project.name].filter(Boolean).join('\n'); }
+function qrModules(text) { const q = qrcode(0, 'M'); q.addData(unescape(encodeURIComponent(text))); q.make(); const n = q.getModuleCount(); const m = []; for (let r = 0; r < n; r++) { const row = []; for (let c = 0; c < n; c++) row.push(q.isDark(r, c)); m.push(row); } return m; }
+function qrCanvas(text, px = 4) { const m = qrModules(text); const n = m.length, q = 4; const c = el('canvas'); c.width = c.height = (n + 2 * q) * px; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#000'; m.forEach((row, r) => row.forEach((d, k) => { if (d) x.fillRect((k + q) * px, (r + q) * px, px, px); })); return c; }
+async function exportDeviceLabels(filter = 'all') {
+  const list = devList().filter(o => filter === 'all' || (filter === 'cameras' ? isCam(o) : !isCam(o))); if (!list.length) return toast('No devices to label yet');
+  try { await needLib('jspdf'); await needLib('qr'); } catch (e) { return reportError('Label export is unavailable', e); }
+  const L = {cols:3, rows:10, w:2.625, h:1, left:0.1875, top:0.5, gx:0.125}; const doc = new jspdf.jsPDF({unit:'in', format:'letter'}); const per = L.cols * L.rows;
+  list.forEach((o, i) => { if (i && i % per === 0) doc.addPage(); const k = i % per; const cx = L.left + (k % L.cols) * (L.w + L.gx), cy = L.top + Math.floor(k / L.cols) * L.h; const p = prod(o.product) || {}; const r = devRoom(o);
+    const m = qrModules(deviceLabelText(o)); const s = 0.84, cell = s / (m.length + 2); doc.setFillColor('#000000'); m.forEach((row, ry) => row.forEach((dk, rx) => { if (dk) doc.rect(cx + 0.08 + (rx + 1) * cell, cy + 0.08 + (ry + 1) * cell, cell, cell, 'F'); }));
+    const tx0 = cx + 0.08 + s + 0.08, tw = L.w - s - 0.26; doc.setTextColor('#000'); doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.text(String(o.name), tx0, cy + 0.3, {maxWidth:tw});
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); const lines = [[p.mfr !== 'Generic' ? p.mfr : '', p.model].filter(Boolean).join(' '), o.props && o.props.ip ? 'IP ' + o.props.ip : '', r ? r.name : floorLabel(o.floor)].filter(Boolean);
+    lines.forEach((l, j) => doc.text(doc.splitTextToSize(String(l), tw)[0], tx0, cy + 0.5 + j * 0.15)); });
+  saveFile(safeName(S.project.name) + '-device-qr-labels.pdf', doc.output('blob')); toast(`${list.length} QR label${list.length > 1 ? 's' : ''} ready — Avery 5160 / 8160`); return list.length;
+}
+
+// ---------- 🎥 camera list for the VMS (DW Spectrum, Milestone, Genetec, AXIS Camera Station…) ----------
+function vmsRows() {
+  const head = ['Camera name', 'Manufacturer', 'Model', 'Part number', 'IP address', 'VLAN', 'Building / floor', 'Room', 'Mount height (ft)', 'View angle (°)', 'Recording (days)', 'Notes'];
+  const days = ((S.project.settings || {}).recording || {}).days || REC_DEFAULTS.days;
+  return [head, ...devList().filter(isCam).map(o => { const p = prod(o.product) || {}; const r = devRoom(o); const cp = camParams(o); return [o.name, p.mfr || '', p.model || '', p.part || '', (o.props || {}).ip || '', (o.props || {}).vlan || '', floorLabel(o.floor), r ? r.name || '' : '', +(o.props.mountH ?? 10), Math.round(cp.hfov), days, (o.props || {}).notes || '']; })];
+}
+function exportVMSList() { const rows = vmsRows(); if (rows.length < 2) return toast('No cameras yet'); const csv = '﻿' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n'); saveFile(safeName(S.project.name) + '-vms-camera-list.csv', new Blob([csv], {type:'text/csv'})); toast(`${rows.length - 1} cameras exported for VMS setup`); return rows.length - 1; }
+
+// ---------- 🎤 dictation: talk instead of typing (site walk + device notes) when the browser supports it ----------
+const SpeechRec = () => window.SpeechRecognition || window.webkitSpeechRecognition || null;
+function micFor(input) {
+  const SR = SpeechRec(); if (!SR || !input || input.dataset.mic) return null; input.dataset.mic = '1';
+  const b = el('button', {class:'micbtn', type:'button', 'aria-label':'Dictate — talk to fill this in', title:'Talk instead of typing', html:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>'});
+  let rec = null; b.addEventListener('click', () => {
+    if (rec) { rec.stop(); return; } rec = new SR(); rec.lang = navigator.language || 'en-US'; rec.interimResults = false; rec.continuous = false; b.classList.add('on');
+    rec.onresult = (e) => { const t = [...e.results].map(r => r[0].transcript).join(' ').trim(); if (!t) return; input.value = (input.value ? input.value.replace(/\s*$/, ' ') : '') + t; input.dispatchEvent(new Event('input', {bubbles:true})); input.dispatchEvent(new Event('change', {bubbles:true})); };
+    rec.onerror = (e) => { if (e.error !== 'aborted' && e.error !== 'no-speech') toast(e.error === 'not-allowed' ? 'Allow the microphone to dictate' : 'Dictation stopped (' + e.error + ')', 'warn'); };
+    rec.onend = () => { b.classList.remove('on'); rec = null; }; try { rec.start(); } catch (e) { b.classList.remove('on'); rec = null; }
+  });
+  const wrap = el('div', {class:'micwrap'}); input.replaceWith(wrap); wrap.append(input, b); return b;
+}
+function addMics(root) { if (!SpeechRec() || !root) return; root.querySelectorAll('textarea, .sitewalk input.field').forEach(i => micFor(i)); }
+let micQ = 0; if (SpeechRec()) new MutationObserver(() => { if (micQ) return; micQ = requestAnimationFrame(() => { micQ = 0; const sw = document.querySelector('.sitewalk'); if (sw) addMics(sw); document.querySelectorAll('#right textarea').forEach(i => micFor(i)); }); }).observe(document.body, {childList:true, subtree:true});
+
+// ---------- 🔊 fun sounds (off by default; synthesized, no audio files) ----------
+const soundsOn = () => { try { return localStorage.getItem('ssd-sounds') === 'on'; } catch (e) { return false; } };
+function setSounds(on) { try { localStorage.setItem('ssd-sounds', on ? 'on' : 'off'); } catch (e) {} if (on) funSound('pop'); }
+let AC = null; const SOUNDS = {pop:[[660, 0, .07]], badge:[[523, 0, .09], [659, .09, .09], [784, .18, .16]], win:[[523, 0, .1], [659, .1, .1], [784, .2, .1], [1047, .3, .24]]};
+function funSound(kind) {
+  if (!soundsOn()) return false; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const t0 = AC.currentTime + 0.01;
+    for (const [f, at, dur] of SOUNDS[kind] || SOUNDS.pop) { const o = AC.createOscillator(), g = AC.createGain(); o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t0 + at); g.gain.exponentialRampToValueAtTime(0.18, t0 + at + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + dur); o.connect(g).connect(AC.destination); o.start(t0 + at); o.stop(t0 + at + dur + 0.02); }
+    EASY.lastSound = kind; return true; } catch (e) { return false; }
+}
+
+// ---------- 🧰 Toolbox: every calculator and install helper in one clean place ----------
+function toolboxTools() {
+  const cams = devList().filter(isCam).length, devs = devList().length; const facp = Object.values(objs()).find(o => o.t === 'dev' && o.kind === 'facp');
+  return [
+    {id:'lens', em:'🔭', name:'Lens & pixel calculator', how:'What view angle sees faces or plates at a distance', go:openLensCalc},
+    {id:'picker', em:'🎯', name:'Help me choose a camera', how:'Four questions → three picks', go:openCameraPicker},
+    {id:'fix', em:'✨', name:'Fix everything', how:'Cover every weak room, then wire it all', go:() => { setStep(2); fixEverything(); }, off: !devs ? 'Add devices first' : null},
+    {id:'compare', em:'⚖️', name:'Compare cameras', how:'Side-by-side specs', go:openCompare},
+    {id:'ups', em:'🔋', name:'UPS runtime', how:'Minutes of backup for your load', go:openUPSDialog},
+    {id:'conduit', em:'🧵', name:'Conduit fill', how:'NEC Chapter 9 fill for your cables', go:() => openConduitDialog()},
+    {id:'ip', em:'🌐', name:'IP address plan', how:'Addresses and VLANs for every device', go:openIPDialog, off: !devs ? 'Add devices first' : null},
+    {id:'qr', em:'🏷️', name:'QR device labels', how:'Avery 5160 — scan on site for model, IP, room', go:() => exportDeviceLabels(), off: !devs ? 'Add devices first' : null},
+    {id:'cablelabels', em:'🔖', name:'Cable labels', how:'Both ends of every run', go:openLabelsDialog},
+    {id:'vms', em:'🎥', name:'Camera list for the VMS', how:'CSV with names, models, IPs, rooms', go:exportVMSList, off: !cams ? 'Add cameras first' : null},
+    {id:'walk', em:'📝', name:'Site walk checklist', how:SpeechRec() ? 'Talk or type what you see on site' : 'What you see on site', go:openSiteWalk},
+    {id:'present', em:'🎬', name:'Present to the customer', how:'Full-screen, no prices or part numbers', go:openPresent},
+  ];
+}
+function openToolbox() {
+  const grid = el('div', {class:'tbgrid', id:'toolbox'}); let d;
+  for (const t of toolboxTools()) grid.append(el('button', {class:'tbtile', 'data-tool':t.id, disabled:!!t.off, title:t.off || t.how, onclick:() => { d.close(); try { t.go(); } catch (e) { reportError('Could not open ' + t.name, e); } }}, [el('span', {class:'tbem', text:t.em, 'aria-hidden':'true'}), el('b', {text:t.name}), el('i', {text:t.off || t.how})]));
+  const snd = el('label', {class:'agree', style:'margin:12px 0 0'}, [el('input', {type:'checkbox', id:'soundsToggle', checked:soundsOn(), onchange:(e) => setSounds(e.target.checked)}), el('span', {text:'🔊 Fun sounds when you place devices and earn badges'})]);
+  d = dialog({title:'Toolbox', cls:'badgedlg', body:el('div', {}, [grid, snd]), footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
+}
 
 // ===== START (after every module has loaded) =====
 boot().catch(e => { console.error(e); const l = $('#loading'); if (l) l.textContent = 'The designer could not start: ' + e.message; });
