@@ -810,6 +810,13 @@ label.ezcard{cursor:pointer}
 @media (max-width:900px){ #sbScale, #sbZoom, #sbSel{display:none !important} }
 @media (max-width:520px){ #sbCams, #sbSave{display:none !important} #status .c{padding:0 8px} }
 #ezUpload.over{border-color:var(--accent); background:var(--accent-bg)}
+/* remediation, review, statuses */
+.fixacts{display:inline-flex; gap:4px; flex-wrap:wrap} .fixacts .btn{height:24px; padding:0 8px; font-size:11.5px}
+.fcissue{display:flex; flex-direction:column; gap:2px; padding:2px 0 6px; border-bottom:1px solid var(--line2)} .fcissue .fixacts{margin-left:14px}
+.fixlist{display:flex; flex-direction:column; gap:6px} .fixrow{display:flex; gap:10px; align-items:flex-start; padding:10px; border:1px solid var(--line); border-radius:10px; background:var(--panel2); cursor:pointer} .fixrow input{margin-top:3px} .fixrow b{display:block; font-size:13px} .fixrow i{display:block; font-style:normal; font-size:12px; color:var(--muted)}
+.libitem .pstat{position:absolute; right:4px; top:4px; font-style:normal; font:700 9px var(--f-ui); text-transform:uppercase; letter-spacing:.04em; padding:1px 5px; border-radius:6px} .libitem{position:relative}
+.libitem .pstat.disc{background:var(--warn-bg); color:var(--warn)} .libitem .pstat.custom{background:var(--info-bg); color:var(--info)}
+.upspick.bad, .lcout .bad i{color:var(--err); font-weight:700}
 </style>
 <div id="app">
   <header id="top"></header>
@@ -925,7 +932,7 @@ const PRODUCTS = [
   {id:'gen-thermal', mfr:'Generic', model:'Thermal Bullet 640', part:'GEN-TH-640', kind:'thermal', res:[640,512], hfov:25, vfov:20, lens:'25 mm', ir:0, watts:12, poeClass:3, env:'outdoor', ip:'IP67', ik:'', audio:false, analytics:'Human/vehicle detect', mount:{part:'GEN-MNT-JB', desc:'Junction box'}},
   {id:'axis-p3275-lve-10', mfr:'AXIS', model:'P3275-LVE 10 mm Dome', part:'03150-001', kind:'dome', res:[1920,1080], hfov:100, hfovMin:32, hfovMax:100, vfov:52, lens:'3.4–9.8 mm', ir:130, poeClass:3, watts:12.95, env:'outdoor', ip:'IP66/IP67', ik:'IK10', audio:true, analytics:'AXIS Object Analytics', mount:{part:'AXIS-T94N01G', desc:'Pole/wall mount (verify per placement)'}, license:'AXIS Camera Station Pro core license', verified:true, src:'https://www.axis.com/products/axis-p3275-lve'},
   {id:'axis-p3275-lve-29', mfr:'AXIS', model:'P3275-LVE 29 mm Dome', part:'03151-001', kind:'dome', res:[1920,1080], hfov:29.1, hfovMin:11, hfovMax:29.1, vfov:16.4, lens:'10.8–28.2 mm', ir:130, poeClass:3, watts:12.95, env:'outdoor', ip:'IP66/IP67', ik:'IK10', audio:true, analytics:'AXIS Object Analytics', mount:{part:'AXIS-T94N01G', desc:'Pole/wall mount (verify per placement)'}, license:'AXIS Camera Station Pro core license', verified:true, src:'https://www.axis.com/products/axis-p3275-lve'},
-  {id:'axis-p3265', mfr:'AXIS', model:'P3265-LVE 9 mm Dome (discontinued)', part:'02328-001', kind:'dome', res:[1920,1080], hfov:100, hfovMin:36, hfovMax:100, vfov:53, lens:'3.4–8.9 mm', ir:130, poeClass:3, watts:10.7, env:'outdoor', ip:'IP66', ik:'IK10', audio:true, analytics:'AXIS Object Analytics', mount:{part:'AXIS-T94N01G', desc:'Pole/wall mount (verify per placement)'}, license:'AXIS Camera Station Pro core license', verified:true, src:'https://www.axis.com/products/axis-p3265-lve/support', note:'Discontinued — replaced by P3275-LVE'},
+  {discontinued:true, id:'axis-p3265', mfr:'AXIS', model:'P3265-LVE 9 mm Dome', part:'02328-001', kind:'dome', res:[1920,1080], hfov:100, hfovMin:36, hfovMax:100, vfov:53, lens:'3.4–8.9 mm', ir:130, poeClass:3, watts:10.7, env:'outdoor', ip:'IP66', ik:'IK10', audio:true, analytics:'AXIS Object Analytics', mount:{part:'AXIS-T94N01G', desc:'Pole/wall mount (verify per placement)'}, license:'AXIS Camera Station Pro core license', verified:true, src:'https://www.axis.com/products/axis-p3265-lve/support', note:'Discontinued — replaced by P3275-LVE'},
   {id:'axis-q1806', mfr:'AXIS', model:'Q1806-LE 32x Zoom Bullet', part:'02506-001', kind:'bullet', res:[2880,1620], hfov:60, hfovMin:2.3, hfovMax:60, vfov:39, lens:'4.3–137 mm', ir:328, poeClass:6, watts:51, env:'outdoor', ip:'IP66/IP67', ik:'IK10', audio:false, analytics:'AXIS Object Analytics', mount:{part:'AXIS-T91B47', desc:'Pole mount (verify)'}, license:'AXIS Camera Station Pro core license', verified:true, src:'https://www.axis.com/products/axis-q1806-le'},
   {id:'axis-m4308', mfr:'AXIS', model:'M4308-PLE Panoramic', part:'02100-001', kind:'fisheye', res:[2880,2880], hfov:360, vfov:183, lens:'1.3 mm', ir:49, poeClass:4, watts:15.5, env:'outdoor', ip:'IP66', ik:'IK10', audio:false, analytics:'AXIS Object Analytics', mount:{part:'AXIS-T94K01D', desc:'Pendant kit (verify)'}, license:'AXIS Camera Station Pro core license', verified:true, src:'https://www.axis.com/dam/public/a9/49/30/datasheet-axis-m4308-ple-panoramic-camera-en-US-517988.pdf', note:'PoE Class 4 · typical 7.9 W, max 15.5 W · IR 15 m'},
   {id:'hanwha-xnv8082r', mfr:'Hanwha', model:'XNV-8082R 6MP IR Dome', part:'XNV-8082R', kind:'dome', res:[3328,1872], hfov:114, hfovMin:40, hfovMax:114, vfov:62, lens:'2.8–8.4 mm motorized', ir:131, poeClass:3, watts:12.95, env:'outdoor', ip:'IP66/IP67/IP6K9K', ik:'IK10+', audio:true, analytics:'AI object detection', mount:{part:'SBP-300WM1', desc:'Wall mount (verify)'}, license:'Wisenet WAVE camera license', verified:true, src:'https://www.hanwhavision.com/en/products/camera/network/dome/xnv-8082r/'},
@@ -939,7 +946,7 @@ const PRODUCTS = [
   {id:'dw-pvf9di2', mfr:'Digital Watchdog', model:'PVF9 9MP Fisheye', series:'MEGApix', part:'DWC-PVF9Di2TW', kind:'fisheye', res:[3008,3000], hfov:360, vfov:185, lens:'2.1 mm fisheye', ir:80, poeClass:3, watts:10, env:'outdoor', ip:'IP66', ik:'IK09', audio:true, analytics:'Dewarp in DW Spectrum', mount:{part:'DWC-VFHMW', desc:'Hanging mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-PVF9Di2TW'},
   {id:'dw-xpza08mi', mfr:'Digital Watchdog', model:'XPZA 4K PTZ', series:'MEGApix', part:'DWC-XPZA08Mi', kind:'ptz', res:[3840,2160], hfov:64.1, teleHfov:1.6, hfovMin:1.6, hfovMax:64.1, vfov:38, lens:'6.5–260 mm (40x)', ir:1148, poeClass:8, watts:75, env:'outdoor', ip:'IP66', ik:'IK10', audio:true, analytics:'Auto-tracking', mount:{part:'DWC-XPZAWM', desc:'PTZ wall mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://ftp.digital-watchdog.com/admin/assets/_downloads/DW_DS_DWC-XPZA08Mi_Rev1023.pdf', note:'75 W — needs an 802.3bt (PoE++ Class 7) port or injector'},
   {id:'unv-ipc', mfr:'Uniview', model:'IPC3614SB 4MP Turret', part:'IPC3614SB-ADF28KM-I0', kind:'turret', res:[2560,1440], hfov:101.1, vfov:55.3, lens:'2.8 mm', ir:98, watts:4, env:'outdoor', ip:'IP67', ik:'', audio:true, analytics:'Smart intrusion', mount:{part:'TR-JB07-IN', desc:'Junction box (verify)'}, verified:true, src:'https://global.uniview.com/Products/Network_Cameras/Prime_Series/PRIMEI_Series/IPC3614SB-ADF28KM-I0/', note:'802.3af PoE or 12 VDC; 4 W max'},
-  {id:'bosch-flexidome', mfr:'Bosch', model:'FLEXIDOME IP outdoor 5000i 5MP', part:'NDE-5503-AL', kind:'dome', res:[3072,1728], hfov:99, hfovMin:31, hfovMax:99, vfov:53, lens:'3–10 mm', ir:98, watts:9.2, poeClass:3, env:'outdoor', ip:'IP66', ik:'IK10', audio:false, analytics:'Essential Video Analytics', mount:{part:'NDA-5100-PIP', desc:'Pipe mount (verify)'}, verified:true, src:'https://atlasgentech.co.nz/media/wysiwyg/BOS-NDE-5503-AL_Data_sheet.pdf', note:'Older model — check availability with your distributor'},
+  {discontinued:true, id:'bosch-flexidome', mfr:'Bosch', model:'FLEXIDOME IP outdoor 5000i 5MP', part:'NDE-5503-AL', kind:'dome', res:[3072,1728], hfov:99, hfovMin:31, hfovMax:99, vfov:53, lens:'3–10 mm', ir:98, watts:9.2, poeClass:3, env:'outdoor', ip:'IP66', ik:'IK10', audio:false, analytics:'Essential Video Analytics', mount:{part:'NDA-5100-PIP', desc:'Pipe mount (verify)'}, verified:true, src:'https://atlasgentech.co.nz/media/wysiwyg/BOS-NDE-5503-AL_Data_sheet.pdf', note:'Older model — check availability with your distributor'},
   {id:'ipro-s', mfr:'i-PRO', model:'WV-S2236L 2MP Indoor Dome', part:'WV-S2236L', kind:'dome', res:[1920,1080], hfov:114, hfovMin:36, hfovMax:114, vfov:60, lens:'2.9–9 mm motorized', ir:164, watts:8.7, poeClass:0, env:'indoor', ip:'', ik:'IK10', audio:false, analytics:'AI-VMD', mount:{part:'WV-Q122A', desc:'Ceiling mount (verify)'}, verified:true, src:'https://i-pro.com/products_and_solutions/sites/default/files/2023-11/WV-S2236L%20_%20i-PRO%20Global_R3_231129.pdf'},
   // ---------- access control ----------
   {id:'hid-signo20', mfr:'HID', model:'Signo 20 Mullion Reader', part:'20NKS-00-000000', kind:'reader', tech:'13.56 MHz + 125 kHz / Mobile, OSDP or Wiegand', amps:0.07, ampsPeak:0.25, volts:12, watts:0.84, verified:true, src:'https://www.hidglobal.com/products/20', note:'12 VDC · 70 mA max average, 250 mA peak'},
@@ -1059,7 +1066,7 @@ function estimatePrice(part) { if (!part) return null; if (EST_PRICE_BY_PART[par
 
 // Security Site Designer — created by Brad Hall. Copyright (c) 2026 Brad Hall. All rights reserved.
 const APP_CREATOR = {name:'Brad Hall', year:2026};
-const APP_VERSION = '3.9';
+const APP_VERSION = '3.10';
 // ===== UTILITIES =====
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -1232,8 +1239,8 @@ function mergeLastUndo(label) {
   for (const [id, before, after] of b.objs) { if (m.has(id)) m.get(id)[2] = after; else m.set(id, [id, before, after]); }
   S.undo.push({label: label || a.label, objs:[...m.values()], meta: a.meta || b.meta ? [ (a.meta||b.meta)[0], (b.meta||a.meta)[1] ] : null, time:b.time});
 }
-function undo() { if (TOOL && TOOL.busy && TOOL.busy()) { cancelTool(); return; } const p = S.undo.pop(); if (!p) return toast('Nothing to undo'); applyPatch(p, 0); S.redo.push(p); toast('Undo: ' + p.label); }
-function redo() { const p = S.redo.pop(); if (!p) return toast('Nothing to redo'); applyPatch(p, 1); S.undo.push(p); toast('Redo: ' + p.label); }
+function undo() { if (TOOL && TOOL.busy && TOOL.busy()) { cancelTool(); return; } const p = S.undo.pop(); if (!p) return toast('Nothing to undo'); S.redo.push(p); applyPatch(p, 0); toast('Undo: ' + p.label); }
+function redo() { const p = S.redo.pop(); if (!p) return toast('Nothing to redo'); S.undo.push(p); applyPatch(p, 1); toast('Redo: ' + p.label); }
 
 // ===== CHANGE PROPAGATION =====
 let changeHooks = [];
@@ -1676,7 +1683,8 @@ function runDesignCheck() {
   for (const d of devs) {
     const rooms = byFloor.get(d.floor); if (!rooms || (buildingOfFloor(d.floor)||{}).kind === 'site') continue;
     const p = [d.x, d.y]; const inside = rooms.some(r => G.inPoly(p, r.pts) || r.pts.some((a,i) => G.segDist(p, a, r.pts[(i+1)%r.pts.length]).d < 2));
-    if (!inside && (prod(d.product)||{}).env !== 'outdoor') add('suggestion', d.id, `${d.name} is outside every room on this floor`);
+    const kk = KINDS[d.kind] || {}; if (kk.room || kk.cat === 'site' || (prod(d.product)||{}).nobom || ['pole', 'gate', 'stair', 'radio', 'radar', 'gateop'].includes(d.kind)) continue;
+    if (!inside && (prod(d.product)||{}).env !== 'outdoor') add('suggestion', d.id, `${d.name} is outside every room on this floor`, 'Move it inside a room, or accept it as an exception if it really sits outside (e.g. above a ceiling, in a corridor not drawn as a room).');
   }
   // lens limits
   for (const c of devs.filter(isCam)) { const lr = lensRange(c); const h = c.props && c.props.hfov; if (lr && h != null && (h < lr[0] - 0.5 || h > lr[1] + 0.5)) add('warning', c.id, `${c.name}: ${h}° view is outside this lens (${lr[0]}–${lr[1]}°)`, 'Pick a model with a wider or longer lens, or adjust the view.'); }
@@ -1687,13 +1695,13 @@ function runDesignCheck() {
   // standby batteries
   for (const ps of devs.filter(o => o.kind === 'psu')) { const L = psuLoad(ps); if (L.battMax && L.ah > L.battMax) add('warning', ps.id, `${ps.name}: ${L.hours} h standby needs ${L.ah.toFixed(1)} Ah — more than the enclosure holds (${L.battMax} Ah)`); }
   for (const u of devs.filter(o => o.kind === 'ups')) { const L = upsLoad(u); if (L.w > L.capW * 0.8) add('warning', u.id, `${u.name}: estimated load ${L.w.toFixed(0)} W is over 80% of its ${L.capW.toFixed(0)} W rating`); }
-  detectorSpacingIssues(add); ipIssues(add); fireIssues(add); wirelessIssues(add); coverageIssues(add);
+  detectorSpacingIssues(add); ipIssues(add); fireIssues(add); wirelessIssues(add); coverageIssues(add); connectivityIssues(add);
   // open comments
   const open = list.filter(o => o.t === 'comment' && o.status !== 'resolved').length;
   if (open) { const c = list.find(o => o.t === 'comment' && o.status !== 'resolved'); add('suggestion', c.id, `${open} open review comment${open>1?'s':''}`); }
   const rank = {error:0, warning:1, suggestion:2};
   out.sort((a,b) => rank[a.sev]-rank[b.sev]);
-  return out;
+  return applyAccepted(out);
 }
 // Per-room coverage shown on room labels in Cameras mode
 const updateRoomCoverage = debounce(() => {
@@ -1703,7 +1711,9 @@ const updateRoomCoverage = debounce(() => {
   const changed = rooms.filter(r => !S.roomCov || !S.roomCov[r.id] || Math.floor(S.roomCov[r.id].pct*100) !== Math.floor(next[r.id].pct*100) || S.roomCov[r.id].need !== next[r.id].need || S.roomCov[r.id].ok !== next[r.id].ok).map(r => r.id);
   S.roomCov = next; if (changed.length) markDirty(changed);
 }, 450);
-const scheduleValidate = debounce(() => { if (!S.project) return; try { S.issues = runDesignCheck(); } catch (e) { console.error('design check failed', e); S.issues = []; } updateStatusCounts(); if (S.mode === 'reports') renderReports(); updateRoomCoverage(); }, 350);
+function issuesKey() { return S.project ? S.project.id + '|' + (S.txn || 0) + '|' + S.project.modified : ''; }
+function freshIssues() { if (!S.project) return []; const k = issuesKey(); if (S.issuesKey !== k) { try { S.issues = runDesignCheck(); } catch (e) { console.error('design check failed', e); S.issues = []; } S.issuesKey = k; S.checkedAt = Date.now(); } return S.issues; }
+const scheduleValidate = debounce(() => { if (!S.project) return; S.issuesKey = null; freshIssues(); updateStatusCounts(); if (S.mode === 'reports') renderReports(); updateRoomCoverage(); }, 350);
 
 // ===== BILL OF MATERIALS =====
 const BOM_CATS = ['Cameras','Camera mounts','Access control','Door hardware','Controllers','Power supplies','Intrusion','Fire alarm','Sensors & audio','Networking','Cable','Fiber','Wireless','Racks','UPS','Licenses','Other items','Labor','Miscellaneous'];
@@ -2194,10 +2204,27 @@ function snapPt(p, opt={}) {
 function nearestWall(p, maxD) {
   let best = null; for (const o of onFloor()) if (o.t === 'wall') { const r = G.segDist(p, [o.x1,o.y1], [o.x2,o.y2]); if (r.d < maxD && (!best || r.d < best.d)) best = {...r, wall:o}; } return best;
 }
+const HITRANK = {dev:0, door:1, window:1, text:2, comment:2, cable:3, wall:4, shape:5, dim:5, room:6, area:6};
+const PICK = {x:0, y:0, t:0, stack:[], i:0};
+function hitStack(e) {
+  const els = (typeof document.elementsFromPoint === 'function' && e && e.clientX != null) ? document.elementsFromPoint(e.clientX, e.clientY) : [e.target]; const out = [];
+  for (const n of els) { const g = n.closest && n.closest('[data-id]'); if (!g) continue; const o = objs()[g.dataset.id]; if (!o || out.includes(o)) continue; const L = S.project.layers[layerFor(o)]; if (L && L.locked) continue; out.push(o); }
+  return out.sort((a, b) => (HITRANK[a.t] ?? 5) - (HITRANK[b.t] ?? 5));
+}
 function hitObject(e) {
   const h = e.target.closest && e.target.closest('[data-handle]'); if (h) return {handle: h.dataset.handle};
-  const g = e.target.closest && e.target.closest('[data-id]'); if (!g) return null; const o = objs()[g.dataset.id]; if (!o) return null;
-  const L = S.project.layers[layerFor(o)]; if (L && L.locked) return null; return {obj:o};
+  const g = e.target.closest && e.target.closest('[data-id]'); if (!g) return null; const top = objs()[g.dataset.id]; if (!top) return null;
+  let stack; try { stack = hitStack(e); } catch (err) { stack = [top]; } if (!stack.length) return null;
+  const pick = stack.find(o => S.sel.has(o.id)) || stack[0]; // keep what's selected under the pointer, so it can be dragged
+  return {obj:pick, stack};
+}
+// a plain click (no drag) on the same spot again picks the next object stacked there
+function cycleOnClick(e) {
+  if (S.tool !== 'select' || e.shiftKey || e.ctrlKey || e.metaKey) return; const moved = PT.downScreen ? Math.hypot(e.clientX - PT.downScreen[0], e.clientY - PT.downScreen[1]) : 0; if (moved > 4) { PICK.t = 0; return; }
+  const same = Math.hypot(e.clientX - PICK.x, e.clientY - PICK.y) < 5 && Date.now() - PICK.t < 2500; PICK.x = e.clientX; PICK.y = e.clientY;
+  let stack = []; try { stack = hitStack(e); } catch (err) {} if (!same || stack.length < 2 || S.sel.size !== 1) { PICK.t = Date.now(); return; }
+  const cur = stack.findIndex(o => S.sel.has(o.id)); if (cur < 0) { PICK.t = Date.now(); return; } const next = stack[(cur + 1) % stack.length];
+  S.sel = new Set([next.id]); onSelectionChanged(); requestDraw(); PICK.t = Date.now(); toast(`Selected ${next.name || next.t} (${stack.indexOf(next) + 1} of ${stack.length} here) — click again to cycle`, '', 2200);
 }
 function expandGroups(ids) { const out = new Set(ids); for (const id of ids) { const o = objs()[id]; if (o && o.group) for (const x of Object.values(objs())) if (x.group === o.group) out.add(x.id); } return out; }
 
@@ -2227,7 +2254,7 @@ function setTool(name, opt={}) {
   if (S.readOnly && !['select','hand','measure','area','advisor'].includes(name)) { if (typeof readOnlyNotice === 'function') readOnlyNotice(); name = 'select'; opt = {}; }
   if (TOOL && TOOL.end) TOOL.end();
   if (name === 'place' && opt.product && opt.product !== S.placeProduct) S.placeHfov = S.placeHfovFor === opt.product ? S.placeHfov : null; if (name === 'place') S.placeHfovFor = opt.product || S.placeProduct;
-  S.tool = name; if (name === 'place' && opt.product) S.placeProduct = opt.product; if (opt.shape) S.shapeKind = opt.shape;
+  S.tool = name; if (name === 'place' && opt.product) S.placeProduct = opt.product; if (name !== 'select' && innerWidth <= 900 && !isEasy()) $('#app').classList.remove('lopen'); if (opt.shape) S.shapeKind = opt.shape;
   TOOL = TOOLS[name] || TOOLS.select; TOOL.start && TOOL.start(opt);
   R.layers.tool.textContent = ''; hideLenBox(); if (typeof updateQuickBar === 'function') updateQuickBar();
   $$('[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === name && (name !== 'place' || !b.dataset.cat || b.dataset.cat === (prod(S.placeProduct) && kindOf(prod(S.placeProduct)).cat)) && (name !== 'shape' || !b.dataset.shape || b.dataset.shape === S.shapeKind)));
@@ -2359,7 +2386,7 @@ function openingTool(kind) {
     hint: () => kind === 'door' ? 'Click on a wall to place a door. It snaps and aligns to the wall.' : 'Click on a wall to place a window.',
     pos(p) { const nw = nearestWall(p, 3); if (nw) { const w = nw.wall; return {p: nw.q, rot: Math.atan2(w.y2-w.y1, w.x2-w.x1)/DEG, wall:w.id}; } return {p: snapPt(p).p, rot: 0, wall:null}; },
     move(e, p) { const q = this.pos(p); const w = kind === 'door' ? 3 : 4; const g = sv('g', {transform:`translate(${q.p[0]} ${q.p[1]}) rotate(${q.rot})`, class:'ghostopen'}); g.append(sv('rect', {x:-w/2, y:-0.5, width:w, height:1})); toolPreview([g]); },
-    down(e, p) { const q = this.pos(p); let o; tx('Place ' + kind, () => { o = addObj({t:kind, floor:S.floorId, x:q.p[0], y:q.p[1], rot:q.rot, w: kind === 'door' ? 3 : 4, wallId:q.wall, name: kind === 'door' ? nextName('door', 'door') : undefined}); }); S.sel = new Set([o.id]); onSelectionChanged(); if (!q.wall) toast('Placed without a wall — drag it onto a wall to snap.'); },
+    down(e, p) { const q = this.pos(p); if (!q.wall && !e.shiftKey && onFloor().some(x => x.t === 'wall')) { toast(`Click on a wall to place the ${kind} — it snaps to the wall. Hold Shift to place it unattached.`, 'warn', 4500); return; } let o; tx('Place ' + kind, () => { o = addObj({t:kind, floor:S.floorId, x:q.p[0], y:q.p[1], rot:q.rot, w: kind === 'door' ? 3 : 4, wallId:q.wall, name: kind === 'door' ? nextName('door', 'door') : undefined}); }); S.sel = new Set([o.id]); onSelectionChanged(); if (!q.wall) toast(`Placed ${o.name || kind} unattached (no wall) — drag it onto a wall to snap.`, 'warn'); },
     up() {},
   };
 }
@@ -2380,7 +2407,7 @@ TOOLS.place = {
   placeAt(p, e, productId) {
     const pid = productId || S.placeProduct; const pr = prod(pid); if (!pr) return; const ps = this.pose(p, e); let o;
     tx('Place ' + (KINDS[pr.kind].label), () => { o = addObj(makeDevice(pid, ps.p[0], ps.p[1], {rot: ps.rot})); if (ps.wall) o.props.mount = 'Wall'; if (S.placeHfov && isCam(o)) o.props.hfov = S.placeHfov; }); try { funSound('pop'); } catch (e) {}
-    S.sel = new Set([o.id]); onSelectionChanged(); smartAfterPlace(o, ps);
+    S.sel = new Set([o.id]); onSelectionChanged(); smartAfterPlace(o, ps); try { placedFeedback(o); } catch (e) {}
     if (S.project.settings.stickyTools === false) setTool('select');
     return o;
   },
@@ -2485,7 +2512,7 @@ function applyCalibration(a, b, realFt, scaleObjects) {
     touchMeta(); const fl = floorById(S.floorId);
     if (fl.bg) { fl.bg.ftPerPx *= k; fl.bg.x *= k; fl.bg.y *= k; }
     if (scaleObjects) for (const o of onFloor()) { touch(o.id); const sc = (q) => [q[0]*k, q[1]*k]; if (o.t === 'wall') { o.x1*=k; o.y1*=k; o.x2*=k; o.y2*=k; } else if (o.pts) o.pts = o.pts.map(sc); else { o.x *= k; o.y *= k; } if (o.w) o.w *= 1; }
-    fl.calibrated = true; fl.calSrc = 'two-point';
+    fl.calibrated = true; fl.calSrc = 'two-point'; fl.calHist = [...(fl.calHist || []), {at:Date.now(), by:S.project.designer || '', a:a.map(v => +v.toFixed(2)), b:b.map(v => +v.toFixed(2)), ft:+realFt, ftPerPx: fl.bg ? +fl.bg.ftPerPx.toPrecision(6) : null, source: fl.bg ? fl.bg.source || '' : ''}].slice(-20);
   });
   R.bgKey = null; redrawAll(); setTool('select'); zoomToFit(); const bad = scaleSanity(curFloor()); if (bad) toast(bad, 'warn', 8000); else toast(`Scale set: ${fmtLen(realFt)} between the two points${planWidthFt(curFloor()) ? ' · plan is ' + fmtLen(planWidthFt(curFloor())) + ' wide' : ''}`, '', 4500);
 }
@@ -2517,7 +2544,7 @@ function initPointer() {
   const wrap = $('#canvasWrap'); const svg = R.svg;
   svg.addEventListener('pointerdown', (e) => {
     if (e.button === 2) return; hideMenus(); clearTimeout(hoverT); $('#ctip').hidden = true;
-    const p = toWorld(e.clientX, e.clientY); PT.last = p; PT.lastScreen = [e.clientX, e.clientY];
+    const p = toWorld(e.clientX, e.clientY); PT.last = p; PT.lastScreen = [e.clientX, e.clientY]; PT.downScreen = [e.clientX, e.clientY];
     svg.setPointerCapture(e.pointerId);
     if (e.button === 1 || PT.spacePan || S.tool === 'hand') { PT.panning = {sx:e.clientX, sy:e.clientY, vx:S.view.x, vy:S.view.y}; wrap.classList.add('panning'); e.preventDefault(); return; }
     if ($('#lenBox') && !$('#lenBox').hidden && TOOL.acceptsLength && TOOL.acceptsLength()) { /* keep typed value */ }
@@ -2536,7 +2563,7 @@ function initPointer() {
     try { TOOL.up && TOOL.up(e, p); } catch (err) { reportError('That action failed', err); }
     PT.down = null;
   };
-  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', (e) => { PT.panning = null; if (TOOL.cancel && TOOL.busy && TOOL.busy() && S.tool === 'select') TOOL.cancel(); });
+  svg.addEventListener('pointerup', (e) => { const wasSel = S.tool === 'select'; const hadDown = !!PT.down; up(e); if (wasSel && hadDown) try { cycleOnClick(e); } catch (err) {} }); svg.addEventListener('pointercancel', (e) => { PT.panning = null; if (TOOL.cancel && TOOL.busy && TOOL.busy() && S.tool === 'select') TOOL.cancel(); });
   svg.addEventListener('dblclick', (e) => { const p = toWorld(e.clientX, e.clientY); try { TOOL.dbl && TOOL.dbl(e, p, hitObject(e)); } catch (err) { reportError('That action failed', err); } });
   wrap.addEventListener('wheel', (e) => {
     e.preventDefault();
@@ -2673,7 +2700,7 @@ function smartAfterCable(c) {
 }
 
 // ===== FLOORS / BUILDINGS =====
-function switchFloor(fid, keepSel) { S.roomCov = null; setTimeout(() => updateRoomCoverage(), 0); if (!floorById(fid)) return; if (TOOL && TOOL.cancel && TOOL.busy && TOOL.busy()) TOOL.cancel(); S.floorId = fid; if (!keepSel) S.sel.clear(); R.bgKey = null; redrawAll(); updateFloorTabs(); renderTree(); onSelectionChanged(); requestAnimationFrame(() => zoomToFit()); refreshMode(); }
+function switchFloor(fid, keepSel) { S.roomCov = null; setTimeout(() => updateRoomCoverage(), 0); if (!floorById(fid)) return; if (TOOL && TOOL.cancel && TOOL.busy && TOOL.busy()) TOOL.cancel(); if (fid !== S.floorId) resetToolOnContextChange(); S.floorId = fid; if (!keepSel) S.sel.clear(); R.bgKey = null; redrawAll(); updateFloorTabs(); renderTree(); onSelectionChanged(); requestAnimationFrame(() => zoomToFit()); refreshMode(); }
 function addBuilding(name) { let b; tx('Add building', () => { touchMeta(); b = {id:uid('b'), name: name || 'Building ' + String.fromCharCode(65 + S.project.buildings.filter(x => x.kind !== 'site').length), kind:'building', floors:[{id:uid('f'), name:'Floor 1', bg:null}]}; S.project.buildings.push(b); }); switchFloor(b.floors[0].id); return b; }
 function addFloor(bid, name) { const b = S.project.buildings.find(x => x.id === bid) || buildingOfFloor(S.floorId); let f; tx('Add floor', () => { touchMeta(); const bb = S.project.buildings.find(x => x.id === b.id); f = {id:uid('f'), name: name || (bb.kind === 'site' ? 'Area ' : 'Floor ') + (bb.floors.length + 1), bg:null}; bb.floors.push(f); }); switchFloor(f.id); return f; }
 function renameFloor(fid, name) { tx('Rename floor', () => { touchMeta(); floorById(fid).name = name; }); }
@@ -2829,7 +2856,7 @@ function toolCable(t) { if (S.mode !== 'cabling' && S.mode !== 'site') setMode('
 
 function setMode(m) {
   if (!MODES.some(x => x[0] === m)) m = 'floor';
-  const prevMode = S.mode; S.mode = m; if (prevMode !== m && LEFT_TAB !== 'assist') LEFT_TAB = 'library';
+  const prevMode = S.mode; if (prevMode && prevMode !== m) resetToolOnContextChange(); S.mode = m; if (prevMode !== m && LEFT_TAB !== 'assist') LEFT_TAB = 'library';
   $$('.mode').forEach(b => { b.classList.toggle('on', b.dataset.mode === m); b.setAttribute('aria-selected', b.dataset.mode === m); });
   const sheet = m === 'bom' || m === 'reports';
   $('#sheet').hidden = !sheet; $('#toolstrip').style.visibility = sheet ? 'hidden' : '';
@@ -3072,6 +3099,9 @@ document.addEventListener('pointerup', pressDone, true); document.addEventListen
 const inLeftField = () => { const ae = document.activeElement; return !!(ae && ae.closest && ae.closest('#left') && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)); };
 function softRenderLeft() { EASY.softPending = true; setTimeout(() => { if (inLeftField() || !EASY.softPending) return; EASY.softPending = false; renderLeft(); }, 0); } // after Tab, focus lands on the next box first
 document.addEventListener('focusout', (e) => { if (!EASY.softPending || !e.target.closest || !e.target.closest('#left')) return; setTimeout(() => { if (inLeftField()) return; if (EASY.softPending) { EASY.softPending = false; renderLeft(); } }, 0); }, true);
+const inRightField = () => { const ae = document.activeElement; return !!(ae && ae.closest && ae.closest('#right') && /INPUT|TEXTAREA|SELECT/.test(ae.tagName) && ae.type !== 'checkbox'); };
+function softRenderRight() { S.rightPending = true; setTimeout(() => { if (!S.rightPending || inRightField()) return; S.rightPending = false; renderRight(); }, 0); }
+document.addEventListener('focusout', (e) => { if (!S.rightPending || !e.target.closest || !e.target.closest('#right')) return; setTimeout(() => { if (inRightField()) return; if (S.rightPending) { S.rightPending = false; renderRight(); } }, 0); }, true);
 function renderLeft() {
   if (PRESS.down && Date.now() - PRESS.t < 4000) { PRESS.pending = true; return; }
   const L = $('#left'); if (!L || !S.project) return; L.innerHTML = '';
@@ -3099,6 +3129,7 @@ function libItem(p) {
   const k = KINDS[p.kind] || {}; const b = el('button', {class:'libitem' + (S.tool === 'place' && S.placeProduct === p.id ? ' on' : ''), draggable:'true', 'data-product':p.id, title:`${p.mfr} ${p.series ? p.series + ' ' : ''}${p.model}${p.part ? ' · ' + p.part : ''}${p.lens ? ' · ' + p.lens : ''}\nClick to place, or drag onto the plan`});
   b.append(symbolSVG(p.kind), el('span', {class:'t'}, [el('b', {text: p.mfr === 'Generic' || p.mfr === 'Custom' ? (k.label || p.model) : p.model}), el('i', {text: p.mfr === 'Generic' ? p.model : (LIB_MFR === p.mfr ? (p.lens || p.part || '') : p.mfr + (p.res ? ` · ${(p.res[0]*p.res[1]/1e6).toFixed(p.res[0]*p.res[1] > 1e6 ? 0 : 1)}MP` : ''))})]));
   if (p.verified) { b.classList.add('verified'); b.title += '\n✓ Specs checked against the manufacturer page'; }
+  { const st = prodStatus(p); if (st && (st[0] === 'disc' || st[0] === 'custom')) b.append(el('em', {class:'pstat ' + st[0], text:st[1]})); if (st && st[0] === 'disc') b.title += '\nDiscontinued — check availability before quoting'; if (st && st[0] === 'gen') b.title += '\nGeneric placeholder — not a specific manufacturer model'; b.dataset.status = st ? st[0] : ''; }
   b.addEventListener('click', () => { S.placeProduct = p.id; setTool('place', {product:p.id}); renderLeftActive(); });
   b.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/x-product', p.id); e.dataTransfer.effectAllowed = 'copy'; });
   return el('div', {class:'libcell'}, [b, favButton(p)]);
@@ -3171,8 +3202,8 @@ function accessPane() {
   const f = el('div'); f.append(libSearch('Search readers, locks, controllers'));
   const tpls = DOOR_TEMPLATES.concat(S.project.doorTemplates || []);
   const door = selObjs().find(o => o.t === 'door');
-  f.append(el('div', {class:'sec'}, [el('h3', {text:'Door assemblies'}), el('p', {class:'note', html: door ? `Apply to <b>${esc(door.name)}</b>:` : 'Select a door on the plan (or add one), then pick an assembly.'}),
-    el('div', {class:'liblist'}, tpls.map(t => el('button', {class:'libitem', style:'cursor:pointer', title:t.items.map(i => KINDS[i[0]].label).join(', '), onclick:() => { const d = selObjs().find(o => o.t === 'door'); if (!d) { toast('Select a door first — or click “Add door”'); setTool('door'); return; } applyDoorTemplate(d.id, t.id); }, html:`${icon('door','width="22" height="22" style="stroke:var(--c-acc,#7c3aed);fill:none;stroke-width:1.6;flex:none"')}<span class="t"><b>${esc(t.name)}</b><i>${t.items.map(i => KINDS[i[0]].abbr).join(' · ')}</i></span>`}))),
+  f.append(el('div', {class:'sec'}, [el('h3', {text:'Door assemblies'}), el('p', {class:'note', html: door ? `Apply to <b>${esc(door.name)}</b>:` : 'Pick an assembly, then click the door it goes on — or select a door first.'}),
+    el('div', {class:'liblist'}, tpls.map(t => el('button', {class:'libitem', style:'cursor:pointer', title:t.items.map(i => KINDS[i[0]].label).join(', '), 'data-asm':t.id, onclick:() => { const d = selObjs().find(o => o.t === 'door'); if (!d) { S.doorTpl = t.id; setTool('doorasm'); toast(`Now click a door to apply “${t.name}”.`, '', 4000); return; } applyDoorTemplate(d.id, t.id); audit('Applied door assembly', `${d.name}: ${t.name}`, [d.id]); }, html:`${icon('door','width="22" height="22" style="stroke:var(--c-acc,#7c3aed);fill:none;stroke-width:1.6;flex:none"')}<span class="t"><b>${esc(t.name)}</b><i>${t.items.map(i => KINDS[i[0]].abbr).join(' · ')}</i></span>`}))),
     el('div', {class:'toolrow'}, [el('button', {class:'tbtn', html:icon('door') + 'Add door', onclick:() => setTool('door')}), door ? el('button', {class:'tbtn', html:icon('plus') + 'Save door as template', onclick:() => saveDoorTemplate(door.id)}) : null].filter(Boolean))]));
   f.append(groupedLib(['access'], [['Readers & intercoms',['reader','intercom']], ['Locking hardware',['maglock','strike','panic','wlock','crashbar','erelease']], ['Egress & monitoring',['rexpir','rexbtn','contact']], ['Controllers & power',['controller','psu','pdb']], ['Gates',['gateop']]]));
   f.append(el('button', {class:'tbtn', style:'margin-top:-4px', html:icon('plus') + 'Custom access device…', onclick:() => openCustomDevice('access')}));
@@ -3303,20 +3334,21 @@ function bind(o, path, kind, opt={}) {
   else if (kind === 'textarea') input = el('textarea', {}, [v0 ?? '']);
   else if (kind === 'bool') input = el('input', {type:'checkbox', checked: !!v0});
   else if (kind === 'len') input = el('input', {type:'text', value: v0 == null ? '' : fmtLen(v0).replace(/ ft$/, ''), placeholder: opt.mixed ? 'mixed' : (opt.placeholder || '')});
-  else input = el('input', {type: kind === 'num' ? 'number' : 'text', value: v0 ?? '', step: opt.step || 'any', min: opt.min, max: opt.max, placeholder: opt.mixed ? 'mixed' : (opt.placeholder || '')});
+  else input = el('input', {type: kind === 'num' ? 'number' : 'text', value: kind === 'num' && typeof v0 === 'number' && isFinite(v0) ? String(+v0.toFixed(6)) : (v0 ?? ''), step: opt.step || 'any', min: opt.min, max: opt.max, placeholder: opt.mixed ? 'mixed' : (opt.placeholder || '')});
   input.dataset.field = path.split('.').pop();
   if (opt.readonly) input.readOnly = true;
   let live = null;
-  const apply = (commit) => {
+  let idle = 0; const apply = (commit, quiet) => { clearTimeout(idle);
     let val = kind === 'bool' ? input.checked : conv(input.value); if (input.value === '__mixed') return;
     if (kind === 'len' && val == null && input.value.trim() !== '') { if (commit) { toast('Could not read that length'); input.value = fmtLen(get()); } return; }
     if (opt.clamp) val = clamp(val, opt.clamp[0], opt.clamp[1]);
     if (!live) live = liveBegin(ids);
     for (const id of ids) { const t = objs()[id]; if (t) { write(t, val); if (opt.after) opt.after(t, val); R.dirty.add(id); } }
     requestDraw();
-    if (commit) { liveCommit(live, opt.label || 'Edit ' + (opt.name || path)); live = null; if (opt.rerender) renderRight(); }
+    if (commit) { liveCommit(live, opt.label || 'Edit ' + (opt.name || path)); live = null; if (opt.rerender && !quiet) softRenderRight(); }
   };
-  if (kind === 'num' || kind === 'text' || kind === 'textarea') input.addEventListener('input', () => apply(false));
+  if (kind === 'num' || kind === 'text' || kind === 'textarea') input.addEventListener('input', () => { apply(false); idle = setTimeout(() => apply(true, true), 900); });
+  if (kind === 'len') input.addEventListener('input', () => { clearTimeout(idle); if (parseLen(input.value) != null) { apply(false); idle = setTimeout(() => apply(true, true), 900); } });
   input.addEventListener('change', () => apply(true));
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && kind !== 'textarea') { e.preventDefault(); input.blur(); } });
   return input;
@@ -3325,7 +3357,7 @@ function F(label, input, unit) { return el('div', {class:'f' + (label === '' ? '
 function grp(title, kids) { return el('div', {class:'grp'}, [el('h4', {text:title}), ...kids.filter(Boolean)]); }
 const ADV = () => S.project.settings.level !== 'quick';
 function productSelect(o, cat, ids) {
-  const opts = catalog.list.filter(p => KINDS[p.kind] && (cat ? KINDS[p.kind].cat === cat : p.kind === o.kind)).map(p => [p.id, `${p.mfr} — ${p.model}`]);
+  const opts = catalog.list.filter(p => KINDS[p.kind] && (cat ? KINDS[p.kind].cat === cat : p.kind === o.kind)).map(p => [p.id, prodOptionLabel(p)]);
   return bind(o, 'product', 'select', {ids, options:opts, label:'Change model', rerender:true, after:(t, v) => { const p = prod(v); if (p) { t.kind = p.kind; if (t.props) { delete t.props.hfov; delete t.props.vfov; delete t.props.resH; } } }});
 }
 function devProps(o) {
@@ -3411,7 +3443,7 @@ function cableProps(o) {
   const f = el('div'); const calc = cableCalc(o); const A = objs()[o.from], B = objs()[o.to];
   f.append(F('Cable ID', bind(o, 'name', 'text', {label:'Rename cable'})), F('Type', bind(o, 'ctype', 'select', {options:Object.entries(CABLE_TYPES).map(([k, c]) => [k, c.label]), label:'Change cable type', rerender:true})), F('Source', el('input', {type:'text', readOnly:true, value: A ? A.name : 'not connected'})), F('Destination', el('input', {type:'text', readOnly:true, value: B ? B.name : 'not connected'})));
   if (!calc.ct.wireless && !calc.ct.pathway) {
-    f.append(grp('Length', [F('Vertical rise', bind(o, 'props.vertical', 'len', {label:'Vertical rise', placeholder:fmtLen(S.project.settings.vertical)})), F('Service loops', bind(o, 'props.loop', 'len', {label:'Service loop', placeholder:fmtLen(S.project.settings.serviceLoop)})), F('Waste', bind(o, 'props.waste', 'num', {label:'Waste', placeholder:String(S.project.settings.waste), step:1}), '%'),
+    f.append(grp('Length', [F('Vertical rise', bind(o, 'props.vertical', 'len', {label:'Vertical rise', rerender:true, placeholder:fmtLen(S.project.settings.vertical)})), F('Service loops', bind(o, 'props.loop', 'len', {label:'Service loop', rerender:true, placeholder:fmtLen(S.project.settings.serviceLoop)})), F('Waste', bind(o, 'props.waste', 'num', {label:'Waste', rerender:true, placeholder:String(S.project.settings.waste), step:1}), '%'),
       el('div', {class:'calc'}, [el('span', {text:'Measured path'}), el('span', {class:'v', text:fmtLen(calc.measured)}), el('span', {text:'Vertical'}), el('span', {class:'v', text:fmtLen(calc.vertical)}), el('span', {text:'Service loops'}), el('span', {class:'v', text:fmtLen(calc.loop)}), el('span', {text:`Waste ${calc.wastePct}%`}), el('span', {class:'v', text:fmtLen(calc.waste)}), el('span', {class:'tot', text:'Estimated cable'}), el('span', {class:'v tot', text:fmtLen(calc.final)})]),
       (() => { const v = voltageDrop(o); if (!v) return null; const bad = v.pct > 10; return el('div', {class:'calc', style:'margin-top:6px'}, [el('span', {text:`Voltage drop (${v.gauge}, ${v.amps.toFixed(2)} A)`}), el('span', {class:'v', text:v.vd.toFixed(2) + ' V · ' + v.pct.toFixed(1) + '%'}), el('span', {class:'tot', text:`At ${v.load.name}`}), el('span', {class:'v tot', style: bad ? 'color:var(--err)' : '', text:v.at.toFixed(1) + ' V of ' + v.volts + ' V'})]); })(),
       calc.ct.ethernet ? el('p', {class:'note', style:`margin:6px 0 0;${calc.channel > 328 ? 'color:var(--err);font-weight:600' : ''}`, text: calc.channel > 328 ? `Over the 328 ft (100 m) Ethernet channel limit by ${fmtLen(calc.channel - 328)}.` : `${fmtLen(328 - calc.channel)} under the 328 ft Ethernet limit.`}) : null]));
@@ -3455,7 +3487,7 @@ function bulkProps(sel) {
   const mixed = (path) => { const vals = new Set(sel.map(o => JSON.stringify(path.split('.').reduce((v, k) => v == null ? v : v[k], o)))); return vals.size > 1; };
   if (kinds.size === 1 && kinds.has('camera')) {
     const o = sel[0];
-    f.append(grp('Edit all cameras', [F('Model', bind(o, 'product', 'select', {ids, mixed:mixed('product'), options:catalog.list.filter(p => KINDS[p.kind] && KINDS[p.kind].cat === 'camera').map(p => [p.id, `${p.mfr} — ${p.model}`]), label:'Bulk change model', rerender:true, after:(t, v) => { const p = prod(v); if (p) t.kind = p.kind; }})), F('Mount height', bind(o, 'props.mountH', 'len', {ids, mixed:mixed('props.mountH'), label:'Bulk mount height'})), F('Tilt', bind(o, 'props.tilt', 'num', {ids, mixed:mixed('props.tilt'), label:'Bulk tilt'}), '°'), F('Horizontal FOV', bind(o, 'props.hfov', 'num', {ids, mixed:mixed('props.hfov'), label:'Bulk FOV'}), '°'), F('VLAN', bind(o, 'props.vlan', 'num', {ids, mixed:mixed('props.vlan'), label:'Bulk VLAN'})), F('Switch', (() => { const list = Object.values(objs()).filter(x => isRole(x,'switch')); return bind(o, 'props.switchId', 'select', {ids, mixed:mixed('props.switchId'), options:[['','— none —'], ...list.map(x => [x.id, x.name])], label:'Bulk assign switch'}); })())]));
+    f.append(grp('Edit all cameras', [F('Model', bind(o, 'product', 'select', {ids, mixed:mixed('product'), options:catalog.list.filter(p => KINDS[p.kind] && KINDS[p.kind].cat === 'camera').map(p => [p.id, prodOptionLabel(p)]), label:'Bulk change model', rerender:true, after:(t, v) => { const p = prod(v); if (p) t.kind = p.kind; }})), F('Mount height', bind(o, 'props.mountH', 'len', {ids, mixed:mixed('props.mountH'), label:'Bulk mount height'})), F('Tilt', bind(o, 'props.tilt', 'num', {ids, mixed:mixed('props.tilt'), label:'Bulk tilt'}), '°'), F('Horizontal FOV', bind(o, 'props.hfov', 'num', {ids, mixed:mixed('props.hfov'), label:'Bulk FOV'}), '°'), F('VLAN', bind(o, 'props.vlan', 'num', {ids, mixed:mixed('props.vlan'), label:'Bulk VLAN'})), F('Switch', (() => { const list = Object.values(objs()).filter(x => isRole(x,'switch')); return bind(o, 'props.switchId', 'select', {ids, mixed:mixed('props.switchId'), options:[['','— none —'], ...list.map(x => [x.id, x.name])], label:'Bulk assign switch'}); })())]));
   } else if (kinds.size === 1 && kinds.has('cable')) {
     const o = sel[0]; f.append(grp('Edit all cables', [F('Type', bind(o, 'ctype', 'select', {ids, mixed:mixed('ctype'), options:Object.entries(CABLE_TYPES).map(([k, c]) => [k, c.label]), label:'Bulk cable type'})), F('Vertical rise', bind(o, 'props.vertical', 'len', {ids, mixed:mixed('props.vertical'), label:'Bulk vertical'})), F('Waste', bind(o, 'props.waste', 'num', {ids, mixed:mixed('props.waste'), label:'Bulk waste'}), '%')]));
     const tot = sel.reduce((a, c) => a + cableCalc(c).final, 0); f.append(el('div', {class:'calc'}, [el('span', {class:'tot', text:'Total estimated'}), el('span', {class:'v tot', text:fmtLen(tot)})]));
@@ -3467,10 +3499,10 @@ function bulkProps(sel) {
 }
 function floorProps() {
   const f = el('div'); const fl = curFloor(); const b = buildingOfFloor(S.floorId); const c = projectCounts({objects:Object.fromEntries(onFloor().map(o => [o.id, o]))});
-  f.append(F('Building', (() => { const i = el('input', {type:'text', value:b.name, 'aria-label':'Building name'}); i.addEventListener('change', () => i.value && renameBuilding(b.id, i.value)); return i; })()), F('Floor', (() => { const i = el('input', {type:'text', value:fl.name, 'aria-label':'Floor name'}); i.addEventListener('change', () => i.value && renameFloor(fl.id, i.value)); return i; })()));
+  f.append(F('Building', (() => { const i = el('input', {type:'text', value:b.name, 'aria-label':'Building name'}); let tm = 0; const go = () => { clearTimeout(tm); const v = i.value.trim(); if (v && v !== (S.project.buildings.find(x => x.id === b.id) || {}).name) renameBuilding(b.id, v); }; i.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(go, 800); }); i.addEventListener('change', go); return i; })()), F('Floor', (() => { const i = el('input', {type:'text', value:fl.name, 'aria-label':'Floor name'}); let tm = 0; const go = () => { clearTimeout(tm); const v = i.value.trim(); if (v && v !== (floorById(fl.id) || {}).name) renameFloor(fl.id, v); }; i.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(go, 800); }); i.addEventListener('change', go); return i; })()));
   f.append(el('div', {class:'calc', style:'margin:6px 0'}, [['Cameras', c.cameras], ['Access doors', c.accessDoors], ['Devices', c.devices], ['Cable runs', c.cables], ['Walls / rooms', c.walls + ' / ' + c.rooms]].flatMap(([a, v]) => [el('span', {text:a}), el('span', {class:'v', text:String(v)})])));
-  const fi = S.issues.filter(i => i.floor === S.floorId);
-  f.append(grp('Design check on this floor', [fi.length ? el('div', {}, fi.slice(0, 8).map(i => el('button', {class:'btn ghost sm', style:'display:flex;justify-content:flex-start;gap:6px;width:100%;height:auto;padding:3px 0;white-space:normal;text-align:left', html:`<i class="dot ${i.sev === 'suggestion' ? 'sug' : i.sev === 'error' ? 'err' : 'warn'}" style="margin-top:5px;flex:none"></i><span>${esc(i.msg)}</span>`, onclick:() => focusObj(i.id)}))) : el('p', {class:'note', style:'margin:0', text:'No problems found on this floor.'})]));
+  const fi = freshIssues().filter(i => i.floor === S.floorId);
+  f.append(grp('Design check on this floor', [fi.length ? el('div', {}, fi.slice(0, 8).map(i => el('div', {class:'fcissue'}, [el('button', {class:'btn ghost sm', style:'display:flex;justify-content:flex-start;gap:6px;width:100%;height:auto;padding:3px 0;white-space:normal;text-align:left', html:`<i class="dot ${i.sev === 'suggestion' ? 'sug' : i.sev === 'error' ? 'err' : 'warn'}" style="margin-top:5px;flex:none"></i><span>${esc(i.msg)}</span>`, onclick:() => focusObj(i.id)}), issueActionButtons(i)]))) : el('p', {class:'note', style:'margin:0', text:'No problems found on this floor.'})]));
   const st = S.project.settings;
   f.append(grp('Project', [F('Units', (() => { const s = el('select', {'aria-label':'Units'}, [['ft','Feet (decimal)'],['ftin','Feet & inches'],['m','Meters']].map(([v, l]) => el('option', {value:v, text:l, selected:st.units === v}))); s.addEventListener('change', () => { tx('Change units', () => { touchMeta(); S.project.settings.units = s.value; }); redrawAll(); renderRight(); }); return s; })()), F('Detail level', (() => { const s = el('select', {'aria-label':'Detail level'}, [['quick','Quick design (sales)'],['advanced','Advanced (engineering)']].map(([v, l]) => el('option', {value:v, text:l, selected:st.level === v}))); s.addEventListener('change', () => { tx('Change detail level', () => { touchMeta(); S.project.settings.level = s.value; }); renderRight(); }); return s; })()), F('Grid size', (() => { const s = el('select', {'aria-label':'Grid size'}, [['0.5','6 in'],['1','1 ft'],['2','2 ft'],['5','5 ft'],['10','10 ft']].map(([v, l]) => el('option', {value:v, text:l, selected:String(st.grid) === v}))); s.addEventListener('change', () => { tx('Change grid', () => { touchMeta(); S.project.settings.grid = +s.value; }); requestDraw(); }); return s; })())]));
   f.append(el('p', {class:'note', text:'Select anything on the plan to edit it here. Shift-click or drag a box to select several and edit them together.'}));
@@ -3480,7 +3512,7 @@ function focusField(name) { requestAnimationFrame(() => { if ($('#app').classLis
 function updatePropsLive(o) { /* lightweight: refresh panel after drag handles */ clearTimeout(updatePropsLive.t); updatePropsLive.t = setTimeout(() => { if (!TOOL.drag) renderRight(); }, 120); }
 changeHooks.push((ids) => {
   const doors = new Set(); for (const id of ids) { const o = objs()[id]; if (o && o.doorId) doors.add(o.doorId); } if (doors.size) markDirty([...doors]);
-  if (!PROPS_LIVE && !(document.activeElement && $('#right').contains(document.activeElement))) renderRight();
+  if (!PROPS_LIVE) softRenderRight(); // waits for focus to settle, and never re-renders under a field you're typing in
   if (S.mode === 'network' || S.mode === 'cabling' || S.mode === 'access') { clearTimeout(renderLeft.t); renderLeft.t = setTimeout(() => { if (!document.activeElement || !$('#left').contains(document.activeElement) || document.activeElement.id !== 'libSearch') renderLeft(); }, 150); }
   if (S.mode === 'bom') renderBOMView();
 });
@@ -3519,14 +3551,20 @@ function renderReports() {
   wrap.append(el('div', {class:'subtabs', role:'tablist'}, tabs.map(([k, l]) => el('button', {class:'subtab' + (REPORT_TAB === k ? ' on' : ''), role:'tab', text:l, onclick:() => { REPORT_TAB = k; renderReports(); }}))));
   const table = (heads, rows, onRow, numCols=[]) => { const t = el('table', {class:'grid'}); t.append(el('thead', {}, [el('tr', {}, heads.map((h, i) => el('th', {class: numCols.includes(i) ? 'n' : '', text:h})))])); const tb = el('tbody'); if (!rows.length) tb.append(el('tr', {}, [el('td', {colspan:heads.length, class:'note', text:'Nothing here yet.'})])); rows.forEach((r) => { const tr = el('tr', {class: onRow ? 'click' : ''}, r.cells.map((c, i) => el('td', {class: numCols.includes(i) ? 'n' : '', html: c}))); if (onRow) tr.addEventListener('click', () => onRow(r)); tb.append(tr); }); t.append(tb); return el('div', {class:'tablewrap'}, [t]); };
   if (REPORT_TAB === 'check') {
+    freshIssues();
     const e = S.issues.filter(i => i.sev === 'error').length, w = S.issues.filter(i => i.sev === 'warning').length, s = S.issues.filter(i => i.sev === 'suggestion').length;
     wrap.append(el('div', {class:'kpis'}, [[e,'Errors'],[w,'Warnings'],[s,'Suggestions']].map(([v, l]) => el('div', {}, [el('b', {text:String(v)}), el('span', {text:l})]))));
-    wrap.append(table(['Severity','Issue','How to fix','Floor'], S.issues.map(i => ({id:i.id, cells:[`<span class="sevpill ${i.sev}">${i.sev}</span>`, esc(i.msg), `<span class="note">${esc(i.fix || '')}</span>`, esc(floorLabel(i.floor) || '')]})), (r) => { setMode(S.mode === 'reports' && (buildingOfFloor(objs()[r.id].floor)||{}).kind === 'site' ? 'site' : 'floor'); focusObj(r.id); }));
+    const tbl = table(['Severity','Issue','How to fix','Floor','Fix'], S.issues.map(i => ({id:i.id, cells:[`<span class="sevpill ${i.sev}">${i.sev}</span>`, esc(i.msg), `<span class="note">${esc(i.fix || '')}</span>`, esc(floorLabel(i.floor) || ''), '']})), (r) => { if (!objs()[r.id]) return; setMode(S.mode === 'reports' && (buildingOfFloor(objs()[r.id].floor)||{}).kind === 'site' ? 'site' : 'floor'); focusObj(r.id); });
+    [...tbl.querySelectorAll('tbody tr')].forEach((tr, k) => { const i = S.issues[k]; if (!i) return; tr.dataset.issue = issueKey(i); const cell = tr.lastElementChild; if (cell) cell.append(issueActionButtons(i)); }); wrap.append(tbl);
+    wrap.append(el('p', {class:'note', id:'checkStamp', text:`Checked ${new Date(S.checkedAt || Date.now()).toLocaleTimeString()} · model revision ${S.txn || 0} · ${traceLine()}`}));
+    const acc = S.acceptedIssues || []; if (acc.length) wrap.append(el('h3', {text:`Accepted exceptions (${acc.length})`, style:'margin:16px 0 6px'}), table(['Issue','Reason','Accepted','By',''], acc.map(i => ({id:i.id, cells:[esc(i.msg), esc(i.accepted.reason || ''), esc(new Date(i.accepted.at).toLocaleString()), esc(i.accepted.by || ''), `<button class="btn sm" data-unaccept="${esc(issueKey(i))}">Undo</button>`]}))));
+    wrap.querySelectorAll('[data-unaccept]').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); unacceptIssue(b.dataset.unaccept); }));
+    const log = (S.project.audit || []).slice(-15).reverse(); if (log.length) wrap.append(el('h3', {text:'Fix history', style:'margin:16px 0 6px'}), table(['When','What','Detail','By'], log.map(a => ({cells:[esc(new Date(a.at).toLocaleString()), esc(a.action), esc(a.detail), esc(a.by || '')]}))));
     wrap.append(el('p', {class:'note', style:'margin-top:8px', text:'Click an issue to jump to it on the plan. The check runs automatically after every change.'}));
   } else if (REPORT_TAB === 'cables') {
-    const rows = Object.values(objs()).filter(o => o.t === 'cable').sort((a,b) => String(a.name).localeCompare(String(b.name), undefined, {numeric:true})).map(c => { const k = cableCalc(c); return {id:c.id, cells:[esc(c.name), esc((objs()[c.from]||{}).name || '—'), esc((objs()[c.to]||{}).name || '—'), esc(c.ctype), fmtLen(k.measured), fmtLen(k.final), esc(floorLabel(c.floor)), esc((c.props||{}).path || ''), esc((c.props||{}).notes || '')]}; });
+    const rows = Object.values(objs()).filter(o => o.t === 'cable').sort((a,b) => String(a.name).localeCompare(String(b.name), undefined, {numeric:true})).map(c => { const k = cableCalc(c); const wl = k.ct.wireless || k.ct.pathway; return {id:c.id, cells:[esc(c.name), esc((objs()[c.from]||{}).name || '—'), esc((objs()[c.to]||{}).name || '—'), esc(c.ctype), fmtLen(k.measured), wl ? '—' : '+ ' + fmtLen(k.vertical), wl ? '—' : '+ ' + fmtLen(k.loop), wl ? '—' : `+ ${k.wastePct}% (${fmtLen(k.waste)})`, '<b>' + fmtLen(k.final) + '</b>', esc(floorLabel(c.floor)), esc((c.props||{}).path || ''), esc((c.props||{}).notes || '')]}; });
     wrap.append(el('div', {class:'sheethead'}, [el('span', {class:'sub', style:'flex:1', text:`${rows.length} runs`}), el('button', {class:'btn sm', html:icon('export') + 'CSV', onclick:() => exportScheduleCSV('cables')})]));
-    wrap.append(table(['Cable ID','Source','Destination','Type','Measured','Calculated','Floor','Path','Notes'], rows, (r) => { setMode('cabling'); focusObj(r.id); }, [4,5]));
+    wrap.append(table(['Cable ID','Source','Destination','Type','Measured','Vertical','Service loops','Waste','Calculated','Floor','Path','Notes'], rows, (r) => { setMode('cabling'); focusObj(r.id); }, [4,5,6,7,8])); wrap.append(el('p', {class:'note', text:'Calculated = measured path + vertical rise + service loops, plus the waste allowance on that total. Change any of them on the cable; this table updates at once.'}));
   } else if (REPORT_TAB === 'devices') {
     const rows = Object.values(objs()).filter(o => o.t === 'dev' && !(prod(o.product)||{}).nobom).sort((a,b) => String(a.name).localeCompare(String(b.name), undefined, {numeric:true})).map(d => { const p = prod(d.product) || {}; return {id:d.id, cells:[esc(d.name), esc(kindOf(d).label), esc(p.mfr || ''), esc(p.model || ''), `<span class="mono">${esc(p.part || '')}</span>`, esc(floorLabel(d.floor)), esc(d.props.ip || ''), esc(d.props.vlan ?? ''), esc(isCam(d) ? fmtLen(d.props.mountH ?? 10) : ''), esc(d.props.notes || '')]}; });
     wrap.append(el('div', {class:'sheethead'}, [el('span', {class:'sub', style:'flex:1', text:`${rows.length} devices`}), el('button', {class:'btn sm', html:icon('export') + 'CSV', onclick:() => exportScheduleCSV('devices')})]));
@@ -3648,9 +3686,10 @@ let downloadsP = null;
 function getDownloads() { if (!downloadsP) downloadsP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(undefined); return downloadsP; }
 async function saveFile(filename, data) {
   const d = await getDownloads();
-  if (d) { try { await d.save({filename, data}); toast('Saved ' + filename); } catch (e) { if (e && e.code === 'declined') toast('Download cancelled'); else if (e && e.code === 'rejected_extension') toast('That file type cannot be downloaded here', 'err'); else { console.error(e); toast('Could not save the file: ' + ((e && e.message) || 'unavailable'), 'err'); } } return; }
+  const blob0 = data instanceof Blob ? data : new Blob([data]);
+  if (d) { try { await d.save({filename, data}); toast('Saved ' + filename + ' · ' + fmtBytes(blob0.size)); logExport(filename, blob0, true); } catch (e) { logExport(filename, blob0, false, e && (e.code || e.message)); if (e && e.code === 'declined') toast('Download cancelled'); else if (e && e.code === 'rejected_extension') toast('That file type cannot be downloaded here', 'err'); else { console.error(e); toast('Could not save the file: ' + ((e && e.message) || 'unavailable'), 'err'); } } return; }
   if (d === null) { toast('Downloads are not available in this view. Open the page in your browser to export files.', 'err', 6000); return; }
-  const blob = data instanceof Blob ? data : new Blob([data]); const url = URL.createObjectURL(blob); const a = el('a', {href:url, download:filename}); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); toast('Downloaded ' + filename);
+  const blob = blob0; try { const url = URL.createObjectURL(blob); const a = el('a', {href:url, download:filename}); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); } catch (e) { logExport(filename, blob, false, e.message); return reportError('The download failed', e); } toast('Downloaded ' + filename + ' · ' + fmtBytes(blob.size)); logExport(filename, blob, true);
 }
 const safeName = (s) => String(s || 'project').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').slice(0, 60) || 'project';
 function csv(rows) { return rows.map(r => r.map(v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n'); }
@@ -3916,7 +3955,7 @@ function openExport() {
   const layerBoxes = el('div', {style:'columns:2;font-size:12.5px'}, LAYERS_DEFAULT.map(([k, n]) => { const x = el('input', {type:'checkbox', checked:(S.project.layers[k]||{}).print !== false}); x.addEventListener('change', () => { S.project.layers[k].print = x.checked; scheduleSave(); refresh(); }); return el('label', {style:'display:flex;gap:6px;align-items:center'}, [x, n]); }));
   const fmt = (label, fn) => el('button', {class:'btn', text:label, onclick:fn});
   const left = el('div', {}, [
-    el('div', {class:'lbl3', text:'Quick exports'}), el('div', {class:'fmtbtns'}, [fmt('PNG', () => exportImage('png')), fmt('JPG', () => exportImage('jpg')), fmt('SVG', () => exportImage('svg')), ...(bomOn() ? [fmt('BOM CSV', exportBOMcsv), fmt('BOM Excel', exportXLSX)] : [fmt('Schedules (Excel)', exportXLSX)]), fmt('Project file', () => exportProjectFile()), fmt('Cables CSV', () => exportScheduleCSV('cables')), fmt('Devices CSV', () => exportScheduleCSV('devices')), fmt('Doors CSV', () => exportScheduleCSV('doors')), fmt('Google Earth (KML)', exportKML), fmt('CAD (DXF)', exportDXF), fmt('Spec sheets PDF', exportSpecSheets), ...(bomOn() ? [fmt('Estimate CSV (QuickBooks / Jobber)', exportEstimateCSV)] : [])]),
+    el('div', {class:'lbl3', text:'Quick exports'}), el('div', {class:'fmtbtns'}, [fmt('PNG', () => exportImage('png')), fmt('JPG', () => exportImage('jpg')), fmt('SVG', () => exportImage('svg')), ...(bomOn() ? [fmt('BOM CSV', exportBOMcsv), fmt('BOM Excel', exportXLSX)] : [fmt('Schedules (Excel)', exportXLSX)]), fmt('Project file', () => exportProjectFile()), fmt('Cables CSV', () => exportScheduleCSV('cables')), fmt('Devices CSV', () => exportScheduleCSV('devices')), fmt('Doors CSV', () => exportScheduleCSV('doors')), (() => { const b = fmt('Google Earth (KML)', exportKML); b.title = 'Google Earth: the site location plus everything on the outdoor Site floor (devices, cables, areas). Indoor floors are not geo-placed, so they are summarized, not drawn.'; b.setAttribute('aria-describedby', 'kmlScope'); return b; })(), el('span', {class:'note', id:'kmlScope', style:'flex-basis:100%;grid-column:1/-1;margin:2px 0 0;font-size:11.5px', text:'KML = site location + outdoor Site floor items only.'}), fmt('CAD (DXF)', () => exportDXF()), fmt('Spec sheets PDF', exportSpecSheets), ...(bomOn() ? [fmt('Estimate CSV (QuickBooks / Jobber)', exportEstimateCSV)] : [])]),
     el('div', {class:'lbl3', text:'PDF drawing set'}),
     el('div', {class:'form', style:'grid-template-columns:90px 1fr'}, [...s('Paper', 'paper', Object.entries(PAPER).map(([k, v]) => [k, v[2] + ` (${v[0]}×${v[1]} in)`])), ...s('Orientation', 'orient', [['landscape','Landscape'],['portrait','Portrait']]), ...s('Scale', 'scale', [['fit','Fit to page'],['8','1" = 8\' (1/8")'],['16','1" = 16\' (1/16")'],['20','1" = 20\''],['30','1" = 30\''],['40','1" = 40\''],['50','1" = 50\''],['100','1" = 100\'']]), ...s('Margins', 'margin', [[0.25,'0.25 in'],[0.4,'0.4 in'],[0.5,'0.5 in'],[1,'1 in']]), ...s('Quality', 'dpi', [[100,'Draft (100 dpi)'],[150,'Standard (150 dpi)'],[220,'High (220 dpi)']])]),
     el('div', {style:'display:flex;flex-direction:column;gap:4px;margin:10px 0'}, [c('Title block', 'titleBlock'), c('Legend (only symbols used)', 'legend'), c('Include review comments', 'comments'), c('Add riser diagram sheet', 'riser'), c('Assumptions & verification sheet', 'assumptions')]),
@@ -3976,7 +4015,7 @@ function paletteCommands() {
     ['Open layers', '', () => { LEFT_TAB = 'layers'; renderLeft(); }], ['Show hidden objects', '', showAllHidden], ['Select all', 'Ctrl+A', selectAll], ['Zoom to fit', 'F', () => zoomToFit()],
     ['Undo', 'Ctrl+Z', undo], ['Redo', 'Ctrl+Y', redo], ['Save version', 'Ctrl+S', () => saveVersion('Manual save')], ['Version history', '', () => { REPORT_TAB = 'versions'; setMode('reports'); }],
     ['Toggle dark mode', '', toggleTheme], ['Toggle grid', '', () => toggleSetting('gridShow')], ['Toggle snap', '', () => toggleSetting('snap')], ['Settings', '', openSettings], ['Keyboard shortcuts', '?', openShortcuts], ['All projects', '', openDashboard], ['New project', '', () => openWizard()],
-    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Project health (preflight)', '', () => openHealth()], ['Room coverage — every room and its %', '', () => openCoverageDetails()], ['Download a backup of this project', '', () => downloadBackup()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Fix everything (cover weak rooms + wire)', '', () => fixEverything()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
+    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Project health (preflight)', '', () => openHealth()], ['Room coverage — every room and its %', '', () => openCoverageDetails()], ['Download a backup of this project', '', () => downloadBackup()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Review suggested fixes (cover weak rooms + wire)', '', () => openReviewFixes()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
     ['Ask the design assistant', '', () => { LEFT_TAB = 'assist'; renderLeft(); }], ['3D view', '', () => open3D((selObjs().find(isCam) || {}).id)], ['IP address plan', '', openIPDialog], ['Camera advisor: click a spot for camera advice', 'G', () => setTool('advisor')], ['Conduit fill calculator', '', () => openConduitDialog()], ['About Security Site Designer', '', openAbout], ['Cable labels', '', openLabelsDialog], ['Field mode: install & test tracking', '', () => setMode('field')], ['As-built / commissioning report (PDF)', '', exportAsBuiltPDF], ['Install sheet (Excel)', '', exportInstallXLSX], ...(TEAM.on ? [['Share with customer', '', openShareDialog], ['Company & team settings', '', () => openCompanyDialog(isAdmin() ? 'company' : 'team')]] : []), ['Bandwidth & storage report', '', () => { REPORT_TAB = 'bandwidth'; setMode('reports'); }], ['Riser diagram', '', () => { REPORT_TAB = 'riser'; setMode('reports'); }], ['Quote & labor', '', () => { S.bomTab = 'quote'; setMode('bom'); }], ['Export proposal PDF', '', () => exportProposal()], ['Import CAD drawing (DXF)', '', () => pickPlanFile()],
   ].map(([label, key, fn]) => ({kind:'Command', label, key, fn}));
   for (const as of loadAssemblies()) cmds.push({kind:'Assembly', label:`Place assembly: ${as.name}`, fn:() => useAssembly(as.id)});
@@ -4165,6 +4204,7 @@ async function openProject(id, opts={}) {
   S.floorId = (withObjs || nonSite[0] || floors()[0]).id;
   $('#dash').hidden = true; applyCanvasTheme(); updateTitle(); updateFloorTabs(); updateToggles();
   let mode = 'floor'; try { mode = localStorage.getItem('ssd-mode') || 'floor'; } catch (e) {} if (mode === 'site') mode = 'floor';
+  S.issuesKey = null; try { freshIssues(); } catch (e) {}
   setTool('select'); setMode(mode); R.bgKey = null; redrawAll(); requestAnimationFrame(() => { zoomToFit(); }); setTimeout(() => { try { maybeRemindBackup(); } catch (e) {} }, 5000);
   S.issues = runDesignCheck(); updateStatusCounts(); setSave('saved');
   await DB.put('meta', 'lastProject', id);
@@ -4236,7 +4276,7 @@ async function boot() {
   exposeTestHooks();
 }
 function exposeTestHooks() {
-  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
+  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {planInput, issueActions, issueKey, acceptIssue, unacceptIssue, openReviewFixes, proposeFixes, signoffProblems, setInstall, instOf, logExport, traceLine, sha256Hex, prodStatus, prodOptionLabel, hitStack, freshIssues, renderReports, audit, connectivityIssues, renderRight, layerFor, startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
   if (typeof TEAM !== 'undefined') { window.SSD.TEAM = TEAM; window.SSD.mergeProjects = mergeProjects; }
 }
 
@@ -5266,7 +5306,7 @@ async function renderApprovals(box) {
 const INSTALL_ST = [['planned','Planned','#8b939c'], ['roughed','Cable pulled','#c27c0e'], ['installed','Installed','#2a62c9'], ['tested','Tested','#0f8a5f'], ['done','Signed off','#1e7b46'], ['issue','Issue','#d13438']];
 const INSTALL_IDX = Object.fromEntries(INSTALL_ST.map(([k], i) => [k, i]));
 const instOf = (o) => (o.props && o.props.inst) || {};
-const instSt = (o) => instOf(o).st || 'planned';
+const instSt = (o) => { const s = instOf(o).st; return s && INSTALL_ST.some(([k]) => k === s) ? s : (s === 'signed' ? 'done' : 'planned'); }; // unknown states never break reports
 const CHECKLISTS = {
   camera: ['Mounted & secured', 'Aimed and focused to the design view', 'Night / IR image checked', 'Recording on the NVR/VMS', 'Firmware updated, default password changed', 'Labelled at both ends'],
   access: ['Lock/strike operates and fails as designed', 'Reader reads credentials', 'REX releases the door', 'Door position reports open/closed', 'Fire alarm release tested', 'Door held / forced alarms tested'],
@@ -5279,9 +5319,14 @@ const CHECKLISTS = {
 const fieldDevices = () => Object.values(objs()).filter(o => o.t === 'dev' && !(prod(o.product) || {}).nobom && !KINDS[o.kind].room);
 function installStats(list = fieldDevices()) { const by = Object.fromEntries(INSTALL_ST.map(([k]) => [k, 0])); for (const o of list) by[instSt(o)]++; const n = list.length || 1; const score = list.reduce((a, o) => a + ({planned:0, roughed:1, installed:2, tested:3, done:4, issue:2}[instSt(o)] || 0), 0) / (4 * n); return {by, total:list.length, pct:Math.round(score * 100)}; }
 function setInstall(ids, patch, label='Update install status') {
+  if (patch.st === 'done' && !patch.force) { const bad = ids.map(id => objs()[id]).filter(o => o && o.t === 'dev').map(o => [o, signoffProblems(o)]).filter(([, m]) => m.length);
+    if (bad.length) { const ok = ids.filter(id => !bad.some(([o]) => o.id === id)); const msg = bad.slice(0, 3).map(([o, m]) => `${o.name}: needs ${m.join(', ')}`).join(' · ') + (bad.length > 3 ? ` · +${bad.length - 3} more` : '');
+      offer(`Can’t sign off yet — ${msg}`, 'Sign off with exceptions', () => promptBox('Sign off with exceptions', 'Why is it OK to sign off without these?', '', (why) => { if (!why) return toast('A reason is required.', 'warn'); setInstall(bad.map(([o]) => o.id), {st:'done', force:true, exception:why}, 'Signed off with exceptions'); audit('Signed off with exceptions', `${bad.map(([o]) => o.name).join(', ')} — ${why}`, bad.map(([o]) => o.id)); }), 14000);
+      if (!ok.length) return; ids = ok; } }
+  if (patch.force) { patch = {...patch}; delete patch.force; }
   const who = (typeof TEAM !== 'undefined' && TEAM.me && TEAM.me.name) || S.project.designer || '';
   tx(label, () => { for (const id of ids) { const o = objs()[id]; if (!o || o.t !== 'dev') continue; const cur = instOf(o); const next = {...cur, ...patch}; if (patch.st && patch.st !== cur.st) { next.by = who; next.at = Date.now(); next.log = [...(cur.log || []), {st:patch.st, by:who, at:Date.now()}].slice(-20); } updObj(id, {props:{...o.props, inst:next}}); } });
-  if (S.mode === 'field') { const ae = document.activeElement; const keep = ae && ae.closest && ae.closest('#right') && ae.getAttribute('aria-label'); renderRight(); renderLeft(); if (keep) { const n = document.querySelector(`#right [aria-label="${CSS.escape(keep)}"]`); if (n && n.type !== 'checkbox') n.focus(); } }
+  if (S.mode === 'field') { if (patch.serial !== undefined || patch.mac !== undefined || patch.note !== undefined || inRightField() || document.activeElement === document.body) { softRenderRight(); softRenderLeft(); return; } const ae = document.activeElement; const keep = ae && ae.closest && ae.closest('#right') && ae.getAttribute('aria-label'); renderRight(); renderLeft(); if (keep) { const n = document.querySelector(`#right [aria-label="${CSS.escape(keep)}"]`); if (n && n.type !== 'checkbox') n.focus(); } }
 }
 let FIELD_FILTER = {st:'all', cat:'all', q:''};
 function fieldPane() {
@@ -5306,7 +5351,7 @@ function fieldPane() {
 function fieldGroup(o) {
   const cur = instOf(o); const stv = instSt(o); const cat = kindOf(o).cat; const list = CHECKLISTS[cat] || CHECKLISTS.site;
   const seg = el('div', {class:'instseg', role:'radiogroup', 'aria-label':'Install status'}, INSTALL_ST.map(([k, l, c]) => el('button', {class:'seg' + (stv === k ? ' on' : ''), role:'radio', 'aria-checked':String(stv === k), style:`--sc:${c}`, text:l, onclick:() => setInstall([o.id], {st:k})})));
-  const field = (key, label, ph) => { const i = el('input', {class:'field', value:cur[key] || '', placeholder:ph || '', 'aria-label':label}); i.addEventListener('change', () => setInstall([o.id], {[key]:i.value.trim()}, 'Edit ' + label.toLowerCase())); return F(label, i); };
+  const field = (key, label, ph) => { const i = el('input', {class:'field', value:cur[key] || '', placeholder:ph || '', 'aria-label':label, 'data-inst':key}); let tm = 0; const save = () => { clearTimeout(tm); const v = i.value.trim(); if ((instOf(objs()[o.id] || o)[key] || '') === v) return; setInstall([o.id], {[key]:v}, 'Edit ' + label.toLowerCase()); }; i.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(save, 800); }); i.addEventListener('change', save); i.addEventListener('blur', save); return F(label, i); };
   const checks = cur.checks || {};
   const cl = el('div', {class:'checklist'}, list.map((item, i) => { const id = 'ck' + i; const box = el('input', {type:'checkbox', checked: !!checks[i], 'aria-label':item}); box.addEventListener('change', () => { const now = instOf(objs()[o.id] || o).checks || {}; setInstall([o.id], {checks:{...now, [i]: box.checked}}, 'Checklist'); }); return el('label', {}, [box, el('span', {text:item})]); }));
   const done = list.filter((_, i) => checks[i]).length;
@@ -5540,7 +5585,7 @@ function signedArea(pts) { let s = 0; for (let i = 0; i < pts.length; i++) { con
 function advisorProducts(kinds, outdoor) {
   let list = catalog.list.filter(p => kinds.includes(p.kind) && p.res && KINDS[p.kind] && KINDS[p.kind].cat === 'camera' && !p.discontinued);
   if (outdoor) { const o = list.filter(p => p.env !== 'indoor'); if (o.length) list = o; }
-  if (ADVISOR.brand !== 'Best match') { const b = list.filter(p => p.mfr === ADVISOR.brand); if (b.length) list = b; }
+  if (ADVISOR.brand && ADVISOR.brand !== 'Best match') list = list.filter(p => p.mfr === ADVISOR.brand); // strict: never swap in another brand
   // keep a diverse, reasonable set: verified first, then by resolution
   list.sort((a, b) => (b.verified ? 1 : 0) - (a.verified ? 1 : 0) || (a.res[0] * a.res[1]) - (b.res[0] * b.res[1]));
   return list.slice(0, 9);
@@ -5658,7 +5703,7 @@ function renderAdvisor() {
   box.append(el('div', {class:'advhead'}, [el('b', {text:'Camera advisor'}), el('button', {class:'ib', 'aria-label':'Close advisor', html:'&times;', onclick:() => { box.hidden = true; S.suggest = null; requestDraw(); setTool('select'); }})]),
     el('p', {class:'advwhere', text:where}), el('div', {class:'form advctl'}, ctrls));
   if (ctx.detected && !S.readOnly) box.append(el('div', {class:'qa', style:'padding:0 12px 6px'}, [el('button', {class:'btn sm', text:'Save as a room', onclick:() => { tx('Add detected room', () => { addObj({t:'room', floor:S.floorId, pts:ctx.roomPts.map(q => [+q[0].toFixed(2), +q[1].toFixed(2)]), name:'Room'}); }); toast('Room added — rename it in the properties panel'); }})]));
-  if (!ADVISOR.opts.length) { box.append(el('p', {class:'note', style:'padding:8px 12px', text:'No camera in the library can cover this spot at that detail level. Try a lower detail level, a bigger area, or add a zoom camera to the library.'})); return; }
+  if (!ADVISOR.opts.length) { box.append(el('p', {class:'note', style:'padding:8px 12px', text: ADVISOR.brand && ADVISOR.brand !== 'Best match' ? `No ${ADVISOR.brand} camera can cover this spot at that detail level — set Brand to “Best match” to see every brand.` : 'No camera in the library can cover this spot at that detail level. Try a lower detail level, a bigger area, or add a zoom camera to the library.'})); return; }
   const list = el('div', {class:'advopts'});
   ADVISOR.opts.forEach((o, i) => { const pr = prod(o.cams[0].product) || {}; const det = optionDetail(o); const names = {}; o.cams.forEach(c => { const p = prod(c.product); const k = (p.mfr === 'Generic' ? '' : p.mfr + ' ') + p.model; names[k] = (names[k] || 0) + 1; });
     const pct = Math.round(o.pct * 100); const withEx = o.existing ? Math.round(Math.min(1, o.existing + o.pct * (1 - o.existing)) * 100) : null;
@@ -5802,7 +5847,7 @@ function applyUI() {
   const tr = $('#tour'); if (tr && !tr.hidden) endTour();
   const easy = uiMode() === 'easy'; document.body.classList.toggle('easy', easy); buildEasyTop(); ensureEasyDock();
   if (!S.project) return;
-  if (easy) { $('#app').classList.remove('lcol'); setStep(EASY.step || guessStep(), {quiet:true}); } else { if (S.mode === 'easy') setMode('floor'); renderLeft(); renderRight(); }
+  if (easy) { $('#app').classList.remove('lcol'); setStep(EASY.step || guessStep(), {quiet:true}); } else { if (innerWidth <= 900) $('#app').classList.remove('lopen', 'ropen'); if (S.mode === 'easy') setMode('floor'); renderLeft(); renderRight(); }
   requestDraw(); try { updateScoreChip(); } catch (e) {}
 }
 function guessStep() { const fl = curFloor(); const all = onFloor(); const hasPlan = (fl && fl.bg) || all.some(o => o.t === 'wall' || o.t === 'room'); const hasDevs = all.some(o => o.t === 'dev'); return !hasPlan ? 1 : 2 + (hasDevs && EASY.step === 3 ? 1 : 0); }
@@ -5908,7 +5953,7 @@ function ezStep2() {
   if (!v.devs) tips.push(el('p', {text:'Start with Auto-design — it picks and places cameras for every room in seconds.'}));
   for (const w of v.weak.slice(0, 3)) tips.push(el('button', {class:'eztip', onclick:() => ezFixRoom(w.r), html:`<b>${esc(w.r.name || 'Room')}</b> is ${Math.round(w.pct * 100)}% covered <span>Fix →</span>`}));
   if (v.loose.length) tips.push(el('button', {class:'eztip', onclick:wireItUp, html:`<b>${v.loose.length} device${v.loose.length > 1 ? 's' : ''}</b> not wired yet <span>Wire up →</span>`}));
-  if (v.weak.length + (v.loose.length ? 1 : 0) >= 2) tips.push(el('button', {class:'btn primary sm ezfixall', id:'ezFixAll', html:'✨ Fix everything for me', onclick:() => fixEverything()}));
+  if (v.weak.length + (v.loose.length ? 1 : 0) >= 2) tips.push(el('button', {class:'btn primary sm ezfixall', id:'ezFixAll', html:'✨ Review suggested fixes', onclick:() => openReviewFixes()}));
   if (v.errs) tips.push(el('button', {class:'eztip', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`<b>${v.errs} problem${v.errs > 1 ? 's' : ''}</b> in the design check <span>Show →</span>`}));
   out.push(el('div', {class:'ezscore'}, [scoreRing(v), el('div', {}, [el('b', {text:`Design score · ${v.label}`}), v.cs.all.length ? el('button', {class:'linkbtn covlink', id:'ezCovLink', text:v.covText + ' — see every room →', onclick:() => openCoverageDetails()}) : el('p', {class:'note', text:`${v.devs} device${v.devs === 1 ? '' : 's'} placed`}), ...tips])]));
   out.push(ezCard({ic:'target', title:'✨ Auto-design cameras', text: onFloor().some(o => o.t === 'room') ? 'Covers every room on this floor' + (EASY.outside ? ' and the outside corners' : '') : 'Draw or find rooms in step 1 first', onclick:() => autoDesignFloor({outside:EASY.outside}), primary:!v.devs, id:'ezAuto'}));
@@ -6226,7 +6271,7 @@ async function markupPhoto(srcUrl, title) {
     else if (s.t === 'arrow') { const [a, b] = [s.a, s.b]; const ang = Math.atan2(b[1] - a[1], b[0] - a[0]); const h = lw * 5; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke(); x.beginPath(); x.moveTo(b[0], b[1]); x.lineTo(b[0] - h * Math.cos(ang - 0.45), b[1] - h * Math.sin(ang - 0.45)); x.lineTo(b[0] - h * Math.cos(ang + 0.45), b[1] - h * Math.sin(ang + 0.45)); x.closePath(); x.fill(); }
     else if (s.t === 'text') { const fs = Math.max(18, Math.round(W / 40)); x.font = `bold ${fs}px Arial`; x.lineWidth = Math.max(3, fs / 6); x.strokeStyle = '#000'; x.strokeText(s.s, s.a[0], s.a[1]); x.fillText(s.s, s.a[0], s.a[1]); } } };
   const pos = (e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
-  cv.addEventListener('pointerdown', (e) => { const p = pos(e); if (tool === 'text') { const s = prompt('Label text'); if (s) { shapes.push({t:'text', a:p, s, c:color}); paint(shapes); } return; } cv.setPointerCapture(e.pointerId); drag = tool === 'pen' ? {t:'pen', pts:[p], c:color} : {t:tool, a:p, b:p, c:color}; });
+  cv.addEventListener('pointerdown', (e) => { const p = pos(e); if (tool === 'text') { promptBox('Add a label', 'Label text', '', (s) => { if (s) { shapes.push({t:'text', a:p, s, c:color}); paint(shapes); } }); return; } cv.setPointerCapture(e.pointerId); drag = tool === 'pen' ? {t:'pen', pts:[p], c:color} : {t:tool, a:p, b:p, c:color}; });
   cv.addEventListener('pointermove', (e) => { if (!drag) return; const p = pos(e); if (drag.t === 'pen') drag.pts.push(p); else drag.b = p; paint(shapes.concat([drag])); });
   cv.addEventListener('pointerup', () => { if (!drag) return; const ok = drag.t === 'pen' ? drag.pts.length > 1 : Math.hypot(drag.b[0] - drag.a[0], drag.b[1] - drag.a[1]) > 4; if (ok) shapes.push(drag); drag = null; paint(shapes); });
   paint(shapes);
@@ -6397,7 +6442,7 @@ function siteLoadW() {
 function openUPSDialog() {
   const load = el('input', {class:'field num', type:'number', min:1, value:siteLoadW() || 150, 'aria-label':'Load in watts'}); const target = el('input', {class:'field num', type:'number', min:1, value:30, 'aria-label':'Runtime needed in minutes'});
   const out = el('div', {class:'upsout'});
-  const calc = () => { const L = +load.value, T = +target.value; out.innerHTML = ''; const rows = UPS_SIZES.map(([n, maxW, wh]) => ({n, maxW, wh, min: L <= maxW ? upsRuntime(L, wh) : null})); const pick = rows.find(r => r.min != null && r.min >= T);
+  const calc = () => { const L = +load.value, T = +target.value; out.innerHTML = ''; if (!(L > 0) || !(T > 0)) { out.dataset.pick = ''; out.append(el('p', {class:'upspick bad', id:'upsInvalid', text: !(L > 0) ? 'Enter the load in watts — it must be more than 0.' : 'Enter how many minutes of runtime you need — more than 0.'})); return; } const rows = UPS_SIZES.map(([n, maxW, wh]) => ({n, maxW, wh, min: L <= maxW ? upsRuntime(L, wh) : null})); const pick = rows.find(r => r.min != null && r.min >= T);
     const t = el('table', {class:'grid'}, [el('thead', {}, [el('tr', {}, ['UPS', 'Max load', 'Battery', 'Runtime'].map(h => el('th', {text:h})))]), el('tbody', {}, rows.map(r => el('tr', {class: r === pick ? 'pick' : ''}, [el('td', {text:r.n}), el('td', {text:r.maxW + ' W'}), el('td', {text:'~' + r.wh + ' Wh'}), el('td', {text: r.min == null ? 'Too small' : Math.round(r.min) + ' min'})])))]);
     out.append(el('p', {class:'upspick', html: pick ? `Pick <b>${pick.n}</b> — about <b>${Math.round(pick.min)} min</b> at ${L} W.` : `No single unit reaches ${T} min at ${L} W — add an extended battery pack or split the load.`}), t); out.dataset.pick = pick ? pick.n : ''; };
   load.addEventListener('input', calc); target.addEventListener('input', calc); calc();
@@ -6503,7 +6548,7 @@ TOOLS.assembly = {
 function useAssembly(id) { const a = loadAssemblies().find(x => x.id === id); if (!a) return; S.placeAssembly = a; setTool('assembly'); toast(`Click the plan to drop “${a.name}”.`, '', 3000); }
 function deleteAssembly(id) { saveAssemblies(loadAssemblies().filter(x => x.id !== id)); renderLeft(); }
 function assemblyTiles() { const list = loadAssemblies(); if (!list.length) return null; return el('div', {class:'ezfavs', id:'ezAssemblies'}, [el('h4', {class:'lbl3', text:'Your assemblies'}), el('div', {class:'aslist'}, list.slice(0, 12).map(a => el('div', {class:'asrow'}, [el('button', {class:'btn sm', 'data-assembly':a.id, title:a.items.map(i => (KINDS[i.kind] || {}).label || i.kind).join(', '), text:`${a.name} · ${a.items.length}`, onclick:() => useAssembly(a.id)}), el('button', {class:'cmpx', 'aria-label':'Delete assembly ' + a.name, text:'×', onclick:() => deleteAssembly(a.id)})])))]); }
-function promptSaveAssembly() { const n = prompt('Name this assembly (e.g. “Front entry kit”):', ''); if (n === null) return; return saveAssemblyFromSelection(n); }
+function promptSaveAssembly() { if (!selObjs().some(o => o.t === 'dev')) return toast('Select the devices to save first.', 'warn'); const names = loadAssemblies().map(a => a.name.toLowerCase()); promptBox('Save as assembly', 'Assembly name (e.g. “Front entry kit”)', '', (n) => { n = String(n || '').trim(); if (!n) return toast('Give the assembly a name.', 'warn'); if (names.includes(n.toLowerCase())) toast(`Replaced the old “${n}”.`); saveAssemblyFromSelection(n); }); }
 
 // ---------- DXF export (AutoCAD R12, feet) for the architect / CAD handover ----------
 function buildDXF(fid = S.floorId) {
@@ -6531,7 +6576,7 @@ function buildDXF(fid = S.floorId) {
   text(LAY.text, [0, -6], 1.4, `${S.project.name} — ${floorLabel(fid)} — Security Site Designer (created by ${APP_CREATOR.name})`);
   g(0, 'ENDSEC'); g(0, 'EOF'); return {dxf: out.join('\r\n') + '\r\n', count:n};
 }
-function exportDXF() { const {dxf, count} = buildDXF(); if (!count) return toast('Nothing on this floor to export yet.'); saveFile(`${safeName(S.project.name)}-${safeName(floorLabel(S.floorId))}.dxf`, new Blob([dxf], {type:'application/dxf'})); }
+function exportDXF(fid) { try { let f = typeof fid === 'string' ? fid : S.floorId; let r = buildDXF(f); if (!r.count) { const alt = floors().find(x => x.id !== f && onFloor(x.id).some(o => o.t !== 'comment')); if (alt) { f = alt.id; r = buildDXF(f); toast(`This floor is empty — exporting ${floorLabel(f)} instead.`, '', 4000); } } if (!r.count) return toast('Nothing to export as CAD yet — draw walls or place devices first.', 'warn', 5000); return saveFile(`${safeName(S.project.name)}-${safeName(floorLabel(f))}.dxf`, new Blob([r.dxf], {type:'image/vnd.dxf'})); } catch (e) { reportError('The CAD (DXF) export failed', e); } }
 
 // ---------- appearance: accent color + comfortable text size (per browser) ----------
 const ACCENTS = {amber:'Amber', blue:'Blue', green:'Green', violet:'Violet'};
@@ -6599,7 +6644,7 @@ function pdfFinish(doc, {W, H, m}) {
   const B = brandInfo(); const n = doc.getNumberOfPages();
   for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setDrawColor('#d7dde6'); doc.setLineWidth(0.01); doc.line(m, H - 0.5, W - m, H - 0.5); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor('#5d6670');
     doc.text([B.name, B.show ? B.contact : ''].filter(Boolean).join('  ·  ').slice(0, 120), m, H - 0.33); doc.text(`Page ${i} of ${n}`, W - m, H - 0.33, {align:'right'});
-    doc.setFontSize(6.5); doc.setTextColor('#a3abb3'); doc.text(`Prepared with Security Site Designer · created by ${APP_CREATOR.name}`, W - m, H - 0.2, {align:'right'}); }
+    doc.setFontSize(6.5); doc.setTextColor('#a3abb3'); doc.text(`Prepared with Security Site Designer · created by ${APP_CREATOR.name}`, W - m, H - 0.2, {align:'right'}); try { doc.text(traceLine(), m, H - 0.2); } catch (e) {} }
 }
 // full-bleed cover page for the proposal
 async function pdfCover(doc, {W, H, m, title}) {
@@ -6758,8 +6803,10 @@ function openLensCalc() {
   const where = el('div', {class:'seg', role:'group', 'aria-label':'Where'}, [['inside', 'Inside'], ['outside', 'Outside']].map(([v, l]) => el('button', {class:'btn sm' + (v === st.where ? ' on' : ''), 'data-v':v, text:l, onclick:(e) => { st.where = v; where.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); calc(); }})));
   const out = el('div', {class:'lcout', id:'lcOut', 'aria-live':'polite'}); const list = el('div', {class:'lclist', id:'lcList'});
   const calc = () => {
-    st.goal = gSel.value; st.dist = Math.max(1, +dist.value || 1); st.res = +resSel.value; custom.parentElement.hidden = st.goal !== 'custom';
-    const ppm = st.goal === 'custom' ? Math.max(1, +custom.value || 1) * FT_PER_M : DORI.find(d => d.key === st.goal).ppm; const m = lensMath({distFt:st.dist, ppm, resH:st.res});
+    st.goal = gSel.value; st.res = +resSel.value; custom.parentElement.hidden = st.goal !== 'custom'; const dv = +dist.value, cv = +custom.value;
+    if (!(dv > 0) || (st.goal === 'custom' && !(cv > 0))) { out.innerHTML = `<div class="bad" id="lcInvalid" style="grid-column:1/-1"><b>—</b><i>${!(dv > 0) ? 'Enter a distance greater than 0 ft.' : 'Enter pixels per foot greater than 0.'}</i></div>`; out.dataset.hfov = ''; out.dataset.width = ''; list.innerHTML = ''; apply.hidden = true; return; }
+    st.dist = dv;
+    const ppm = st.goal === 'custom' ? cv * FT_PER_M : DORI.find(d => d.key === st.goal).ppm; const m = lensMath({distFt:st.dist, ppm, resH:st.res});
     out.innerHTML = `<div><b>${m.hfov >= 120 ? '≥120' : m.hfov.toFixed(1)}°</b><i>widest view that still works</i></div><div><b>${m.maxWidthFt.toFixed(1)} ft</b><i>scene width at ${st.dist} ft</i></div><div><b>${Math.round(ppm)} px/m</b><i>${m.ppf.toFixed(1)} px/ft needed</i></div>`;
     out.dataset.hfov = m.hfov.toFixed(2); out.dataset.width = m.maxWidthFt.toFixed(2);
     const hits = lensMatches({distFt:st.dist, ppm, where:st.where}); list.innerHTML = '';
@@ -6832,7 +6879,7 @@ function toolboxTools() {
   return [
     {id:'lens', em:'🔭', name:'Lens & pixel calculator', how:'What view angle sees faces or plates at a distance', go:openLensCalc},
     {id:'picker', em:'🎯', name:'Help me choose a camera', how:'Four questions → three picks', go:openCameraPicker},
-    {id:'fix', em:'✨', name:'Fix everything', how:'Cover every weak room, then wire it all', go:() => { setStep(2); fixEverything(); }, off: !devs ? 'Add devices first' : null},
+    {id:'fix', em:'✨', name:'Review suggested fixes', how:'See every proposed camera and cable first, then apply', go:() => { setStep(2); openReviewFixes(); }, off: !devs ? 'Add devices first' : null},
     {id:'compare', em:'⚖️', name:'Compare cameras', how:'Side-by-side specs', go:openCompare},
     {id:'ups', em:'🔋', name:'UPS runtime', how:'Minutes of backup for your load', go:openUPSDialog},
     {id:'conduit', em:'🧵', name:'Conduit fill', how:'NEC Chapter 9 fill for your cables', go:() => openConduitDialog()},
@@ -6923,7 +6970,7 @@ function floorScale(f) {
   const bg = f.bg; const drawn = onFloor(f.id).some(o => o.t === 'wall' || o.t === 'room');
   if (!bg) return drawn ? {state:'ok', src:'drawn', text:'Drawn to scale in the app'} : {state:'none', src:'none', text:'No plan'};
   if (bg.vector || f.calSrc === 'dxf') return {state:'ok', src:'dxf', text:'From the CAD file’s units'};
-  if (f.calibrated) return {state:'ok', src:f.calSrc || 'calibrated', text: f.calSrc === 'map' ? 'From the satellite map' : 'Set by two-point calibration'};
+  if (f.calibrated) { const h = (f.calHist || []).slice(-1)[0]; return {state:'ok', src:f.calSrc || 'calibrated', text: f.calSrc === 'map' ? 'From the satellite map' : 'Set by two-point calibration' + (h ? ` (${fmtLen(h.ft)} between two points, ${new Date(h.at).toLocaleDateString()}${h.by ? ' by ' + h.by : ''})` : '')}; }
   return {state:'fail', src:'unset', text:'Plan scale NOT set — distances and coverage are unverified'};
 }
 function planWidthFt(f) { const bg = f.bg; if (bg && bg.w && bg.ftPerPx) return bg.w * bg.ftPerPx; const pts = []; for (const o of onFloor(f.id)) { if (o.t === 'wall') pts.push([o.x1, o.y1], [o.x2, o.y2]); else if (o.pts) pts.push(...o.pts); } return pts.length ? G.bbox(pts).w : 0; }
@@ -7013,6 +7060,114 @@ document.addEventListener('paste', (e) => {
   if (!files.length) return; e.preventDefault(); const f = files[0]; const named = f.name && f.name !== 'image.png' ? f : new File([f], 'Pasted plan ' + new Date().toLocaleDateString().replace(/\//g, '-') + '.png', {type:f.type || 'image/png'});
   importFiles([named]); toast('Pasted — importing it as the floor plan', '', 3000);
 });
+
+// ===== TRUST & REMEDIATION: one-click fixes, accepted exceptions with an audit trail, review-before-apply,
+// fire/intrusion connectivity, commissioning gate, export log with checksums, catalog status, tool/context hygiene =====
+
+// ---------- context hygiene: a drawing tool never follows you to another floor or workspace ----------
+function resetToolOnContextChange() { if (!S.tool || ['select', 'hand'].includes(S.tool)) return; try { if (TOOL && TOOL.cancel) TOOL.cancel(); } catch (e) {} setTool('select'); }
+// counters update with the model, in the same tick (no "0 cameras" while CAM-001 is on screen)
+changeHooks.push(() => { try { if (!S.project || !$('#sbCams')) return; const c = projectCounts(S.project); $('#sbCams').innerHTML = `<b>${c.cameras}</b> cameras`; $('#sbDoors').innerHTML = `<b>${c.accessDoors}</b> access doors`; $('#sbCables').innerHTML = `<b>${c.cables}</b> cable runs`; } catch (e) {} });
+// phones/tablets in Pro: drawers close when you go back to the plan, so the canvas is never buried
+const narrowPro = () => innerWidth <= 900 && !isEasy();
+document.addEventListener('pointerdown', (e) => { if (!narrowPro() || !e.target.closest) return; if (e.target.closest('#canvasWrap, #cv')) $('#app').classList.remove('lopen', 'ropen'); }, true);
+
+// ---------- audit trail ----------
+function audit(action, detail, ids) { const p = S.project; if (!p) return; p.audit = [...(p.audit || []), {at:Date.now(), by:(typeof TEAM !== 'undefined' && TEAM.me && TEAM.me.name) || p.designer || '', action, detail:String(detail || '').slice(0, 240), ids:(ids || []).slice(0, 40)}].slice(-300); }
+
+// ---------- accepted exceptions: a reviewed suggestion stops nagging, but is never forgotten ----------
+const issueKey = (i) => [i.sev, i.id, String(i.msg).replace(/\d+(\.\d+)?/g, '#')].join('|');
+function acceptedMap() { return (S.project && S.project.accepted) || {}; }
+function applyAccepted(list) { const A = acceptedMap(); const keep = [], acc = []; for (const i of list) { const k = issueKey(i); if (A[k] && i.sev !== 'error') acc.push({...i, accepted:A[k]}); else keep.push(i); } S.acceptedIssues = acc; return keep; }
+function acceptIssue(i, reason) { const k = issueKey(i); tx('Accept exception', () => { touchMeta(); S.project.accepted = {...acceptedMap(), [k]:{at:Date.now(), by:S.project.designer || '', reason:String(reason || '').slice(0, 200), msg:i.msg}}; }); audit('Accepted exception', `${i.msg}${reason ? ' — ' + reason : ''}`, [i.id]); S.issuesKey = null; freshIssues(); try { updateStatusCounts(); } catch (e) {} if (S.mode === 'reports') renderReports(); renderRight(); }
+function unacceptIssue(k) { tx('Remove exception', () => { touchMeta(); const a = {...acceptedMap()}; delete a[k]; S.project.accepted = a; }); audit('Removed exception', k, []); S.issuesKey = null; freshIssues(); if (S.mode === 'reports') renderReports(); }
+
+// ---------- one-click remediation for each kind of finding ----------
+function onFloorOf(id) { const o = objs()[id]; if (o && o.floor && o.floor !== S.floorId) switchFloor(o.floor, true); return o; }
+function wireFix(i, label) { const o = onFloorOf(i.id); const n0 = Object.values(objs()).filter(x => x.t === 'cable').length; const d0 = Object.keys(objs()).length; wireItUp(); const n1 = Object.values(objs()).filter(x => x.t === 'cable').length; audit(label || 'Wired', `${o ? o.name + ': ' : ''}${n1 - n0} cable(s), ${Object.keys(objs()).length - d0 - (n1 - n0)} device(s) added`, [i.id]); S.issuesKey = null; freshIssues(); if (S.mode === 'reports') renderReports(); }
+function issueActions(i) {
+  const m = String(i.msg); const o = objs()[i.id]; const acts = [];
+  if (/has no network connection|not connected to (a|the) fire alarm|not connected to (an|the) intrusion panel|is not assigned to a controller|has no power supply|has no uplink|no NVR or recording server|but no fire alarm control panel|but no intrusion panel/.test(m)) acts.push(['Wire it up', () => wireFix(i, 'One-click wire')]);
+  if (o && o.t === 'room' && /covered at .* \(target/.test(m)) acts.push(['Suggest cameras', () => { onFloorOf(i.id); if (isEasy()) setStep(2); ezFixRoom(o); audit('Opened camera suggestions', o.name, [o.id]); }], ['Not required', () => { tx('Coverage requirement', () => updObj(o.id, {props:{...o.props, coverNeed:'optional'}})); audit('Marked room not required', o.name, [o.id]); S.issuesKey = null; freshIssues(); if (S.mode === 'reports') renderReports(); renderRight(); }]);
+  if (i.sev !== 'error') acts.push(['Accept…', () => promptBox('Accept this as an exception', 'Reason (shown in the audit trail)', '', (r) => acceptIssue(i, r || 'Reviewed'))]);
+  return acts;
+}
+function issueActionButtons(i) { return el('span', {class:'fixacts'}, issueActions(i).map(([l, fn]) => el('button', {class:'btn sm' + (l === 'Wire it up' || l === 'Suggest cameras' ? ' primary' : ''), text:l, 'data-fix':l, onclick:(e) => { e.stopPropagation(); try { fn(); } catch (err) { reportError('That fix did not work', err); } }}))); }
+
+// ---------- extra design-check rules ----------
+function connectivityIssues(add) {
+  const g = buildGraph(); const devs = Object.values(objs()).filter(o => o.t === 'dev');
+  const FIRE_IN = ['smoke', 'heat', 'pull'], FIRE_OUT = ['hornstrobe'], INTR = ['pir', 'glassbreak', 'keypad', 'siren', 'contact'];
+  const fire = devs.filter(o => FIRE_IN.includes(o.kind) || FIRE_OUT.includes(o.kind)); const facps = devs.filter(o => o.kind === 'facp');
+  if (fire.length && !facps.length) add('error', fire[0].id, `${fire.length} fire device${fire.length > 1 ? 's' : ''} but no fire alarm control panel (FACP)`, 'Add an FACP from the fire library, then wire the initiating and notification circuits.');
+  else for (const d of fire) { const ok = (d.props && d.props.facpId && objs()[d.props.facpId]) || findUp(g, d.id, (x) => x.kind === 'facp', 6); if (!ok) add('warning', d.id, `${d.name} is not connected to a fire alarm panel`, `${FIRE_IN.includes(d.kind) ? 'Run the initiating (SLC/IDC) circuit' : 'Run the notification (NAC) circuit'} to ${facps[0].name}, or press “Wire it up”.`); }
+  const intr = devs.filter(o => INTR.includes(o.kind) && !(o.kind === 'contact' && o.doorId && devs.some(x => x.doorId === o.doorId && isRole(x, 'reader')))); const panels = devs.filter(o => o.kind === 'ipanel');
+  if (intr.length && !panels.length) add('warning', intr[0].id, `${intr.length} intrusion device${intr.length > 1 ? 's' : ''} but no intrusion panel`, 'Add an intrusion panel and wire the zones, or press “Wire it up”.');
+  else for (const d of intr) { if (!findUp(g, d.id, (x) => x.kind === 'ipanel' || isRole(x, 'controller'), 6)) add('warning', d.id, `${d.name} is not connected to an intrusion panel`, `Wire the zone to ${panels[0].name}, or press “Wire it up”.`); }
+}
+
+// ---------- review suggested fixes before anything changes ----------
+async function proposeFixes() {
+  const out = []; const cs = coverageSummary(); const wasTool = S.tool;
+  for (const x of cs.weak.slice(0, 12)) { const r = x.r; const c = G.centroid(r.pts); const p = G.inPoly(c, r.pts) ? c : r.pts.reduce((a, q) => [a[0] + q[0] / r.pts.length, a[1] + q[1] / r.pts.length], [0, 0]);
+    try { await adviseAt(p); } catch (e) { continue; } const o = ADVISOR.opts[0]; if (!o) { out.push({kind:'room', r, none:true, pct:x.pct}); continue; }
+    out.push({kind:'room', r, opt:o, ctx:ADVISOR.ctx, pct:x.pct, after:o.pct, cams:o.cams.map(c => (prod(c.product) || {}).model || c.kind)}); }
+  ADVISOR.opts = []; ADVISOR.ctx = null; const box = $('#advisor'); if (box) box.hidden = true; if (S.tool === 'advisor' && wasTool !== 'advisor') setTool(wasTool || 'select');
+  const loose = looseDevices().filter(o => o.floor === S.floorId); if (loose.length) out.push({kind:'wire', n:loose.length, names:loose.slice(0, 8).map(o => o.name)});
+  return out;
+}
+async function openReviewFixes() {
+  if (!S.project) return; const t = toast('Working out the suggested fixes…', '', 30000); let items; try { items = await proposeFixes(); } finally { t.remove(); }
+  if (!items.length) { toast('Nothing to fix on this floor — every required room meets the target and everything is wired.', '', 4500); return null; }
+  const checks = items.map(() => el('input', {type:'checkbox', checked:true})); let d;
+  const rows = items.map((it, k) => el('label', {class:'fixrow', 'data-fix':it.kind, 'data-room':it.r ? it.r.id : ''}, it.kind === 'room' ? (it.none ? [el('input', {type:'checkbox', disabled:true}), el('span', {}, [el('b', {text:it.r.name || 'Room'}), el('i', {text:`${Math.floor(it.pct * 100)}% now — no camera in the library can cover it at this level`})])] : [checks[k], el('span', {}, [el('b', {text:`${it.r.name || 'Room'}: ${Math.floor(it.pct * 100)}% → about ${Math.round(it.after * 100)}%`}), el('i', {text:`Adds ${it.opt.cams.length} camera${it.opt.cams.length > 1 ? 's' : ''}: ${[...new Set(it.cams)].join(', ')}`})])]) : [checks[k], el('span', {}, [el('b', {text:`Wire ${it.n} device${it.n > 1 ? 's' : ''}`}), el('i', {text:`${it.names.join(', ')}${it.n > 8 ? '…' : ''} — adds a switch, recorder, controller or panel only if one is missing`})])]));
+  const apply = async () => { d.close(); const d0 = S.undo.length; const keep = new Set($('#toasts').children); const before = freshScore().score; const done = [];
+    for (let k = 0; k < items.length; k++) { const it = items[k]; if (!checks[k].checked || it.none) continue;
+      if (it.kind === 'room') { ADVISOR.opts = [it.opt]; ADVISOR.ctx = it.ctx; placeOption(0); done.push(`${it.r.name}: +${it.opt.cams.length} camera(s)`); }
+      if (it.kind === 'wire') { wireItUp(); done.push(`wired ${it.n} device(s)`); } }
+    [...$('#toasts').children].forEach(n => { if (!keep.has(n)) n.remove(); }); const after = freshScore().score; const steps = S.undo.length - d0; const depth = S.undo.length;
+    audit('Applied suggested fixes', done.join('; ') + ` · score ${before} → ${after}`, []); S.sel = new Set(); onSelectionChanged(); renderLeft(); requestDraw();
+    const tt = el('div', {class:'toast undo', role:'status', id:'fixToast'}, [el('span', {text:`✨ Applied ${done.length} fix${done.length === 1 ? '' : 'es'} · score ${before} → ${after}`}), steps ? el('button', {class:'btn sm', text:'Undo', onclick:() => { tt.remove(); if (S.undo.length !== depth) return toast('Something else changed since — use Ctrl+Z.', 'warn'); for (let i = 0; i < steps; i++) undo(); [...$('#toasts').children].forEach(n => n.remove()); audit('Undid suggested fixes', '', []); EASY.scoreCache = null; renderLeft(); toast('Undid the suggested fixes'); }}) : null, el('button', {class:'x', 'aria-label':'Dismiss', html:'&times;', onclick:() => tt.remove()})]);
+    $('#toasts').append(tt); setTimeout(() => tt.remove(), 9000); return {before, after, done}; };
+  d = dialog({title:'Review suggested fixes', cls:'mid', body:el('div', {class:'fixlist', id:'fixReview'}, [el('p', {class:'note', style:'margin-top:0', text:'Nothing changes until you press Apply. Untick anything you don’t want. You can undo it all in one step afterwards.'}), ...rows]), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', id:'fixApply', text:'Apply selected', onclick:apply})]});
+  d.items = items; return d;
+}
+
+// ---------- commissioning gate: “Signed off” needs a real record ----------
+const needsMAC = (o) => isCam(o) || ['network', 'access'].includes(kindOf(o).cat) && (isRole(o, 'controller') || isRole(o, 'switch') || isRole(o, 'nvr') || o.kind === 'intercom') || devPowerW(o) > 0;
+function signoffProblems(o) {
+  const cur = instOf(o); const list = CHECKLISTS[kindOf(o).cat] || CHECKLISTS.site; const miss = [];
+  if (!cur.serial) miss.push('serial number'); if (needsMAC(o) && !cur.mac) miss.push('MAC address');
+  const undone = list.filter((_, i) => !(cur.checks || {})[i]); if (undone.length) miss.push(`${undone.length} checklist item${undone.length > 1 ? 's' : ''}`);
+  if (NEEDS_WIRE(o)) { const g = buildGraph(); if (!neighbors(g, o.id).length && !(o.props && (o.props.switchId || o.props.controllerId || o.props.facpId))) miss.push('a connection (cable or assignment)'); }
+  return miss;
+}
+
+// ---------- export log: every file says what it is, how big, its SHA-256, and the check state it was made from ----------
+async function sha256Hex(blob) { try { const buf = await blob.arrayBuffer(); const h = await crypto.subtle.digest('SHA-256', buf); return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join(''); } catch (e) { return ''; } }
+function checkSummary() { const is = freshIssues(); return {e:is.filter(i => i.sev === 'error').length, w:is.filter(i => i.sev === 'warning').length, s:is.filter(i => i.sev === 'suggestion').length, accepted:(S.acceptedIssues || []).length}; }
+async function logExport(filename, blob, ok, err) {
+  const p = S.project; if (!p) return null; const size = blob ? blob.size : 0; const sha = ok && blob ? await sha256Hex(blob) : '';
+  const rec = {at:Date.now(), name:filename, size, sha, ok:!!ok, err:err ? String(err).slice(0, 160) : '', ver:APP_VERSION, checks:checkSummary()};
+  p.exportLog = [...(p.exportLog || []), rec].slice(-200); try { await DB.put('projects', p.id, p); } catch (e) {} return rec;
+}
+const fmtBytes = (n) => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : n >= 1024 ? Math.round(n / 1024) + ' KB' : n + ' B';
+function traceLine() { const c = checkSummary(); return `Security Site Designer v${APP_VERSION} · checked ${new Date(S.checkedAt || Date.now()).toLocaleString()} · ${c.e} errors, ${c.w} warnings${c.accepted ? `, ${c.accepted} accepted exceptions` : ''}`; }
+
+// ---------- catalog status: Verified · Generic · Discontinued · Custom ----------
+function prodStatus(p) { if (!p) return null; if (p.discontinued) return ['disc', 'Discontinued']; if (p.mfr === 'Custom' || String(p.id).startsWith('custom')) return ['custom', 'Custom']; if (p.mfr === 'Generic') return ['gen', 'Generic']; if (p.verified) return ['ver', 'Verified']; return ['unv', 'Not verified']; }
+function prodOptionLabel(p) { const s = prodStatus(p); return `${p.mfr} — ${p.model}${s && s[0] === 'disc' ? ' (discontinued)' : s && s[0] === 'custom' ? ' (custom)' : ''}`.replace(' (discontinued) (discontinued)', ' (discontinued)'); }
+
+// ---------- placement feedback ----------
+let placeToast = null;
+function placedFeedback(o) { const txt = `Placed ${o.name} · ${floorLabel(o.floor)} — keep clicking to place more, Esc to stop`; if (placeToast && placeToast.isConnected) { placeToast.querySelector('span').textContent = txt; return; } placeToast = toast(txt, '', 3000); placeToast.id = 'placeToast';
+  const L = S.project.layers && S.project.layers[layerFor(o)]; if (L && L.visible === false) { tx('Show layer', () => { touchMeta(); L.visible = true; }); applyLayers(); toast(`The ${layerFor(o)} layer was hidden — it’s showing again so you can see ${o.name}.`, 'warn', 5000); } }
+
+// ---------- assemblies: pick one first, then click the door ----------
+TOOLS.doorasm = { hint() { const t = (S.doorTpl && DOOR_TEMPLATES.concat(S.project.doorTemplates || []).find(x => x.id === S.doorTpl)) || {}; return `Click a door to apply “${t.name || 'assembly'}”. Esc when done.`; },
+  down(e, p, hit) { const o = hit && hit.obj; const d = o && o.t === 'door' ? o : onFloor().filter(x => x.t === 'door').map(x => ({x, d:G.dist(p, [x.x, x.y])})).filter(x => x.d < 3).sort((a, b) => a.d - b.d).map(x => x.x)[0];
+    if (!d) { toast('That’s not a door — click a door on the plan (or add one with the Door tool).', 'warn', 3500); return; } applyDoorTemplate(d.id, S.doorTpl); audit('Applied door assembly', `${d.name}: ${S.doorTpl}`, [d.id]); },
+  move() {}, up() {} };
 
 // ===== START (after every module has loaded) =====
 boot().catch(e => { console.error(e); const l = $('#loading'); if (l) l.textContent = 'The designer could not start: ' + e.message; });
