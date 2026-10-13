@@ -355,8 +355,8 @@ table.grid input.price{width:90px; height:24px; text-align:right; padding:0 6px;
 #palette{width:min(620px, 100%)}
 #palette input{width:100%; height:44px; border:0; border-bottom:1px solid var(--line); padding:0 14px; font-size:15px; background:none; outline:0}
 #palette .res{max-height:52vh; overflow:auto; padding:4px}
-#palette .res button{display:flex; align-items:center; gap:10px; width:100%; border:0; background:none; text-align:left; padding:7px 10px; border-radius:3px; font-size:13.5px}
-#palette .res button.hl{background:var(--accent-bg)}
+#palette .res [role=option]{cursor:pointer; color:var(--fg); display:flex; align-items:center; gap:10px; width:100%; border:0; background:none; text-align:left; padding:7px 10px; border-radius:3px; font-size:13.5px}
+#palette .res [role=option].hl{background:var(--accent-bg)}
 #palette .res .kind{font:600 10px var(--f-cond); letter-spacing:.08em; text-transform:uppercase; color:var(--faint); width:62px; flex:none}
 #palette .res .k{margin-left:auto; color:var(--faint); font:11px var(--f-mono)}
 #palette .res .grp{font:600 10.5px var(--f-cond); letter-spacing:.09em; text-transform:uppercase; color:var(--faint); padding:8px 10px 3px}
@@ -787,6 +787,29 @@ body.nobom .mode[data-mode="bom"]{display:none}
 @media (max-width:520px){ #toolboxBtn{display:none} }
 @media (max-width:1100px){ body.easy #steps .stp span{display:none} body.easy #steps .stp{padding:0 5px} body.easy #steps{flex:none} }
 body.easy #steps{flex:none; overflow:visible}
+.vh-file{position:fixed; left:-10000px; top:0; width:1px; height:1px; opacity:0; pointer-events:none}
+label.ezcard{cursor:pointer}
+#cv .covpill.opt rect{fill:#6c7681}
+.covlink{display:block; text-align:left; margin:2px 0 4px; font-size:12.5px}
+.covfields .covstatus{margin:2px 0 8px; font-weight:600} .covfields .covstatus.ok{color:var(--ok)} .covfields .covstatus.bad{color:var(--err)}
+.covlist{display:flex; flex-direction:column; gap:4px; max-height:55vh; overflow:auto}
+.covrow{display:grid; grid-template-columns:minmax(90px,1.3fr) 1fr 44px minmax(90px,1fr) 80px; gap:10px; align-items:center; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:var(--panel2); color:var(--fg); text-align:left; cursor:pointer}
+.covrow:hover{border-color:var(--accent)} .covrow b{font-size:13px} .covrow .covpct{font:800 13px var(--f-ui); text-align:right} .covrow .covst{font-size:12px} .covrow .covlvl{font-size:11px; color:var(--muted); text-transform:capitalize}
+.covrow.bad .covst{color:var(--err); font-weight:700} .covrow.ok.required .covst{color:var(--ok)} .covrow.optional .covst, .covrow.privacy .covst{color:var(--muted)}
+.covbar{height:6px; border-radius:9px; background:var(--line2); overflow:hidden} .covbar i{display:block; height:100%; background:var(--ok)} .covrow.bad .covbar i{background:var(--err)} .covrow.optional .covbar i{background:var(--faint)}
+@media (max-width:520px){ .covrow{grid-template-columns:1fr 44px; } .covrow .covbar, .covrow .covlvl{display:none} }
+#tour{z-index:70}
+.geostate{display:inline-block; margin:0 0 8px; padding:4px 10px; border-radius:999px; font-weight:700; font-size:12.5px; background:var(--warn-bg); color:var(--warn)} .geostate.located{background:var(--ok-bg); color:var(--ok)} .geostate.none{background:var(--panel2); color:var(--muted)}
+.planfacts{margin:-2px 0 8px; font-size:12px}
+.health .hsum{padding:10px 12px; border-radius:10px; font-weight:700; margin-bottom:10px} .health .hsum.ok{background:var(--ok-bg); color:var(--ok)} .health .hsum.warn{background:var(--warn-bg); color:var(--warn)} .health .hsum.fail{background:var(--err-bg); color:var(--err)}
+.health .hgrp h4{margin:10px 0 4px; font:700 11.5px var(--f-ui); text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.hrow{display:flex; gap:10px; align-items:center; padding:8px 0; border-top:1px solid var(--line2)} .hrow .hico{width:22px; height:22px; flex:none; border-radius:50%; display:grid; place-items:center; font:800 12px var(--f-ui); color:#fff; background:var(--ok)}
+.hrow.warn .hico{background:var(--warn)} .hrow.fail .hico{background:var(--err)} .hrow .htxt{flex:1; min-width:0} .hrow b{display:block; font-size:13px} .hrow i{display:block; font-style:normal; font-size:12px; color:var(--muted); overflow-wrap:anywhere}
+/* status bar fits every width: least important items drop out first */
+@media (max-width:1200px){ #sbLayer, #sbXY, #sbDoors, #sbCables{display:none !important} }
+@media (max-width:900px){ #sbScale, #sbZoom, #sbSel{display:none !important} }
+@media (max-width:520px){ #sbCams, #sbSave{display:none !important} #status .c{padding:0 8px} }
+#ezUpload.over{border-color:var(--accent); background:var(--accent-bg)}
 </style>
 <div id="app">
   <header id="top"></header>
@@ -909,8 +932,8 @@ const PRODUCTS = [
   {id:'vk-cd53', mfr:'Verkada', model:'CD53 Dome 5MP', part:'CD53', kind:'dome', res:[2688,1944], hfov:109, hfovMin:39, hfovMax:109, vfov:80, lens:'2.8–8 mm motorized', ir:98, poeClass:4, watts:16.8, env:'outdoor', ip:'IP67', ik:'IK10', audio:false, analytics:'People & vehicle analytics', mount:{part:'ACC-MNT-CJBOX-1', desc:'Circle junction box'}, license:'Verkada camera license', verified:true, src:'https://www.verkada.com/security-cameras/dome/cd52/', note:'Onboard storage; needs PoE+ (802.3at) with IR'},
   {id:'avi-h5a-bo1-ir', mfr:'Avigilon', model:'H5A Bullet 2MP IR', part:'2.0C-H5A-BO1-IR', kind:'bullet', res:[1920,1080], hfov:99, hfovMin:34, hfovMax:99, vfov:53, lens:'3.3–9 mm', ir:164, poeClass:3, watts:13, env:'outdoor', ip:'IP66/IP67', ik:'IK10', audio:true, analytics:'Avigilon AI', mount:{part:'H4-BO-JBOX1', desc:'Junction box (verify)'}, license:'ACC camera channel', verified:true, src:'https://mayflex.com/shop/product/2.0C-H5A-BO1-IR'},
   // Digital Watchdog — specs from DW product pages / datasheets (checked Oct 2026)
-  {id:'dw-mv72wi28', mfr:'Digital Watchdog', model:'MV72 2MP Dome', series:'MEGApix Ultra Low-Profile', part:'DWC-MV72Wi28TW', kind:'dome', res:[1945,1109], hfov:111, vfov:60, lens:'2.8 mm', ir:80, poeClass:2, watts:5.5, env:'outdoor', ip:'IP67', ik:'IK10', audio:false, analytics:'DW IVA (intrusion, line crossing, loitering…)', mount:{part:'DWC-V7WMW', desc:'Wall mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-MV72Wi4TW'},
-  {id:'dw-mv72wi6', mfr:'Digital Watchdog', model:'MV72 2MP Dome', series:'MEGApix Ultra Low-Profile', part:'DWC-MV72Wi6TW', kind:'dome', res:[1945,1109], hfov:55, vfov:30, lens:'6 mm', ir:80, poeClass:2, watts:5.5, env:'outdoor', ip:'IP67', ik:'IK10', audio:false, analytics:'DW IVA', mount:{part:'DWC-V7WMW', desc:'Wall mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-MV72Wi4TW'},
+  {id:'dw-mv72wi28', mfr:'Digital Watchdog', model:'MV72 2MP Dome 2.8 mm', series:'MEGApix Ultra Low-Profile', part:'DWC-MV72Wi28TW', kind:'dome', res:[1945,1109], hfov:111, vfov:60, lens:'2.8 mm', ir:80, poeClass:2, watts:5.5, env:'outdoor', ip:'IP67', ik:'IK10', audio:false, analytics:'DW IVA (intrusion, line crossing, loitering…)', mount:{part:'DWC-V7WMW', desc:'Wall mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-MV72Wi4TW'},
+  {id:'dw-mv72wi6', mfr:'Digital Watchdog', model:'MV72 2MP Dome 6 mm', series:'MEGApix Ultra Low-Profile', part:'DWC-MV72Wi6TW', kind:'dome', res:[1945,1109], hfov:55, vfov:30, lens:'6 mm', ir:80, poeClass:2, watts:5.5, env:'outdoor', ip:'IP67', ik:'IK10', audio:false, analytics:'DW IVA', mount:{part:'DWC-V7WMW', desc:'Wall mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-MV72Wi4TW'},
   {id:'dw-mv75wi28', mfr:'Digital Watchdog', model:'MV75 5MP Dome', series:'MEGApix Ultra Low-Profile', part:'DWC-MV75Wi28TW', kind:'dome', res:[2592,1944], hfov:102.4, vfov:76, lens:'2.8 mm', ir:80, poeClass:3, watts:7.2, env:'outdoor', ip:'IP67', ik:'IK10', audio:false, analytics:'DW IVA', mount:{part:'DWC-V7WMW', desc:'Wall mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-MV75Wi4TW'},
   {id:'dw-mb48wiatw', mfr:'Digital Watchdog', model:'MB48 4K Bullet', series:'MEGApix', part:'DWC-MB48WiATW', kind:'bullet', res:[3840,2160], hfov:90.3, hfovMin:33.1, hfovMax:90.3, vfov:49, lens:'2.7–13.5 mm motorized', ir:140, poeClass:4, watts:16, env:'outdoor', ip:'IP67', ik:'IK10', audio:true, analytics:'DW IVA (intrusion, line crossing, counting, loitering…)', mount:{part:'DWC-BLJUNC-W', desc:'Junction box'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-MB48WiATW', note:'16 W max — needs a PoE+ (802.3at) port'},
   {id:'dw-pvf9di2', mfr:'Digital Watchdog', model:'PVF9 9MP Fisheye', series:'MEGApix', part:'DWC-PVF9Di2TW', kind:'fisheye', res:[3008,3000], hfov:360, vfov:185, lens:'2.1 mm fisheye', ir:80, poeClass:3, watts:10, env:'outdoor', ip:'IP66', ik:'IK09', audio:true, analytics:'Dewarp in DW Spectrum', mount:{part:'DWC-VFHMW', desc:'Hanging mount'}, license:'DW Spectrum IPVMS recording license', licenseFamily:'dwspectrum', verified:true, src:'https://www.digital-watchdog.com/productdetail/DWC-PVF9Di2TW'},
@@ -1036,7 +1059,7 @@ function estimatePrice(part) { if (!part) return null; if (EST_PRICE_BY_PART[par
 
 // Security Site Designer — created by Brad Hall. Copyright (c) 2026 Brad Hall. All rights reserved.
 const APP_CREATOR = {name:'Brad Hall', year:2026};
-const APP_VERSION = '3.8';
+const APP_VERSION = '3.9';
 // ===== UTILITIES =====
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -1215,7 +1238,7 @@ function redo() { const p = S.redo.pop(); if (!p) return toast('Nothing to redo'
 // ===== CHANGE PROPAGATION =====
 let changeHooks = [];
 function afterChange(ids, metaChanged) {
-  S.project.modified = Date.now();
+  S.project.modified = Date.now(); S.txn = (S.txn || 0) + 1;
   if (ids.some(id => { const o = S.project.objects[id]; return !o || o.t === 'wall' || o.t === 'door'; })) invalidateOcc();
   if (!floorById(S.floorId)) { S.floorId = floors()[0].id; S.sel.clear(); R.full = true; }
   markDirty(ids, metaChanged);
@@ -1262,7 +1285,7 @@ function setSave(st, msg) {
   S.saveState = st; const b = $('#saveStatus'); if (!b) return;
   const map = {saved:[S.readOnly ? 'View only' : 'Saved', S.readOnly ? 'ro' : 'ok'], saving:['Saving…','busy'], unsaved:['Unsaved changes','warn'], error:['Error saving — retry','err']};
   const [t, c] = map[st]; b.textContent = t; b.className = 'save ' + c; b.title = msg || (st === 'saved' ? 'All changes saved on this device ' + new Date().toLocaleTimeString() : '');
-  const sb = $('#sbSave'); if (sb) sb.textContent = t;
+  const sb = $('#sbSave'); if (sb) sb.textContent = st === 'saved' && !S.readOnly ? `${t} · ${new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}` : t;
 }
 let saveSeq = 0;
 const scheduleSave = debounce(saveNow, 700);
@@ -1664,7 +1687,7 @@ function runDesignCheck() {
   // standby batteries
   for (const ps of devs.filter(o => o.kind === 'psu')) { const L = psuLoad(ps); if (L.battMax && L.ah > L.battMax) add('warning', ps.id, `${ps.name}: ${L.hours} h standby needs ${L.ah.toFixed(1)} Ah — more than the enclosure holds (${L.battMax} Ah)`); }
   for (const u of devs.filter(o => o.kind === 'ups')) { const L = upsLoad(u); if (L.w > L.capW * 0.8) add('warning', u.id, `${u.name}: estimated load ${L.w.toFixed(0)} W is over 80% of its ${L.capW.toFixed(0)} W rating`); }
-  detectorSpacingIssues(add); ipIssues(add); fireIssues(add); wirelessIssues(add);
+  detectorSpacingIssues(add); ipIssues(add); fireIssues(add); wirelessIssues(add); coverageIssues(add);
   // open comments
   const open = list.filter(o => o.t === 'comment' && o.status !== 'resolved').length;
   if (open) { const c = list.find(o => o.t === 'comment' && o.status !== 'resolved'); add('suggestion', c.id, `${open} open review comment${open>1?'s':''}`); }
@@ -1676,8 +1699,8 @@ function runDesignCheck() {
 const updateRoomCoverage = debounce(() => {
   if (!S.project) return; const rooms = onFloor().filter(o => o.t === 'room');
   if (S.mode !== 'cameras' || rooms.length > 60) { if (S.roomCov) { S.roomCov = null; markDirty(rooms.map(r => r.id)); } return; }
-  const next = {}; for (const r of rooms) { const c = coverageAnalysis(r.floor, S.overlay.level, [r.id]); next[r.id] = {pct:c.pct, total:c.total}; }
-  const changed = rooms.filter(r => !S.roomCov || !S.roomCov[r.id] || Math.round(S.roomCov[r.id].pct*100) !== Math.round(next[r.id].pct*100)).map(r => r.id);
+  const next = {}; for (const r of rooms) { const c = roomCoverage(r); next[r.id] = {pct:c.pct, total:c.total, need:c.need, ok:c.ok, target:c.target, cams:c.camsInside}; }
+  const changed = rooms.filter(r => !S.roomCov || !S.roomCov[r.id] || Math.floor(S.roomCov[r.id].pct*100) !== Math.floor(next[r.id].pct*100) || S.roomCov[r.id].need !== next[r.id].need || S.roomCov[r.id].ok !== next[r.id].ok).map(r => r.id);
   S.roomCov = next; if (changed.length) markDirty(changed);
 }, 450);
 const scheduleValidate = debounce(() => { if (!S.project) return; try { S.issues = runDesignCheck(); } catch (e) { console.error('design check failed', e); S.issues = []; } updateStatusCounts(); if (S.mode === 'reports') renderReports(); updateRoomCoverage(); }, 350);
@@ -1846,7 +1869,7 @@ function drawRoom(o) {
   const t = sv('text', {y:-1, class:'roomlbl'}); t.textContent = o.name || 'Room'; lab.append(t);
   const t2 = sv('text', {y:11, class:'roomdim'}); t2.textContent = `${fmtArea(G.area(o.pts))} · ${fmtLen(bb.w)} × ${fmtLen(bb.h)}`; lab.append(t2);
   const pc = S.mode === 'cameras' && S.roomCov && S.roomCov[o.id];
-  if (pc != null && pc !== undefined && pc.total) { const v = Math.round(pc.pct * 100); const cls = v >= 90 ? 'good' : v >= 60 ? 'fair' : 'poor'; const pg = sv('g', {class:'covpill ' + cls, transform:'translate(0 25)'}); const label = v + '% covered'; const w = 14 + label.length * 5.3; pg.append(sv('rect', {x:-w/2, y:-9, width:w, height:15, rx:7.5})); const tt = sv('text', {y:2.5}); tt.textContent = label; pg.append(tt); lab.append(pg); }
+  if (pc != null && pc !== undefined && pc.total) { const v = Math.floor(pc.pct * 100); const cls = pc.need === 'privacy' ? (pc.ok ? 'opt' : 'poor') : pc.need === 'optional' ? 'opt' : pc.ok ? 'good' : v >= 60 ? 'fair' : 'poor'; const pg = sv('g', {class:'covpill ' + cls, transform:'translate(0 25)'}); const label = pc.need === 'privacy' ? (pc.ok ? 'privacy · no cameras' : '⚠ camera in privacy area') : pc.need === 'optional' ? v + '% · not required' : v + '% covered'; const w = 14 + label.length * 5.3; pg.append(sv('rect', {x:-w/2, y:-9, width:w, height:15, rx:7.5})); const tt = sv('text', {y:2.5}); tt.textContent = label; pg.append(tt); lab.append(pg); }
   g.append(lab);
   return g;
 }
@@ -2462,9 +2485,9 @@ function applyCalibration(a, b, realFt, scaleObjects) {
     touchMeta(); const fl = floorById(S.floorId);
     if (fl.bg) { fl.bg.ftPerPx *= k; fl.bg.x *= k; fl.bg.y *= k; }
     if (scaleObjects) for (const o of onFloor()) { touch(o.id); const sc = (q) => [q[0]*k, q[1]*k]; if (o.t === 'wall') { o.x1*=k; o.y1*=k; o.x2*=k; o.y2*=k; } else if (o.pts) o.pts = o.pts.map(sc); else { o.x *= k; o.y *= k; } if (o.w) o.w *= 1; }
-    fl.calibrated = true;
+    fl.calibrated = true; fl.calSrc = 'two-point';
   });
-  R.bgKey = null; redrawAll(); setTool('select'); zoomToFit(); toast(`Scale set: ${fmtLen(realFt)} between the two points`);
+  R.bgKey = null; redrawAll(); setTool('select'); zoomToFit(); const bad = scaleSanity(curFloor()); if (bad) toast(bad, 'warn', 8000); else toast(`Scale set: ${fmtLen(realFt)} between the two points${planWidthFt(curFloor()) ? ' · plan is ' + fmtLen(planWidthFt(curFloor())) + ' wide' : ''}`, '', 4500);
 }
 
 // ===== HOVER INFO (what is this?) =====
@@ -2717,14 +2740,15 @@ function reportError(friendly, err) { console.warn(friendly, err); toast(friendl
 window.addEventListener('error', (e) => { if (!e.error) return; console.error(e.error); if (/ResizeObserver/.test(String(e.message))) return; toast('Something went wrong in that last step. Your saved work is safe.', 'err', 5000); });
 window.addEventListener('unhandledrejection', (e) => { console.error(e.reason); });
 function dialog({title, body, footer, cls='', onClose}) {
-  const bd = el('div', {class:'backdrop', role:'presentation'}); const d = el('div', {class:'dlg ' + cls, role:'dialog', 'aria-modal':'true', 'aria-label':title});
-  const close = () => { bd.remove(); document.removeEventListener('keydown', onKey, true); onClose && onClose(); };
-  const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+  const bd = el('div', {class:'backdrop', role:'presentation'}); const d = el('div', {class:'dlg ' + cls, role:'dialog', 'aria-modal':'true', 'aria-label':title}); const back = document.activeElement;
+  const close = () => { if (!bd.isConnected) return; bd.remove(); document.removeEventListener('keydown', onKey, true); onClose && onClose(); try { if (back && back.isConnected && !document.querySelector('.backdrop')) back.focus({preventScroll:true}); } catch (e) {} };
+  const focusables = () => [...d.querySelectorAll('button:not([disabled]), [href], input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')].filter(n => n.offsetParent !== null || n === document.activeElement);
+  const onKey = (e) => { if (bd !== [...document.querySelectorAll('.backdrop')].pop()) return; if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'Tab') { const f = focusables(); if (!f.length) return; const first = f[0], last = f[f.length - 1]; if (e.shiftKey && (document.activeElement === first || !d.contains(document.activeElement))) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && (document.activeElement === last || !d.contains(document.activeElement))) { e.preventDefault(); first.focus(); } } };
   d.append(el('header', {}, [el('h2', {text:title}), el('button', {class:'ib', 'aria-label':'Close', html:icon('x'), onclick:close})]));
   const b = el('div', {class:'body'}); if (typeof body === 'string') b.innerHTML = body; else if (body) b.append(body); d.append(b);
   if (footer) { const f = el('footer'); footer.forEach(x => f.append(x)); d.append(f); }
   bd.append(d); bd.addEventListener('pointerdown', (e) => { if (e.target === bd) close(); }); document.addEventListener('keydown', onKey, true); document.body.append(bd);
-  setTimeout(() => { const f = d.querySelector('input:not([type=checkbox]):not([type=file]),select,textarea'); f && f.focus(); }, 30);
+  setTimeout(() => { const f = d.querySelector('input:not([type=checkbox]):not([type=file]),select,textarea') || d.querySelector('footer .btn.primary') || d.querySelector('button'); f && f.focus({preventScroll:true}); }, 30);
   return {close, el:d, body:b};
 }
 function confirmBox(msg, okLabel, fn) { const d = dialog({title:'Confirm', body: el('p', {text:msg, style:'margin:0'}), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', text:okLabel, onclick:() => { d.close(); fn(); }})]}); }
@@ -2754,13 +2778,13 @@ const MODES = [['site','Site'],['floor','Floor plan'],['cameras','Cameras'],['ac
 function buildChrome() {
   $('#top').innerHTML = '';
   $('#top').append(
-    el('button', {class:'brand', id:'brand', title:'All projects', onclick:openDashboard, html:`${LOGO}<span class="stack"><span class="pn" id="projName"></span><span class="pc" id="projCust"></span></span>`}),
+    el('button', {class:'brand', id:'brand', title:'All projects', 'aria-label':'All projects', onclick:openDashboard, html:`${LOGO}<span class="stack"><span class="pn" id="projName"></span><span class="pc" id="projCust"></span></span>`}),
     el('nav', {id:'modes', role:'tablist', 'aria-label':'Workspace'}, MODES.map(([k, l]) => el('button', {class:'mode', role:'tab', 'data-mode':k, 'aria-label':l, title:l, onclick:() => setMode(k), html:`<span class="ml">${l}</span><span class="ms">${({floor:'Plan', access:'Access', systems:'Intru/Fire', cabling:'Cable', network:'Network', reports:'Reports'})[k] || l}</span>`}))),
     el('div', {class:'tb-right'}, [
-      el('button', {class:'searchbtn', id:'searchBtn', onclick:() => openPalette(), html:`${icon('search','width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8"')}<span class="t">Search or run a command</span><kbd>Ctrl K</kbd>`}),
+      el('button', {class:'searchbtn', id:'searchBtn', 'aria-label':'Search or run a command (Ctrl+K)', onclick:() => openPalette(), html:`${icon('search','width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8"')}<span class="t">Search or run a command</span><kbd>Ctrl K</kbd>`}),
       el('button', {class:'save ok', id:'saveStatus', text:'Saved', onclick:() => { if (S.saveState === 'error') saveNow(); else saveNow(); }}),
       el('button', {class:'btn checkbtn', id:'checkBtn', title:'Run design check', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`${icon('check')}<span class="hide-s">Check</span><span class="cnt ok" id="checkCnt">0</span>`}),
-      el('button', {class:'btn primary', id:'exportBtn', onclick:() => openExport(), html:`${icon('export')}<span class="hide-s">Export</span>`}),
+      el('button', {class:'btn primary', id:'exportBtn', 'aria-label':'Export', onclick:() => openExport(), html:`${icon('export')}<span class="hide-s">Export</span>`}),
       el('button', {class:'ib tbbtn', id:'toolboxBtn', 'aria-label':'Toolbox', 'data-tip':'Toolbox', 'data-desc':'Lens calculator, QR labels, VMS list, UPS, conduit, IP plan…', html:'<span aria-hidden="true" style="font-size:17px;line-height:1">🧰</span>', onclick:() => openToolbox()}),
       el('button', {class:'ib', id:'helpBtn', 'aria-label':'Help', 'data-tip':'Help', 'data-desc':'Guided tour and keyboard shortcuts', html:icon('help'), onclick:(e) => { const r = e.currentTarget.getBoundingClientRect(); popMenu(r.right - 220, r.bottom + 4, [{label:'Take the 1-minute tour', fn:startTour}, {label:'Keyboard shortcuts', key:'?', fn:openShortcuts}, {label:'About Security Site Designer', fn:() => openAbout()}, {label:'Open the example project', fn:openExample}]); }}),
       el('button', {class:'ib', id:'themeBtn', title:'Toggle light/dark', 'aria-label':'Toggle theme', onclick:toggleTheme}),
@@ -3040,7 +3064,16 @@ let LEFT_TAB = 'library'; let LIB_Q = ''; let LIB_MFR = 'All';
 const LIB_CATS = {
   site: ['site','camera'], floor: ['building'], cameras: ['camera'], access: ['access'], cabling: [], network: ['network'], bom: [], reports: [],
 };
+const PRESS = {down:false, pending:false, t:0};
+document.addEventListener('pointerdown', (e) => { if (e.target && e.target.closest && e.target.closest('#left')) { PRESS.down = true; PRESS.t = Date.now(); } }, true);
+const pressDone = () => { if (!PRESS.down) return; PRESS.down = false; if (PRESS.pending) { PRESS.pending = false; setTimeout(() => renderLeft(), 0); } };
+document.addEventListener('pointerup', pressDone, true); document.addEventListener('pointercancel', pressDone, true); window.addEventListener('blur', pressDone);
+// soft refresh: wait until the user leaves the panel's inputs, so typing and Tab are never interrupted
+const inLeftField = () => { const ae = document.activeElement; return !!(ae && ae.closest && ae.closest('#left') && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)); };
+function softRenderLeft() { EASY.softPending = true; setTimeout(() => { if (inLeftField() || !EASY.softPending) return; EASY.softPending = false; renderLeft(); }, 0); } // after Tab, focus lands on the next box first
+document.addEventListener('focusout', (e) => { if (!EASY.softPending || !e.target.closest || !e.target.closest('#left')) return; setTimeout(() => { if (inLeftField()) return; if (EASY.softPending) { EASY.softPending = false; renderLeft(); } }, 0); }, true);
 function renderLeft() {
+  if (PRESS.down && Date.now() - PRESS.t < 4000) { PRESS.pending = true; return; }
   const L = $('#left'); if (!L || !S.project) return; L.innerHTML = '';
   if (isEasy() && !['bom','reports'].includes(S.mode)) return renderEasyLeft(L);
   const tabs = el('div', {class:'ptabs', role:'tablist'}, [['library', S.mode === 'cabling' ? 'Cables' : S.mode === 'floor' ? 'Draw' : S.mode === 'site' ? 'Site' : 'Library'], ['project','Project'], ['layers','Layers'], ['assist','Ask']].map(([k, l]) => el('button', {class:'ptab' + (LEFT_TAB === k ? ' on' : ''), role:'tab', text:l, onclick:() => { LEFT_TAB = k; renderLeft(); }})));
@@ -3393,8 +3426,8 @@ function roomProps(o) {
   const f = el('div'); const bb = G.bbox(o.pts);
   f.append(F('Name', bind(o, 'name', 'text', {label:'Rename room'})), F('Room type', bind(o, 'props.type', 'select', {options:[['','—'],['Office','Office'],['Lobby','Lobby'],['Corridor','Corridor'],['Telecom / IDF','Telecom / IDF'],['MDF','MDF'],['Storage','Storage'],['Warehouse','Warehouse'],['Classroom','Classroom'],['Retail floor','Retail floor'],['Exterior','Exterior']], label:'Room type'})));
   f.append(el('div', {class:'calc', style:'margin:6px 0'}, [el('span', {text:'Area'}), el('span', {class:'v', text:fmtArea(G.area(o.pts))}), el('span', {text:'Perimeter'}), el('span', {class:'v', text:fmtLen(G.perim(o.pts))}), el('span', {text:'Bounding size'}), el('span', {class:'v', text:`${fmtLen(bb.w)} × ${fmtLen(bb.h)}`})]));
-  const cov = coverageAnalysis(o.floor, S.overlay.level, [o.id]); const cams = onFloor(o.floor).filter(c => isCam(c) && G.inPoly([c.x,c.y], o.pts)).length;
-  f.append(grp('Camera coverage', [el('p', {class:'note', style:'margin:0 0 6px', html:`<b>${Math.round(cov.pct*100)}%</b> of this room is covered at <b>${S.overlay.level}</b> level by cameras on this floor (${cams} inside the room).`}), el('div', {class:'qa'}, [el('button', {class:'btn sm primary', text:'Suggest cameras', onclick:() => runSuggest(o.id)}), el('button', {class:'btn sm', text:S.overlay.gaps ? 'Hide gaps' : 'Show gaps', onclick:() => { S.overlay.gaps = !S.overlay.gaps; requestDraw(); renderRight(); }})])]));
+  const cvx = roomCoverage(o); const cov = {pct:cvx.pct}; const cams = onFloor(o.floor).filter(c => isCam(c) && G.inPoly([c.x,c.y], o.pts)).length;
+  f.append(grp('Camera coverage', [roomCoverageFields(o), el('p', {class:'note', style:'margin:0 0 6px', html:`<b>${Math.floor(cov.pct*100)}%</b> of this room is covered at <b>${cvx.level}</b> level by cameras on this floor (${cams} inside the room).`}), el('div', {class:'qa'}, [el('button', {class:'btn sm primary', text:'Suggest cameras', onclick:() => runSuggest(o.id)}), el('button', {class:'btn sm', text:S.overlay.gaps ? 'Hide gaps' : 'Show gaps', onclick:() => { S.overlay.gaps = !S.overlay.gaps; requestDraw(); renderRight(); }})])]));
   f.append(grp('Notes', [F('', bind(o, 'props.notes', 'textarea', {label:'Notes'}))]));
   return f;
 }
@@ -3558,11 +3591,11 @@ function answerQuestion(q) {
   const inScope = (o) => !fl || o.floor === fl;
   const nameMatch = all.find(o => o.name && s.includes(String(o.name).toLowerCase()));
   if (/blind|gap|uncovered|coverage/.test(s)) {
-    const rooms = all.filter(o => o.t === 'room' && inScope(o)); const res = rooms.map(r => ({r, c:coverageAnalysis(r.floor, S.overlay.level, [r.id])})).filter(x => x.c.total);
+    const rooms = all.filter(o => o.t === 'room' && inScope(o)); const res = rooms.map(r => ({r, c:roomCoverage(r)})).filter(x => x.c.total && x.c.need === 'required');
     const blocked = all.filter(o => isCam(o) && inScope(o)).map(c => ({c, v:visPoly(c).ratio})).filter(x => x.v < 0.6);
-    const low = res.filter(x => x.c.pct < 0.8).sort((a,b) => a.c.pct - b.c.pct);
+    const low = res.filter(x => !x.c.ok).sort((a,b) => a.c.pct - b.c.pct);
     if (!rooms.length) return {html:'There are no rooms drawn, so blind spots can\'t be measured. Draw rooms (R) and ask again.'};
-    return {html:`${low.length ? `<b>${low.length}</b> room${low.length>1?'s are':' is'} under 80% covered at ${S.overlay.level}: ` + low.map(x => `${esc(x.r.name)} (${Math.round(x.c.pct*100)}%)`).join(', ') + '.' : `All ${res.length} rooms are at least 80% covered at ${S.overlay.level}.`}${blocked.length ? ` <b>${blocked.length}</b> camera${blocked.length>1?'s have':' has'} views mostly blocked by walls.` : ''} Turn on “Show coverage gaps” in Cameras to see them.`, ids:low.map(x => x.r.id).concat(blocked.map(x => x.c.id))};
+    return {html:`${low.length ? `<b>${low.length}</b> required room${low.length>1?'s are':' is'} under the ${coverTarget()}% target: ` + low.map(x => `${esc(x.r.name)} (${Math.floor(x.c.pct*100)}% at ${x.c.level})`).join(', ') + '.' : `All ${res.length} required rooms meet the ${coverTarget()}% target.`}${blocked.length ? ` <b>${blocked.length}</b> camera${blocked.length>1?'s have':' has'} views mostly blocked by walls.` : ''} Turn on “Show coverage gaps” in Cameras to see them.`, ids:low.map(x => x.r.id).concat(blocked.map(x => x.c.id))};
   }
   if (/(exceed|over|longer|too long).*(cat|distance|100|328)|distance.*(exceed|over)/.test(s)) {
     const bad = all.filter(o => o.t === 'cable' && inScope(o) && cableCalc(o).ct.ethernet && cableCalc(o).channel > 328);
@@ -3643,7 +3676,7 @@ async function projectFileData(p = S.project) {
   if (p.logo) assets[p.logo] = await getAsset(p.logo);
   return JSON.stringify({format:'securitysite', formatVersion:1, exported:new Date().toISOString(), app:'Security Site Designer', project:p, assets});
 }
-async function exportProjectFile(p) { saveFile(safeName((p||S.project).name) + '.securitysite.json', await projectFileData(p)); }
+async function exportProjectFile(p) { const cur = !p || (S.project && p.id === S.project.id); if (cur && S.project) { S.project.lastBackup = Date.now(); } await saveFile(safeName((p||S.project).name) + '.securitysite.json', await projectFileData(p)); if (cur && S.project) { try { await DB.put('projects', S.project.id, S.project); } catch (e) {} } }
 async function importProjectFile(text) {
   let data; try { data = JSON.parse(text); } catch (e) { throw Object.assign(new Error('bad json'), {userMessage:'This file is not a valid project file.'}); }
   if (!data || data.format !== 'securitysite' || !data.project || !data.project.objects) throw Object.assign(new Error('bad format'), {userMessage:'This JSON file is not a Security Site Designer project.'});
@@ -3654,7 +3687,24 @@ async function importProjectFile(text) {
 }
 
 // ===== IMPORT PLANS =====
-function pickPlanFile(replace) { const i = el('input', {type:'file', accept:'.pdf,.png,.jpg,.jpeg,.svg,.webp,.dxf,.dwg,.json,application/pdf,image/*'}); i.addEventListener('change', () => { if (i.files.length) importFiles(i.files, {replace}); }); i.click(); }
+// File pickers use real <input type=file> elements kept in the page (some browsers ignore detached inputs).
+// If no file window appears (no blur, change or cancel within 2.5 s) the user is told how else to add the file.
+const PLAN_ACCEPT = '.pdf,.png,.jpg,.jpeg,.webp,.svg,.dxf,.dwg,.json,application/pdf,image/*';
+function fileInput(id, attrs={}) {
+  let i = document.getElementById(id); if (!i) { i = el('input', {type:'file', id, class:'vh-file', tabindex:'-1', 'aria-hidden':'true'}); document.body.append(i); }
+  for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) i.removeAttribute(k); else i.setAttribute(k, v === true ? '' : v); } return i;
+}
+function watchPicker(i, hint) {
+  let seen = false; const mark = () => { seen = true; }; const t0 = Date.now(); window.addEventListener('blur', mark, {once:true}); document.addEventListener('visibilitychange', mark, {once:true}); i.addEventListener('cancel', mark, {once:true}); i.addEventListener('change', mark, {once:true});
+  setTimeout(() => { window.removeEventListener('blur', mark); if (!seen && document.hasFocus()) toast(hint || 'If no file window opened, drag the file onto the plan instead — or try the button again.', 'warn', 7000); }, 2500); return t0;
+}
+function pickFiles(id, attrs, onFiles, hint) {
+  const i = fileInput(id, attrs); i.value = ''; i.onchange = () => { const f = [...(i.files || [])]; i.value = ''; if (f.length) onFiles(f); };
+  watchPicker(i, hint); try { i.click(); } catch (e) { reportError('Your browser blocked the file window', e); } return i;
+}
+function planInput() { const i = fileInput('planFileIn', {accept:PLAN_ACCEPT, multiple:null, capture:null}); if (!i.dataset.wired) { i.dataset.wired = '1'; i.addEventListener('change', () => { const f = [...(i.files || [])]; const replace = PLAN_PICK.replace; PLAN_PICK.replace = false; i.value = ''; if (f.length) importFiles(f, {replace}); }); } return i; }
+const PLAN_PICK = {replace:false};
+function pickPlanFile(replace) { const i = planInput(); PLAN_PICK.replace = !!replace; i.value = ''; watchPicker(i); i.click(); return i; }
 async function importFiles(files, opt={}) {
   const f = files[0]; const name = (f.name || '').toLowerCase();
   try {
@@ -3715,7 +3765,7 @@ function openMapDialog() {
   const loc = S.project.location || {}; const q = el('input', {class:'field', value:loc.query || S.project.address || '', placeholder:'Address, business name, or 32.7555, -97.3308', 'aria-label':'Location'});
   const link = (base) => { const v = q.value.trim(); const m = v.match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/); return m ? `https://www.google.com/maps/@?api=1&map_action=map&center=${m[1]},${m[2]}&zoom=19&basemap=satellite` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v)}`; };
   const a1 = el('a', {class:'btn', target:'_blank', rel:'noopener', href:link(), text:'Open satellite view ↗'}); q.addEventListener('input', () => { a1.href = link(); });
-  const drop = el('div', {class:'drop', html:'Drop an aerial screenshot here, or <b>choose a file</b>'}); drop.addEventListener('click', () => { const i = el('input', {type:'file', accept:'image/*'}); i.addEventListener('change', () => i.files[0] && useImg(i.files[0])); i.click(); });
+  const drop = el('div', {class:'drop', html:'Drop an aerial screenshot here, or <b>choose a file</b>'}); drop.addEventListener('click', () => pickFiles('mapImgIn', {accept:'image/*', multiple:null}, (f) => useImg(f[0])));
   drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); }); drop.addEventListener('dragleave', () => drop.classList.remove('over')); drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); e.dataTransfer.files[0] && useImg(e.dataTransfer.files[0]); });
   const useImg = async (f) => { save(); d.close(); const site = S.project.buildings.find(b => b.kind === 'site'); const fid = site ? site.floors[0].id : S.floorId; const url = await readDataURL(f); const s = await imageSize(url); await setFloorPlan(fid, url, s.w, s.h, 400 / s.w, f.name); setMode('site'); };
   const save = () => { const v = q.value.trim(); const m = v.match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/); tx('Set location', () => { touchMeta(); S.project.location = {query:v, lat: m ? m[1] : '', lng: m ? m[2] : ''}; }); renderLeft(); };
@@ -3858,7 +3908,7 @@ async function preparePages(o) {
 }
 function openExport() {
   const fl = floors(); const sel = new Set([S.floorId]);
-  const o = {paper:'tabloid', orient:'landscape', scale:'fit', margin:0.4, legend:true, titleBlock:true, comments:false, riser:false, dpi:150, floors:[S.floorId]};
+  const o = {paper:'tabloid', orient:'landscape', scale:'fit', margin:0.4, legend:true, titleBlock:true, comments:false, riser:false, assumptions:true, dpi:150, floors:[S.floorId]};
   const prev = el('canvas'); const prevBox = el('div', {class:'prev'}, [prev]); const info = el('p', {class:'note'});
   const s = (label, key, opts) => { const x = el('select', {'aria-label':label}, opts.map(([v, l]) => el('option', {value:v, text:l, selected:String(o[key]) === String(v)}))); x.addEventListener('change', () => { o[key] = /^(margin|dpi)$/.test(key) ? +x.value : x.value; refresh(); }); return [el('label', {text:label}), x]; };
   const c = (label, key) => { const x = el('input', {type:'checkbox', checked:o[key]}); x.addEventListener('change', () => { o[key] = x.checked; refresh(); }); return el('label', {style:'display:flex;gap:6px;align-items:center;font-size:13px'}, [x, label]); };
@@ -3869,7 +3919,7 @@ function openExport() {
     el('div', {class:'lbl3', text:'Quick exports'}), el('div', {class:'fmtbtns'}, [fmt('PNG', () => exportImage('png')), fmt('JPG', () => exportImage('jpg')), fmt('SVG', () => exportImage('svg')), ...(bomOn() ? [fmt('BOM CSV', exportBOMcsv), fmt('BOM Excel', exportXLSX)] : [fmt('Schedules (Excel)', exportXLSX)]), fmt('Project file', () => exportProjectFile()), fmt('Cables CSV', () => exportScheduleCSV('cables')), fmt('Devices CSV', () => exportScheduleCSV('devices')), fmt('Doors CSV', () => exportScheduleCSV('doors')), fmt('Google Earth (KML)', exportKML), fmt('CAD (DXF)', exportDXF), fmt('Spec sheets PDF', exportSpecSheets), ...(bomOn() ? [fmt('Estimate CSV (QuickBooks / Jobber)', exportEstimateCSV)] : [])]),
     el('div', {class:'lbl3', text:'PDF drawing set'}),
     el('div', {class:'form', style:'grid-template-columns:90px 1fr'}, [...s('Paper', 'paper', Object.entries(PAPER).map(([k, v]) => [k, v[2] + ` (${v[0]}×${v[1]} in)`])), ...s('Orientation', 'orient', [['landscape','Landscape'],['portrait','Portrait']]), ...s('Scale', 'scale', [['fit','Fit to page'],['8','1" = 8\' (1/8")'],['16','1" = 16\' (1/16")'],['20','1" = 20\''],['30','1" = 30\''],['40','1" = 40\''],['50','1" = 50\''],['100','1" = 100\'']]), ...s('Margins', 'margin', [[0.25,'0.25 in'],[0.4,'0.4 in'],[0.5,'0.5 in'],[1,'1 in']]), ...s('Quality', 'dpi', [[100,'Draft (100 dpi)'],[150,'Standard (150 dpi)'],[220,'High (220 dpi)']])]),
-    el('div', {style:'display:flex;flex-direction:column;gap:4px;margin:10px 0'}, [c('Title block', 'titleBlock'), c('Legend (only symbols used)', 'legend'), c('Include review comments', 'comments'), c('Add riser diagram sheet', 'riser')]),
+    el('div', {style:'display:flex;flex-direction:column;gap:4px;margin:10px 0'}, [c('Title block', 'titleBlock'), c('Legend (only symbols used)', 'legend'), c('Include review comments', 'comments'), c('Add riser diagram sheet', 'riser'), c('Assumptions & verification sheet', 'assumptions')]),
     el('div', {class:'lbl3', text:'Floors (one sheet each)'}), floorBoxes, el('div', {class:'lbl3', text:'Layers to print'}), layerBoxes,
     el('p', {class:'note', html:`Title block uses company, designer, revision and drawing number from <b>Settings</b>. ${S.project.logo ? 'Company logo included.' : 'Add a company logo in Settings.'}`}),
   ]);
@@ -3892,6 +3942,7 @@ function openExport() {
 async function exportPDF(o) {
   try { await needLib('jspdf'); } catch (e) { return reportError('PDF export is unavailable', e); }
   if (!o.floors.length) return toast('Choose at least one floor');
+  if (!(await preflight('drawings'))) return;
   const t = toast(`Building ${o.floors.length}-sheet PDF…`, '', 60000);
   try {
     const pages = await preparePages(o); const [pw, ph] = PAPER[o.paper]; const W = o.orient === 'landscape' ? Math.max(pw, ph) : Math.min(pw, ph), H = o.orient === 'landscape' ? Math.min(pw, ph) : Math.max(pw, ph);
@@ -3900,6 +3951,7 @@ async function exportPDF(o) {
     for (let i = 0; i < pages.length; i++) { if (i) doc.addPage([W, H], o.orient); await composePage(pdfAdapter(doc), W, H, pages[i], o); }
     if (o.riser) { const svgEl = riserSVG(); const str = new XMLSerializer().serializeToString(svgEl); const url = URL.createObjectURL(new Blob([str], {type:'image/svg+xml'})); const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; }); const cv = el('canvas'); const k = 2; cv.width = img.width * k; cv.height = img.height * k; const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
       doc.addPage([W, H], o.orient); const m = o.margin; doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Network & access riser — ' + S.project.name, m, m + 0.3); const aw = W - 2*m, ah = H - 2*m - 0.6; const sc = Math.min(aw / cv.width, ah / cv.height); doc.addImage(cv, 'PNG', m, m + 0.5, cv.width * sc, cv.height * sc); }
+    if (o.assumptions !== false) { doc.addPage([W, H], o.orient); const m = o.margin + 0.2; doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor('#1a1f25'); doc.text('Assumptions & verification — ' + S.project.name, m, m + 0.35); doc.setFont('helvetica', 'normal'); doc.setFontSize(11); let y = m + 0.85; for (const line of assumptionsLines()) { for (const ln of doc.splitTextToSize('•  ' + line, W - 2 * m)) { doc.text(ln, m, y); y += 0.22; } y += 0.08; } doc.setFontSize(8.5); doc.setTextColor('#5d6670'); doc.text(`Prepared with Security Site Designer · created by ${APP_CREATOR.name} · ${new Date().toLocaleDateString()}`, m, H - m); }
     const blob = doc.output('blob'); t.remove(); await saveFile(`${safeName(S.project.name)}-drawings-rev${S.project.revision || 'A'}.pdf`, blob);
   } catch (e) { t.remove(); reportError('PDF export failed', e); }
 }
@@ -3924,7 +3976,7 @@ function paletteCommands() {
     ['Open layers', '', () => { LEFT_TAB = 'layers'; renderLeft(); }], ['Show hidden objects', '', showAllHidden], ['Select all', 'Ctrl+A', selectAll], ['Zoom to fit', 'F', () => zoomToFit()],
     ['Undo', 'Ctrl+Z', undo], ['Redo', 'Ctrl+Y', redo], ['Save version', 'Ctrl+S', () => saveVersion('Manual save')], ['Version history', '', () => { REPORT_TAB = 'versions'; setMode('reports'); }],
     ['Toggle dark mode', '', toggleTheme], ['Toggle grid', '', () => toggleSetting('gridShow')], ['Toggle snap', '', () => toggleSetting('snap')], ['Settings', '', openSettings], ['Keyboard shortcuts', '?', openShortcuts], ['All projects', '', openDashboard], ['New project', '', () => openWizard()],
-    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Fix everything (cover weak rooms + wire)', '', () => fixEverything()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
+    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Project health (preflight)', '', () => openHealth()], ['Room coverage — every room and its %', '', () => openCoverageDetails()], ['Download a backup of this project', '', () => downloadBackup()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Fix everything (cover weak rooms + wire)', '', () => fixEverything()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
     ['Ask the design assistant', '', () => { LEFT_TAB = 'assist'; renderLeft(); }], ['3D view', '', () => open3D((selObjs().find(isCam) || {}).id)], ['IP address plan', '', openIPDialog], ['Camera advisor: click a spot for camera advice', 'G', () => setTool('advisor')], ['Conduit fill calculator', '', () => openConduitDialog()], ['About Security Site Designer', '', openAbout], ['Cable labels', '', openLabelsDialog], ['Field mode: install & test tracking', '', () => setMode('field')], ['As-built / commissioning report (PDF)', '', exportAsBuiltPDF], ['Install sheet (Excel)', '', exportInstallXLSX], ...(TEAM.on ? [['Share with customer', '', openShareDialog], ['Company & team settings', '', () => openCompanyDialog(isAdmin() ? 'company' : 'team')]] : []), ['Bandwidth & storage report', '', () => { REPORT_TAB = 'bandwidth'; setMode('reports'); }], ['Riser diagram', '', () => { REPORT_TAB = 'riser'; setMode('reports'); }], ['Quote & labor', '', () => { S.bomTab = 'quote'; setMode('bom'); }], ['Export proposal PDF', '', () => exportProposal()], ['Import CAD drawing (DXF)', '', () => pickPlanFile()],
   ].map(([label, key, fn]) => ({kind:'Command', label, key, fn}));
   for (const as of loadAssemblies()) cmds.push({kind:'Assembly', label:`Place assembly: ${as.name}`, fn:() => useAssembly(as.id)});
@@ -3934,24 +3986,24 @@ function paletteCommands() {
   return cmds;
 }
 function openPalette(initial='') {
-  const input = el('input', {placeholder:'Search devices, part numbers, rooms, cables, notes — or type a command', value:initial, 'aria-label':'Command palette'}); const res = el('div', {class:'res', role:'listbox'});
-  const bd = el('div', {class:'backdrop'}); const box = el('div', {class:'dlg', id:'palette', role:'dialog', 'aria-label':'Command palette'}, [input, res]); bd.append(box); document.body.append(bd);
-  const close = () => bd.remove(); bd.addEventListener('pointerdown', (e) => { if (e.target === bd) close(); });
+  const input = el('input', {placeholder:'Search devices, part numbers, rooms, cables, notes — or type a command', value:initial, 'aria-label':'Search or run a command', role:'combobox', 'aria-expanded':'true', 'aria-controls':'palList', 'aria-autocomplete':'list'}); const res = el('div', {class:'res', role:'listbox', id:'palList', 'aria-label':'Results'});
+  const bd = el('div', {class:'backdrop'}); const box = el('div', {class:'dlg', id:'palette', role:'dialog', 'aria-modal':'true', 'aria-label':'Command palette'}, [input, res]); bd.append(box); document.body.append(bd); const back = document.activeElement;
+  const close = () => { bd.remove(); try { back && back.isConnected && back.focus(); } catch (e) {} }; bd.addEventListener('pointerdown', (e) => { if (e.target === bd) close(); });
   let items = [], hl = 0; const cmds = paletteCommands();
   const render = () => {
     const q = input.value.trim().toLowerCase(); res.innerHTML = ''; items = [];
     const score = (text) => { if (!q) return 1; const t = text.toLowerCase(); if (t.startsWith(q)) return 3; if (t.includes(q)) return 2; const words = q.split(/\s+/); return words.every(w => t.includes(w)) ? 1 : 0; };
     const objsHits = q ? Object.values(objs()).map(o => { const p = prod(o.product) || {}; const text = [o.name, o.t === 'room' ? 'room' : '', o.label, o.text, p.part, p.model, p.mfr, (o.props||{}).notes, (o.props||{}).ip, o.t === 'dev' ? kindOf(o).label : o.t].filter(Boolean).join(' '); return {o, s:score(text)}; }).filter(x => x.s).sort((a,b) => b.s - a.s).slice(0, 12) : [];
     const cmdHits = cmds.map(c => ({c, s:score(c.label)})).filter(x => x.s).sort((a,b) => b.s - a.s).slice(0, q ? 10 : 14);
-    if (objsHits.length) { res.append(el('div', {class:'grp', text:'In this project'})); for (const {o} of objsHits) items.push({label:(o.name || o.text || o.t) + '', kind: o.t === 'dev' ? kindOf(o).label.split(' ')[0] : o.t, sub: floorLabel(o.floor) + ((prod(o.product)||{}).part ? ' · ' + prod(o.product).part : ''), fn:() => { const cat = o.t === 'dev' ? kindOf(o).cat : null; if (cat === 'camera') setMode('cameras'); else if (cat === 'access' || o.t === 'door') setMode('access'); else if (o.t === 'cable') setMode('cabling'); else if (cat === 'network') setMode('network'); else if ((buildingOfFloor(o.floor)||{}).kind === 'site') setMode('site'); else if (S.mode === 'bom' || S.mode === 'reports') setMode('floor'); focusObj(o.id); }}); }
+    if (objsHits.length) { res.append(el('div', {class:'grp', role:'presentation', text:'In this project'})); for (const {o} of objsHits) items.push({label:(o.name || o.text || o.t) + '', kind: o.t === 'dev' ? kindOf(o).label.split(' ')[0] : o.t, sub: floorLabel(o.floor) + ((prod(o.product)||{}).part ? ' · ' + prod(o.product).part : ''), fn:() => { const cat = o.t === 'dev' ? kindOf(o).cat : null; if (cat === 'camera') setMode('cameras'); else if (cat === 'access' || o.t === 'door') setMode('access'); else if (o.t === 'cable') setMode('cabling'); else if (cat === 'network') setMode('network'); else if ((buildingOfFloor(o.floor)||{}).kind === 'site') setMode('site'); else if (S.mode === 'bom' || S.mode === 'reports') setMode('floor'); focusObj(o.id); }}); }
     const start = items.length; objsHits.length && null;
     for (let i = 0; i < start; i++) addRow(items[i], i);
-    if (cmdHits.length) { res.append(el('div', {class:'grp', text:'Commands'})); for (const {c} of cmdHits) { items.push(c); addRow(c, items.length - 1); } }
+    if (cmdHits.length) { res.append(el('div', {class:'grp', role:'presentation', text:'Commands'})); for (const {c} of cmdHits) { items.push(c); addRow(c, items.length - 1); } }
     if (!items.length) res.append(el('div', {class:'note', style:'padding:12px', text:'No matches.'}));
     hl = Math.min(hl, items.length - 1); mark();
   };
-  const addRow = (it, i) => { const b = el('button', {role:'option', html:`<span class="kind">${esc(it.kind)}</span><span>${esc(it.label)}${it.sub ? ` <span class="note">${esc(it.sub)}</span>` : ''}</span>${it.key ? `<span class="k">${esc(it.key)}</span>` : ''}`, onclick:() => run(i)}); b.addEventListener('mousemove', () => { hl = i; mark(); }); res.append(b); it.btn = b; };
-  const mark = () => items.forEach((it, i) => { it.btn && it.btn.classList.toggle('hl', i === hl); if (i === hl && it.btn) it.btn.scrollIntoView({block:'nearest'}); });
+  const addRow = (it, i) => { const b = el('div', {role:'option', id:'palOpt' + i, tabindex:'-1', 'aria-selected':'false', 'aria-label':it.label + (it.sub ? ' — ' + it.sub : '') + (it.kind ? ' (' + it.kind + ')' : ''), html:`<span class="kind" aria-hidden="true">${esc(it.kind)}</span><span>${esc(it.label)}${it.sub ? ` <span class="note">${esc(it.sub)}</span>` : ''}</span>${it.key ? `<span class="k">${esc(it.key)}</span>` : ''}`, onclick:() => run(i)}); b.addEventListener('mousemove', () => { hl = i; mark(); }); res.append(b); it.btn = b; };
+  const mark = () => { items.forEach((it, i) => { if (!it.btn) return; it.btn.classList.toggle('hl', i === hl); it.btn.setAttribute('aria-selected', String(i === hl)); if (i === hl) it.btn.scrollIntoView({block:'nearest'}); }); const cur = items[hl] && items[hl].btn; if (cur) input.setAttribute('aria-activedescendant', cur.id); else input.removeAttribute('aria-activedescendant'); };
   const run = (i) => { const it = items[i]; if (!it) return; close(); try { it.fn(); } catch (e) { reportError('That command failed', e); } };
   input.addEventListener('input', () => { hl = 0; render(); });
   input.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown') { e.preventDefault(); hl = Math.min(items.length - 1, hl + 1); mark(); } else if (e.key === 'ArrowUp') { e.preventDefault(); hl = Math.max(0, hl - 1); mark(); } else if (e.key === 'Enter') { e.preventDefault(); run(hl); } else if (e.key === 'Escape') { e.preventDefault(); close(); } });
@@ -3964,7 +4016,7 @@ function openSettings() {
   const inp = (obj, key, attrs={}) => { const i = el('input', {value: obj[key] ?? '', ...attrs}); i.addEventListener('input', () => obj[key] = attrs.type === 'number' ? +i.value : i.value); return i; };
   const sel = (obj, key, opts) => { const s = el('select', {}, opts.map(([v, l]) => el('option', {value:v, text:l, selected: String(obj[key]) === String(v)}))); s.addEventListener('change', () => obj[key] = /^(true|false)$/.test(s.value) ? s.value === 'true' : isNaN(+s.value) || s.value === '' ? s.value : +s.value); return s; };
   const logoBox = el('div', {style:'display:flex;gap:8px;align-items:center'}); let logoKey = p.logo;
-  const drawLogo = async () => { logoBox.innerHTML = ''; const u = logoKey && await getAsset(logoKey); if (u) logoBox.append(el('img', {src:u, alt:'Company logo', style:'height:32px;max-width:120px;object-fit:contain;border:1px solid var(--line);background:#fff'})); logoBox.append(el('button', {class:'btn sm', type:'button', text: u ? 'Replace logo' : 'Upload logo', onclick:() => { const i = el('input', {type:'file', accept:'image/png,image/jpeg,image/svg+xml'}); i.addEventListener('change', async () => { if (!i.files[0]) return; const url = await readDataURL(i.files[0]); logoKey = await putAsset(url); drawLogo(); }); i.click(); }})); if (u) logoBox.append(el('button', {class:'btn sm ghost', type:'button', text:'Remove', onclick:() => { logoKey = null; drawLogo(); }})); };
+  const drawLogo = async () => { logoBox.innerHTML = ''; const u = logoKey && await getAsset(logoKey); if (u) logoBox.append(el('img', {src:u, alt:'Company logo', style:'height:32px;max-width:120px;object-fit:contain;border:1px solid var(--line);background:#fff'})); logoBox.append(el('button', {class:'btn sm', type:'button', text: u ? 'Replace logo' : 'Upload logo', onclick:() => pickFiles('logoIn', {accept:'image/png,image/jpeg,image/svg+xml', multiple:null}, async (f) => { const url = await readDataURL(f[0]); logoKey = await putAsset(url); drawLogo(); })})); if (u) logoBox.append(el('button', {class:'btn sm ghost', type:'button', text:'Remove', onclick:() => { logoKey = null; drawLogo(); }})); };
   drawLogo();
   const ds = draft.settings; const nm = ds.naming;
   const sec = (t) => el('div', {class:'lbl3 full', text:t, style:'grid-column:1/-1;margin-top:14px'});
@@ -4113,7 +4165,7 @@ async function openProject(id, opts={}) {
   S.floorId = (withObjs || nonSite[0] || floors()[0]).id;
   $('#dash').hidden = true; applyCanvasTheme(); updateTitle(); updateFloorTabs(); updateToggles();
   let mode = 'floor'; try { mode = localStorage.getItem('ssd-mode') || 'floor'; } catch (e) {} if (mode === 'site') mode = 'floor';
-  setTool('select'); setMode(mode); R.bgKey = null; redrawAll(); requestAnimationFrame(() => { zoomToFit(); });
+  setTool('select'); setMode(mode); R.bgKey = null; redrawAll(); requestAnimationFrame(() => { zoomToFit(); }); setTimeout(() => { try { maybeRemindBackup(); } catch (e) {} }, 5000);
   S.issues = runDesignCheck(); updateStatusCounts(); setSave('saved');
   await DB.put('meta', 'lastProject', id);
   try { const st = +localStorage.getItem('ssd-step-' + id); EASY.step = st >= 1 && st <= 3 ? st : guessStep(); } catch (e) { EASY.step = guessStep(); } EASY.scoreCache = null; applyUI();
@@ -4184,7 +4236,7 @@ async function boot() {
   exposeTestHooks();
 }
 function exposeTestHooks() {
-  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
+  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
   if (typeof TEAM !== 'undefined') { window.SSD.TEAM = TEAM; window.SSD.mergeProjects = mergeProjects; }
 }
 
@@ -4291,7 +4343,7 @@ async function captureMap() {
     const url = c.toDataURL('image/jpeg', 0.9); t.remove();
     const a = mercToWorld(ms, [tx0 * tm - MERC/2, MERC/2 - ty0 * tm]); const ftPerPx = (tm * ftPerMercM) / 256;
     const key = await putAsset(url);
-    tx('Capture map', () => { touchMeta(); const fl = floorById(S.floorId); fl.bg = {asset:key, w:c.width, h:c.height, ftPerPx, x:a[0], y:a[1], rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}, source:'Map capture ' + new Date().toLocaleDateString()}; fl.calibrated = true; S.project.location.mapShow = false; });
+    tx('Capture map', () => { touchMeta(); const fl = floorById(S.floorId); fl.bg = {asset:key, w:c.width, h:c.height, ftPerPx, x:a[0], y:a[1], rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}, source:'Map capture ' + new Date().toLocaleDateString()}; fl.calibrated = true; fl.calSrc = 'map'; S.project.location.mapShow = false; });
     R.bgKey = null; requestDraw(); renderLeft(); toast('Map captured as a to-scale site plan. It works offline and prints in exports.');
   } catch (e) { t.remove(); reportError('Could not capture the map', Object.assign(e, {userMessage: window.claude && window.claude.use ? 'Map tiles are blocked inside the Claude preview — capture works in the deployed app.' : 'This map source does not allow capturing. Try Satellite or Road.'})); }
 }
@@ -4715,6 +4767,7 @@ function renderQuoteView(wrap) {
 }
 async function exportProposal() {
   if (!bomOn() && !quoteOptions().some(o => o.Q.priced)) { toast('Type your price for at least one option in step 3 first.', 'warn', 5000); return; }
+  if (!(await preflight('proposal'))) return;
   try { await needLib('jspdf'); } catch (e) { return reportError('PDF export is unavailable', e); }
   const Q = buildQuote(); const p = S.project; const t = toast('Building proposal…', '', 60000);
   try {
@@ -4746,13 +4799,14 @@ async function exportProposal() {
     if (!OWN && Q.estimated) { txt(`Some prices are typical estimates and will be confirmed before ordering.`, m + 0.1, y, 8, false, '#8b939c'); y += 0.3; }
     if (!OWN) { if (y > H - 1.6) { doc.addPage(); y = m + 0.2; } txt('Equipment list', m, y, 12, true, BC); y += 0.28; const bom = (opts.find(o => o.key === chosen) || opts[0] || {Q}).Q.bom.filter(r => r.qty > 0);
     doc.setFontSize(8.5); for (const r of bom) { if (y > H - m) { doc.addPage(); y = m + 0.2; } txt(String(r.qty), m + 0.1, y, 8.5); txt(`${r.mfr === '—' ? '' : r.mfr + ' '}${r.part}`.slice(0, 34), m + 0.5, y, 8.5); txt(String(r.desc).slice(0, 60), m + 2.9, y, 8.5, false, '#5d6670'); y += 0.19; } }
+    { y += 0.3; if (y > H - 1.6) { doc.addPage(); y = m + 0.2; } txt('Design notes & assumptions', m, y, 12, true, BC); y += 0.26; doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor('#3b434c'); for (const line of assumptionsLines()) { for (const ln of doc.splitTextToSize('•  ' + line, W - 2 * m - 0.1)) { if (y > H - 0.8) { doc.addPage(); y = m + 0.2; } doc.text(ln, m + 0.1, y); y += 0.16; } } }
     const co = (typeof TEAM !== 'undefined' && TEAM.org) ? TEAM.org.settings || {} : {}; const terms = String(co.terms || '').trim();
     if (terms) { y += 0.3; if (y > H - 1.6) { doc.addPage(); y = m + 0.2; } txt('Terms', m, y, 12, true, BC); y += 0.25; doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor('#3b434c'); for (const ln of doc.splitTextToSize(terms, W - 2 * m)) { if (y > H - m) { doc.addPage(); y = m + 0.2; } doc.text(ln, m, y); y += 0.17; } }
     y += 0.3; if (y > H - 1.4) { doc.addPage(); y = m + 0.2; }
     txt('Acceptance', m, y, 12, true, BC); y += 0.5; doc.line(m, y, m + 3.2, y); doc.line(W - m - 2.4, y, W - m, y); y += 0.18; txt('Customer signature', m, y, 8.5, false, '#5d6670'); txt('Date', W - m - 2.4, y, 8.5, false, '#5d6670');
     y += 0.45; if (y > H - 0.7) { doc.addPage(); y = m + 0.2; } txt('Prices are valid for 30 days. Specifications per manufacturer datasheets; final quantities confirmed at site survey.', m, y, 7.5, false, '#8b939c');
     pdfFinish(doc, {W, H, m});
-    t.remove(); await saveFile(`${safeName(p.name)}-proposal.pdf`, doc.output('blob'));
+    t.remove(); await saveFile(`${safeName(p.name)}-proposal.pdf`, doc.output('blob')); markProposalSent('pdf'); return true;
   } catch (e) { t.remove(); reportError('Proposal export failed', e); }
 }
 // ---------- J. Riser / topology diagram ----------
@@ -4784,7 +4838,7 @@ function riserSVG() {
 function photosGroup(o) {
   const keys = (o.props && o.props.photos) || []; const wrap = el('div', {class:'photos'});
   keys.forEach((k, i) => { const im = el('img', {alt:'Site photo ' + (i + 1), class:'thumb'}); getAsset(k).then(u => { if (u) im.src = u; }); im.addEventListener('click', async () => { const u = await getAsset(k); dialog({title:`${o.name} — photo ${i + 1}`, cls:'wide', body: el('img', {src:u, alt:'Site photo', style:'max-width:100%;max-height:70vh;display:block;margin:auto'}), footer:[el('button', {class:'btn', id:'muOpen', text:'✎ Mark up', onclick:async () => { const bd = document.querySelector('.backdrop:last-child'); bd && bd.remove(); const nu = await markupPhoto(u, `${o.name} — mark up photo ${i + 1}`); if (!nu) return; const nk = await putAsset(nu); const cur = objs()[o.id]; if (!cur) return; tx('Mark up photo', () => updObj(o.id, {props:{...cur.props, photos: ((cur.props && cur.props.photos) || []).map(x => x === k ? nk : x)}})); renderRight(); toast('Markup saved to the photo'); }}), el('button', {class:'btn danger', text:'Remove photo', onclick:() => { tx('Remove photo', () => updObj(o.id, {props:{...o.props, photos: keys.filter(x => x !== k)}})); document.querySelector('.backdrop:last-child') && document.querySelector('.backdrop:last-child').remove(); renderRight(); }})]}); }); wrap.append(im); });
-  const pick = (capture) => { const i = el('input', {type:'file', accept:'image/*', multiple:!capture, capture:capture || null}); i.addEventListener('change', async () => { const newKeys = []; for (const f of i.files) { const url = await shrinkImage(await readDataURL(f), 1600); newKeys.push(await putAsset(url)); } const cur = objs()[o.id] || o; tx('Add photo', () => updObj(o.id, {props:{...cur.props, photos: ((cur.props && cur.props.photos) || []).concat(newKeys)}})); renderRight(); }); i.click(); return i; };
+  const pick = (capture) => pickFiles(capture ? 'photoCamIn' : 'photoIn', {accept:'image/*', multiple:capture ? null : true, capture:capture || null}, async (files) => { const newKeys = []; for (const f of files) { const url = await shrinkImage(await readDataURL(f), 1600); newKeys.push(await putAsset(url)); } const cur = objs()[o.id] || o; tx('Add photo', () => updObj(o.id, {props:{...cur.props, photos: ((cur.props && cur.props.photos) || []).concat(newKeys)}})); renderRight(); });
   const add = el('button', {class:'btn sm', text:'+ Add photo', onclick:() => pick()});
   wrap.append(add); if (isTouchDevice()) wrap.append(el('button', {class:'btn sm', id:'takePhoto', html:icon('camera') + 'Take photo', onclick:() => pick('environment')})); return grp('Site photos', [wrap]);
 }
@@ -5054,7 +5108,7 @@ async function openShareDialog() {
   const render = async () => { listBox.innerHTML = ''; try { const {shares} = await api('GET', `/api/projects/${S.project.id}/shares`); if (!shares.length) listBox.append(el('p', {class:'note', text:'No links yet.'}));
     for (const s of shares) listBox.append(el('div', {class:'sharerow'}, [el('div', {}, [el('b', {text:(s.label || 'Link') + (s.locked ? ' · 🔒 password' : '')}), el('span', {class:'note', text:` · by ${s.by || '—'} · ${s.views} view${s.views === 1 ? '' : 's'} · ${s.expires ? 'expires ' + new Date(s.expires).toLocaleDateString() : 'no expiry'}`})]), el('input', {class:'field mono', readonly:'', value:linkFor(s.token), 'aria-label':'Share link', onclick:(e) => e.target.select()}), el('button', {class:'btn sm', text:'Copy', onclick:() => copyText(linkFor(s.token))}), S.readOnly ? null : el('button', {class:'btn sm ghost', text:'Turn off', onclick:async () => { await api('DELETE', '/api/shares/' + s.token); render(); }})].filter(Boolean))); } catch (e) { listBox.append(el('p', {class:'note', text:e.message})); } };
   const pwIn = el('input', {class:'field', type:'text', id:'sharePw', placeholder:'optional — they must type it to open the link', autocomplete:'off', 'aria-label':'Link password'});
-  const d = dialog({title:'Share with your customer', cls:'mid', body:el('div', {}, [el('p', {class:'note', text:'Anyone with the link can view this design, measure and download PDFs — they can’t change anything or see your other projects. Turn a link off at any time.'}), S.readOnly ? null : el('div', {class:'form'}, [el('label', {text:'Label'}), label, el('label', {text:'Expires'}), days, el('label', {text:'Password'}), pwIn]), S.readOnly ? null : optRow, el('div', {class:'lbl3', text:'Active links', style:'margin-top:12px'}), listBox, approvalsBox].filter(Boolean)), footer:[el('button', {class:'btn', text:'Close', onclick:() => d.close()}), S.readOnly ? null : el('button', {class:'btn primary', id:'shareCreate', text:'Create link', onclick:async (e) => { const btn = e.currentTarget; if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Creating…'; try { await saveNow(); await Promise.race([teamSave(S.project), new Promise(r => setTimeout(r, 6000))]); const r = await api('POST', `/api/projects/${S.project.id}/shares`, {label:label.value, days:+days.value, password:pwIn.value.trim() || undefined}); pwIn.value = ''; copyText(linkFor(r.token)); toast('Link created and copied'); await render(); } catch (e) { toast(e.message, 'err'); } finally { btn.disabled = false; btn.textContent = 'Create link'; } }})].filter(Boolean)});
+  const d = dialog({title:'Share with your customer', cls:'mid', body:el('div', {}, [el('p', {class:'note', text:'Anyone with the link can view this design, measure and download PDFs — they can’t change anything or see your other projects. Turn a link off at any time.'}), S.readOnly ? null : el('div', {class:'form'}, [el('label', {text:'Label'}), label, el('label', {text:'Expires'}), days, el('label', {text:'Password'}), pwIn]), S.readOnly ? null : optRow, el('div', {class:'lbl3', text:'Active links', style:'margin-top:12px'}), listBox, approvalsBox].filter(Boolean)), footer:[el('button', {class:'btn', text:'Close', onclick:() => d.close()}), S.readOnly ? null : el('button', {class:'btn primary', id:'shareCreate', text:'Create link', onclick:async (e) => { const btn = e.currentTarget; if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Creating…'; try { await saveNow(); await Promise.race([teamSave(S.project), new Promise(r => setTimeout(r, 6000))]); const r = await api('POST', `/api/projects/${S.project.id}/shares`, {label:label.value, days:+days.value, password:pwIn.value.trim() || undefined}); pwIn.value = ''; copyText(linkFor(r.token)); toast('Link created and copied'); markProposalSent('link'); await render(); } catch (e) { toast(e.message, 'err'); } finally { btn.disabled = false; btn.textContent = 'Create link'; } }})].filter(Boolean)});
   render();
 }
 function copyText(t) { const fallback = () => { const i = el('textarea', {style:'position:fixed;left:-9999px'}); i.value = t; document.body.append(i); i.select(); try { document.execCommand('copy'); } catch (e2) {} i.remove(); }; try { const pr = navigator.clipboard && navigator.clipboard.writeText(t); if (pr && pr.catch) pr.catch(fallback); else if (!pr) fallback(); return; } catch (e) { const i = el('textarea', {style:'position:fixed;left:-9999px'}); i.value = t; document.body.append(i); i.select(); try { document.execCommand('copy'); } catch (e2) {} i.remove(); } }
@@ -5745,6 +5799,7 @@ const uiMode = () => { try { return localStorage.getItem('ssd-ui') || 'easy'; } 
 const isEasy = () => document.body.classList.contains('easy');
 function setUI(m) { try { localStorage.setItem('ssd-ui', m); } catch (e) {} applyUI(); toast(m === 'easy' ? 'Easy mode: 3 simple steps' : 'Pro tools: every drawing and engineering tool', '', 2500); }
 function applyUI() {
+  const tr = $('#tour'); if (tr && !tr.hidden) endTour();
   const easy = uiMode() === 'easy'; document.body.classList.toggle('easy', easy); buildEasyTop(); ensureEasyDock();
   if (!S.project) return;
   if (easy) { $('#app').classList.remove('lcol'); setStep(EASY.step || guessStep(), {quiet:true}); } else { if (S.mode === 'easy') setMode('floor'); renderLeft(); renderRight(); }
@@ -5764,7 +5819,7 @@ function stepDone(k) { const all = Object.values(objs()); if (k === 1) return fl
 // ---------- top bar (step pills + Pro toggle + install) ----------
 function buildEasyTop() {
   const top = $('#top'); if (!top) return; let st = $('#steps');
-  if (!st) { st = el('nav', {id:'steps', 'aria-label':'Steps'}, STEPS.map(([n, t, d]) => el('button', {class:'stp', 'data-step':n, onclick:() => setStep(n), html:`<b>${n}</b><span><em>${t}</em><i>${d}</i></span>`}))); const modes = $('#modes'); modes ? modes.after(st) : top.append(st); }
+  if (!st) { st = el('nav', {id:'steps', 'aria-label':'Steps'}, STEPS.map(([n, t, d]) => el('button', {class:'stp', 'data-step':n, 'aria-label':`Step ${n}: ${t} — ${d}`, onclick:() => setStep(n), html:`<b>${n}</b><span><em>${t}</em><i>${d}</i></span>`}))); const modes = $('#modes'); modes ? modes.after(st) : top.append(st); }
   let pro = $('#proToggle'); if (!pro) { pro = el('button', {class:'protoggle', id:'proToggle', onclick:() => setUI(isEasy() ? 'pro' : 'easy')}); const right = $('#top .tb-right'); right && right.insertBefore(pro, right.firstChild); }
   pro.innerHTML = isEasy() ? `${icon('layers')}<span>Pro tools</span>` : `${icon('target')}<span>Easy mode</span>`; pro.title = isEasy() ? 'Show every drawing and engineering tool' : 'Back to the simple 3-step view';
   let inst = $('#installBtn'); if (EASY.install && !inst) { inst = el('button', {class:'btn', id:'installBtn', html:`${icon('import')}<span class="hide-s">Install app</span>`, onclick:installApp}); const right = $('#top .tb-right'); right && right.insertBefore(inst, $('#proToggle').nextSibling); }
@@ -5786,26 +5841,26 @@ function ensureEasyDock() {
 
 // ---------- design score ----------
 function designScore() {
-  const key = S.project.id + '|' + S.project.modified + '|' + S.floorId + '|' + S.overlay.level; if (EASY.scoreCache && EASY.scoreCache.key === key) return EASY.scoreCache.v;
+  const key = S.project.id + '|' + S.project.modified + '|' + (S.txn || 0) + '|' + S.floorId + '|' + S.overlay.level + '|' + coverTarget() + '|' + (S.issues || []).length; if (EASY.scoreCache && EASY.scoreCache.key === key) return EASY.scoreCache.v;
   const all = onFloor(); const devs = all.filter(o => o.t === 'dev' && kindOf(o).cat !== 'site' && !KINDS[o.kind].room); // this floor — matches what Auto-design and Wire it all up act on
-  const rooms = onFloor().filter(o => o.t === 'room' && o.pts && G.area(o.pts) >= 40);
-  let covArea = 0, area = 0; const weak = [];
-  for (const r of rooms) { const a = G.area(r.pts); const c = coverageAnalysis(r.floor, S.overlay.level || 'detection', [r.id]); area += a; covArea += a * c.pct; if (c.pct < 0.8 && !/stor|closet|jan|mech|elec|idf|mdf|telecom|bath|restroom|toilet/i.test(r.name || '')) weak.push({r, pct:c.pct}); }
-  const cov = area ? covArea / area : (devs.some(isCam) ? 1 : 0);
+  const cs = coverageSummary(); const rooms = cs.req; // required rooms only — optional and privacy rooms are listed separately, never counted as covered
+  let covArea = 0, area = 0; for (const x of rooms) { const a = G.area(x.r.pts); area += a; covArea += a * Math.min(1, x.pct / x.target); }
+  const weak = cs.weak.map(x => ({r:x.r, pct:x.pct}));
+  const cov = (area ? covArea / area : (devs.some(isCam) ? 1 : 0)) * (cs.privacyBad.length ? 0.5 : 1);
   const g = buildGraph(); const needs = devs.filter(o => isCam(o) || ['reader', 'lock', 'rex', 'contact', 'controller', 'nvr', 'switch'].includes(kindOf(o).role) || ['pir','glassbreak','keypad','siren','smoke','heat','pull','hornstrobe'].includes(o.kind));
   const loose = needs.filter(o => !neighbors(g, o.id).length);
   const issues = S.issues || []; const errs = issues.filter(i => i.sev === 'error').length, warns = issues.filter(i => i.sev === 'warning').length;
   const wire = needs.length ? 1 - loose.length / needs.length : 1;
   const score = devs.length ? Math.round(60 * cov + 25 * wire + Math.max(0, 15 - 5 * errs - warns)) : 0;
   const label = !devs.length ? 'Just starting' : score >= 90 ? 'Excellent' : score >= 75 ? 'Good' : score >= 50 ? 'Getting there' : 'Needs work';
-  const v = {score, label, cov, rooms:rooms.length, covered:rooms.length - weak.length, weak:weak.sort((a, b) => a.pct - b.pct), loose, errs, warns, devs:devs.length};
+  const v = {score, label, cov, rooms:rooms.length, covered:rooms.length - weak.length, weak, loose, errs, warns, devs:devs.length, cs, covText:coverageText(cs)};
   EASY.scoreCache = {key, v}; return v;
 }
 function scoreRing(v) {
   const r = 30, c = 2 * Math.PI * r, f = v.score / 100; const col = v.score >= 90 ? 'var(--ok)' : v.score >= 60 ? 'var(--accent)' : 'var(--err)';
   return el('div', {class:'ring', role:'img', 'aria-label':`Design score ${v.score} out of 100, ${v.label}`, html:`<svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="${r}" class="rbg"/><circle cx="38" cy="38" r="${r}" class="rfg" style="stroke:${col};stroke-dasharray:${(c * f).toFixed(1)} ${c.toFixed(1)}"/></svg><b>${v.score}</b>`});
 }
-function maybeCelebrate(v) { const k = S.project.id; if (v.score >= 90 && v.devs && !EASY.celebrated.has(k)) { EASY.celebrated.add(k); confetti(); try { funSound('win'); } catch (e) {} toast('Excellent design — every room covered and wired! 🎉', '', 4000); } }
+function maybeCelebrate(v) { const k = S.project.id; if (v.score >= 90 && v.devs && !v.weak.length && !v.loose.length && !EASY.celebrated.has(k)) { EASY.celebrated.add(k); confetti(); try { funSound('win'); } catch (e) {} toast(v.rooms ? `Excellent design — all ${v.rooms} required rooms meet ${coverTarget()}% coverage and everything is wired! 🎉` : 'Excellent design — everything is wired! 🎉', '', 4500); } }
 function confetti() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; const cv = el('canvas', {class:'confetti', 'aria-hidden':'true'}); cv.width = innerWidth; cv.height = innerHeight; document.body.append(cv); const g = cv.getContext('2d');
   const cols = ['#e0a81c', '#2f7de1', '#0f8a5f', '#7c3aed', '#d12f2f', '#0891b2']; const P = Array.from({length:140}, () => ({x:innerWidth / 2 + (Math.random() - 0.5) * 200, y:innerHeight * 0.35, vx:(Math.random() - 0.5) * 14, vy:-Math.random() * 13 - 4, s:4 + Math.random() * 5, c:cols[(Math.random() * cols.length) | 0], r:Math.random() * 6}));
@@ -5815,6 +5870,11 @@ function confetti() {
 // ---------- left panel ----------
 const ezCard = ({ic, title, text, onclick, primary=false, id, badge}) => el('button', {class:'ezcard' + (primary ? ' primary' : ''), id, onclick, html:`<span class="ezic">${ic.startsWith('<') ? ic : icon(ic)}</span><span class="ezt"><b>${esc(title)}</b>${text ? `<i>${esc(text)}</i>` : ''}</span>${badge ? `<em>${esc(badge)}</em>` : ''}`});
 const ezHead = (n, title, sub) => el('div', {class:'ezhead'}, [el('span', {class:'ezn', text:String(n)}), el('div', {}, [el('h2', {text:title}), el('p', {text:sub})])]);
+function ezUploadCard(primary) {
+  const i = planInput(); const c = el('label', {class:'ezcard' + (primary ? ' primary' : ''), id:'ezUpload', for:i.id, role:'button', tabindex:'0', 'aria-label':'Upload a floor plan — PDF, photo, screenshot or CAD (DXF)', html:`<span class="ezic">${icon('import')}</span><span class="ezt"><b>Upload a floor plan</b><i>PDF, photo, screenshot or CAD (DXF) — or drop it here, or paste a screenshot (Ctrl+V)</i></span>`});
+  c.addEventListener('click', () => { PLAN_PICK.replace = false; i.value = ''; watchPicker(i); }); c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); } });
+  c.addEventListener('dragover', (e) => { e.preventDefault(); c.classList.add('over'); }); c.addEventListener('dragleave', () => c.classList.remove('over')); c.addEventListener('drop', (e) => { e.preventDefault(); c.classList.remove('over'); const f = [...((e.dataTransfer && e.dataTransfer.files) || [])]; if (f.length) importFiles(f); }); return c;
+}
 const ezNext = (label, fn) => el('button', {class:'btn primary big eznext', html:`${esc(label)} →`, onclick:fn});
 function renderEasyLeft(L) {
   L.innerHTML = ''; const body = el('div', {class:'ezpanel'}); L.append(body);
@@ -5826,11 +5886,12 @@ function renderEasyLeft(L) {
 function ezStep1() {
   const fl = curFloor(); const all = onFloor(); const hasPlan = !!(fl && fl.bg) || all.some(o => o.t === 'wall' || o.t === 'room'); const needsScale = fl && fl.bg && !fl.calibrated && !all.some(o => o.t === 'wall');
   const out = [ezHead(1, 'Your floor plan', 'Start with the building. Pick one — you can mix them.')];
+  { const facts = planFacts(fl); if (facts) out.push(el('p', {class:'note planfacts', id:'ezPlanFacts', text:'Plan: ' + facts})); const bad = fl && scaleSanity(fl); if (bad && !needsScale) out.push(el('div', {class:'ezalert soft', id:'ezScaleWarn'}, [el('b', {text:'Check the scale'}), el('p', {text:bad}), el('button', {class:'btn', text:'Set the scale again', onclick:() => setTool('calibrate')})])); }
   if (needsScale) out.push(el('div', {class:'ezalert'}, [el('b', {text:'One quick thing: set the scale'}), el('p', {text:'Click two points on the plan you know the distance between (a door is about 3 ft, a parking space 9 ft), then type the distance.'}), el('button', {class:'btn primary', text:'Set the scale now', onclick:() => setTool('calibrate')})]));
   out.push(el('div', {class:'ezgrid'}, [
     isTouchDevice() ? ezCard({ic:'camera', title:'Snap a photo of the plan', text:'Use your camera — hold it straight over the drawing', onclick:() => snapPlanPhoto(), primary:!hasPlan, id:'ezSnap'}) : null,
-    ezCard({ic:'import', title:'Upload a floor plan', text:'PDF, photo, screenshot or CAD (DXF)', onclick:() => pickPlanFile(), primary:!hasPlan && !isTouchDevice(), id:'ezUpload'}),
-    ezCard({ic:'map', title:'Use the satellite map', text:'Type the address and design outside', onclick:() => { const site = S.project.buildings.find(b => b.kind === 'site'); if (site) switchFloor(site.floors[0].id); setMode('site'); renderLeft(); setTimeout(() => { const i = $('#left input[aria-label="Map search"]'); i && i.focus(); }, 60); }, id:'ezMap'}),
+    ezUploadCard(!hasPlan && !isTouchDevice()),
+    ezCard({ic:'map', title:'Use the satellite map', text: siteGeoStatus().state === 'none' ? 'Type the address and design outside' : siteGeoStatus().text, onclick:() => { const site = S.project.buildings.find(b => b.kind === 'site'); if (site) switchFloor(site.floors[0].id); setMode('site'); renderLeft(); setTimeout(() => { const i = $('#left input[aria-label="Map search"]'); i && i.focus(); }, 60); }, id:'ezMap'}),
     ezCard({ic:'room', title:'Draw rooms', text:'Drag a box for each room — or type 20x30', onclick:() => { if (S.mode === 'site') setMode('floor'); setTool('room'); toast('Drag a box for each room. Or click once and type 20x30, then Enter.', '', 5000); }, id:'ezRooms'}),
     ezCard({ic:'file', title:'Start from a template', text:'Office, warehouse, school, retail…', onclick:openTemplatePicker, id:'ezTemplate'}),
   ]));
@@ -5849,7 +5910,7 @@ function ezStep2() {
   if (v.loose.length) tips.push(el('button', {class:'eztip', onclick:wireItUp, html:`<b>${v.loose.length} device${v.loose.length > 1 ? 's' : ''}</b> not wired yet <span>Wire up →</span>`}));
   if (v.weak.length + (v.loose.length ? 1 : 0) >= 2) tips.push(el('button', {class:'btn primary sm ezfixall', id:'ezFixAll', html:'✨ Fix everything for me', onclick:() => fixEverything()}));
   if (v.errs) tips.push(el('button', {class:'eztip', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`<b>${v.errs} problem${v.errs > 1 ? 's' : ''}</b> in the design check <span>Show →</span>`}));
-  out.push(el('div', {class:'ezscore'}, [scoreRing(v), el('div', {}, [el('b', {text:`Design score · ${v.label}`}), el('p', {class:'note', text: v.rooms ? `${v.covered} of ${v.rooms} rooms covered at ${S.overlay.level || 'detection'} level` : `${v.devs} device${v.devs === 1 ? '' : 's'} placed`}), ...tips])]));
+  out.push(el('div', {class:'ezscore'}, [scoreRing(v), el('div', {}, [el('b', {text:`Design score · ${v.label}`}), v.cs.all.length ? el('button', {class:'linkbtn covlink', id:'ezCovLink', text:v.covText + ' — see every room →', onclick:() => openCoverageDetails()}) : el('p', {class:'note', text:`${v.devs} device${v.devs === 1 ? '' : 's'} placed`}), ...tips])]));
   out.push(ezCard({ic:'target', title:'✨ Auto-design cameras', text: onFloor().some(o => o.t === 'room') ? 'Covers every room on this floor' + (EASY.outside ? ' and the outside corners' : '') : 'Draw or find rooms in step 1 first', onclick:() => autoDesignFloor({outside:EASY.outside}), primary:!v.devs, id:'ezAuto'}));
   out.push(el('label', {class:'ezcheck'}, [el('input', {type:'checkbox', checked:EASY.outside, onchange:(e) => { EASY.outside = e.target.checked; renderLeft(); }}), 'Include the outside of the building']));
   out.push(ezCard({ic:'target', title:'Camera advisor', text:'Click any spot — room, corner, wall or pole', onclick:() => setTool('advisor'), id:'ezAdvisor', badge:'G'}));
@@ -5887,7 +5948,7 @@ function ezStep3() {
 function ezStep3Tail(out, Q) {
   // monthly plans
   const q = Q.q; const mon = el('div', {class:'ezsec'}, [el('h3', {text:'Monthly services (optional)'}), el('p', {class:'note', text:'Type your monthly rate — it’s added to the proposal when ticked.'})]);
-  for (const [i, m] of (q.monthly || []).entries()) { const cb = el('input', {type:'checkbox', checked:!!m.on, 'aria-label':m.desc}); const pr = el('input', {class:'field num', type:'number', min:0, step:1, value:m.price ? m.price : null, placeholder:'$', 'aria-label':'Monthly price ' + m.desc}); const save = (e) => { if (e && e.target === pr && +pr.value > 0) cb.checked = true; const list = (quoteSettings().monthly || []).slice(); list[i] = {...list[i], on:cb.checked, price:pr.value === '' ? null : (+pr.value || 0)}; tx('Edit monthly services', () => { touchMeta(); S.project.quote = {...quoteSettings(), monthly:list}; }); renderLeft(); }; cb.addEventListener('change', save); pr.addEventListener('change', save);
+  for (const [i, m] of (q.monthly || []).entries()) { const cb = el('input', {type:'checkbox', checked:!!m.on, 'aria-label':m.desc}); const pr = el('input', {class:'field num', type:'number', min:0, step:1, value:m.price ? m.price : null, placeholder:'$', 'aria-label':'Monthly price ' + m.desc}); const save = (e) => { if (e && e.target === pr && +pr.value > 0) cb.checked = true; const list = (quoteSettings().monthly || []).slice(); list[i] = {...list[i], on:cb.checked, price:pr.value === '' ? null : (+pr.value || 0)}; tx('Edit monthly services', () => { touchMeta(); S.project.quote = {...quoteSettings(), monthly:list}; }); ezLiveUpdate(); softRenderLeft(); }; cb.addEventListener('change', save); pr.addEventListener('change', save);
     mon.append(el('label', {class:'ezmon'}, [cb, el('span', {text:m.desc}), el('div', {class:'unit'}, [pr, el('span', {text:'/' + m.unit})])])); }
   mon.append(el('p', {class:'note', text:'“Complete care” always includes these. Tick them to add them to the other options too.'}));
   out.push(mon);
@@ -5896,9 +5957,10 @@ function ezStep3Tail(out, Q) {
   // scope of work
   const sow = el('textarea', {class:'field', rows:5, 'aria-label':'Scope of work'}); sow.value = S.project.scope || scopeOfWork(null).text; sow.addEventListener('change', () => tx('Edit scope of work', () => { touchMeta(); S.project.scope = sow.value; }));
   out.push(el('div', {class:'ezsec'}, [el('div', {class:'ezsecH'}, [el('h3', {text:'Scope of work'}), el('button', {class:'btn sm ghost', text:'Rewrite from design', onclick:() => { tx('Rewrite scope', () => { touchMeta(); S.project.scope = ''; }); renderLeft(); }})]), sow]));
+  { let hl = []; try { hl = projectHealth().filter(h => h.for.includes('proposal')); } catch (e) {} const f = hl.filter(h => h.state === 'fail').length, w = hl.filter(h => h.state === 'warn').length; out.push(ezCard({ic:'check', title:'Project health', text: f ? `${f} to fix before sending · ${w} to review` : w ? `Ready to send · ${w} worth a look` : 'Everything checks out ✓', onclick:() => openHealth(), id:'ezHealth', badge: f ? String(f) : null})); }
   out.push(el('div', {class:'ezsec'}, [el('h3', {text:'Send it'}), el('div', {class:'ezgrid'}, [
-    ezCard({ic:'file', title:'Proposal PDF', text:'Options, scope, price, signature line', onclick:() => { tx('Mark sent', () => { touchMeta(); S.project.quoteSent = Date.now(); }); exportProposal(); }, primary:true, id:'ezProposal'}),
-    TEAM.on ? ezCard({ic:'share', title:'Customer link', text:'They review it and approve online — you can let them pick an option', onclick:() => { tx('Mark sent', () => { touchMeta(); S.project.quoteSent = Date.now(); }); openShareDialog(); }, id:'ezShare'}) : ezCard({ic:'export', title:'Project file', text:'Save or send the design itself', onclick:() => exportProjectFile(), id:'ezFile'}),
+    ezCard({ic:'file', title:'Proposal PDF', text:'Options, scope, price, signature line', onclick:() => exportProposal(), primary:true, id:'ezProposal'}),
+    TEAM.on ? ezCard({ic:'share', title:'Customer link', text:'They review it and approve online — you can let them pick an option', onclick:() => openShareDialog(), id:'ezShare'}) : ezCard({ic:'export', title:'Project file', text:'Save or send the design itself', onclick:() => exportProjectFile(), id:'ezFile'}),
     ezCard({ic:'print', title:'Drawings PDF', text:'Floor plans with legend & title block', onclick:() => openExport(), id:'ezDrawings'}),
     bomOn() ? ezCard({ic:'export', title:'Parts list (Excel)', text:'BOM, cables, devices, quote', onclick:() => exportXLSX(), id:'ezExcel'}) : ezCard({ic:'export', title:'Schedules (Excel)', text:'Devices, cables, doors — for your own BOM', onclick:() => exportXLSX(), id:'ezExcel'}),
   ])]));
@@ -5910,10 +5972,12 @@ function ezStep3Own(out) {
   const chosen = S.project.quoteOption && all.some(o => o.key === S.project.quoteOption) ? S.project.quoteOption : 'recommended';
   const pick = (k) => { tx('Choose quote option', () => { touchMeta(); S.project.quoteOption = k; }); renderLeft(); };
   out.push(el('p', {class:'note', style:'margin:0 0 8px', text:'Type your price for each option from your own BOM. Leave one blank to leave it out of the proposal.'}));
-  out.push(el('div', {class:'ezopts own', role:'radiogroup', 'aria-label':'Quote options'}, all.map(o => { const on = o.key === chosen;
+  const keys = all.map(o => o.key); const grp = el('div', {class:'ezopts own', role:'radiogroup', 'aria-label':'Quote options — use arrow keys to choose', tabindex:'0', 'aria-activedescendant':'ezopt-' + chosen, onkeydown:(e) => { if (e.target !== e.currentTarget) return; const i = keys.indexOf(chosen); const n = /ArrowRight|ArrowDown/.test(e.key) ? 1 : /ArrowLeft|ArrowUp/.test(e.key) ? -1 : 0; if (!n) return; e.preventDefault(); pick(keys[(i + n + keys.length) % keys.length]); setTimeout(() => { const g = $('#left .ezopts'); g && g.focus(); }, 0); }});
+  out.push(el('div', {style:'display:contents'}, [grp])); grp.append(...all.map(o => { const on = o.key === chosen;
     const inp = el('input', {class:'field num', type:'number', min:'0', step:'0.01', inputmode:'decimal', placeholder:'$ price', 'aria-label':'Your price for ' + o.name, 'data-price':o.key, value: o.Q.priced ? String(o.Q.total) : ''});
-    inp.addEventListener('click', (e) => e.stopPropagation()); inp.addEventListener('change', () => { const v = inp.value === '' ? null : Math.max(0, +inp.value || 0); tx('Set price', () => { touchMeta(); S.project.ownPrices = {...(S.project.ownPrices || {}), [o.key]: v}; }); renderLeft(); });
-    return el('div', {class:'ezopt' + (on ? ' on' : ''), role:'radio', tabindex:'0', 'aria-checked':String(on), 'data-opt':o.key, onclick:() => pick(o.key), onkeydown:(e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) { e.preventDefault(); pick(o.key); } }}, [o.badge ? el('em', {text:o.badge}) : null, el('b', {text:o.name}), el('i', {text:o.blurb}), inp, o.Q.monthly ? el('span', {text:`+ ${money(o.Q.monthly)}/mo`}) : el('span', {text:' '})].filter(Boolean)); })));
+    inp.addEventListener('click', (e) => e.stopPropagation()); let tm = 0; const commit = () => { clearTimeout(tm); const raw = String(inp.value).replace(/[$,\s]/g, ''); const v = raw === '' ? null : Math.max(0, +raw || 0); if (((S.project.ownPrices || {})[o.key] ?? null) === v) return; tx('Set price', () => { touchMeta(); S.project.ownPrices = {...(S.project.ownPrices || {}), [o.key]: v}; }); ezLiveUpdate(); };
+    inp.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(commit, 350); }); inp.addEventListener('change', () => { commit(); softRenderLeft(); }); inp.addEventListener('blur', commit);
+    return el('div', {class:'ezopt' + (on ? ' on' : ''), role:'radio', id:'ezopt-' + o.key, tabindex:'-1', 'aria-checked':String(on), 'data-opt':o.key, onclick:() => pick(o.key)}, [o.badge ? el('em', {text:o.badge}) : null, el('b', {text:o.name}), el('i', {text:o.blurb}), inp, o.Q.monthly ? el('span', {text:`+ ${money(o.Q.monthly)}/mo`}) : el('span', {text:' '})].filter(Boolean)); }));
   const c = projectCounts(S.project); const R = (all.find(o => o.key === chosen) || all[1]).Q; const ft = Object.values(objs()).filter(o => o.t === 'cable').reduce((a, x) => { const k = cableCalc(x); return a + (k.ct.wireless || k.ct.pathway ? 0 : k.final); }, 0);
   out.push(el('div', {class:'ezsum'}, [['Cameras', c.cameras], ['Access doors', c.accessDoors], ['Devices', c.devices], ['Cable', Math.round(ft).toLocaleString() + ' ft'], ['Cable runs', c.cables], ['Deposit', R.priced ? money(R.deposit) : '—']].map(([l, n]) => el('div', {}, [el('b', {text:String(n)}), el('span', {text:l})]))));
   if (!priced.length) out.push(el('div', {class:'ezalert', id:'ezNoPrice'}, [el('b', {text:'Type at least one price'}), el('p', {text:'The proposal shows the options you price. Your BOM and costs stay with you — the app never shows parts or costs to the customer.'})]));
@@ -6055,7 +6119,7 @@ function renderEasyRight(Rp, sel) {
     body.append(el('div', {class:'ezgrid one'}, [['std-ext','Card reader door'], ['strike-reader','Card reader + strike'], ['exit-only','Exit only (alarmed)'], ['wireless','Wireless lock']].map(([id, l]) => ezCard({ic:'door', title:l, onclick:() => { applyDoorTemplate(o.id, id); renderEasyRight(Rp, selObjs()); }}))));
   } else if (o.t === 'room') {
     const c = coverageAnalysis(o.floor, S.overlay.level || 'detection', [o.id]);
-    body.append(F('Name', bind(o, 'name', 'text', {label:'Rename room'})), el('p', {class:'note', text:`${fmtArea(G.area(o.pts))} · ${Math.round(c.pct * 100)}% covered at ${S.overlay.level || 'detection'} level`}), ezCard({ic:'target', title:'Suggest cameras for this room', onclick:() => ezFixRoom(o), primary:c.pct < 0.8}));
+    body.append(F('Name', bind(o, 'name', 'text', {label:'Rename room'})), el('p', {class:'note', text:fmtArea(G.area(o.pts))}), roomCoverageFields(o), ezCard({ic:'target', title:'Suggest cameras for this room', onclick:() => ezFixRoom(o), primary:c.pct < 0.8}));
   } else { body.append(el('p', {class:'note', text:'Switch to Pro tools for every setting of this item.'})); }
   body.append(el('div', {class:'ezbtns end'}, [el('button', {class:'btn ghost', html:icon('duplicate') + 'Duplicate', onclick:() => duplicateSelection && duplicateSelection(4)}), el('button', {class:'btn ghost danger', html:icon('trash') + 'Delete', onclick:() => deleteSelection()})]), el('button', {class:'linkbtn', text:'All settings (Pro) →', onclick:() => setUI('pro')}));
 }
@@ -6063,6 +6127,17 @@ function renderEasyRight(Rp, sel) {
 // re-draw the step panel as the design changes (score, tips, prices) — never while the user is typing in it
 const ezRefresh = debounce(() => { if (!isEasy() || !S.project || EASY.step === 1 && S.tool === 'room') return; const ae = document.activeElement; if (ae && ae.closest && ae.closest('#left') && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return; EASY.scoreCache = null; renderLeft(); $$('#steps .stp').forEach(b => b.classList.toggle('done', stepDone(+b.dataset.step))); }, 700);
 changeHooks.push(() => ezRefresh());
+// "Proposal sent" is recorded only by a real proposal: the proposal PDF or a customer link. Design exports never count.
+function markProposalSent(how) { tx('Proposal sent', () => { touchMeta(); S.project.quoteSent = Date.now(); S.project.quoteSentBy = how; }); try { checkBadges(); } catch (e) {} if (isEasy()) softRenderLeft(); }
+// refresh the step checklist, the next-step hint and the "type a price" prompt in place (no full re-render)
+function ezLiveUpdate() {
+  if (!isEasy()) return; const body = $('#left .ezpanel'); if (!body) return; EASY.scoreCache = null;
+  const old = body.querySelector('.ezcheck-list'); let list = []; try { list = ezChecklist(EASY.step); } catch (e) {}
+  if (old) { const done = list.filter(x => x[1]).length; old.setAttribute('aria-label', `Step ${EASY.step}: ${done} of ${list.length} done`); old.replaceChildren(...list.map(([t, ok]) => el('span', {class:'ezchk' + (ok ? ' ok' : ''), role:'listitem', text:(ok ? '✓ ' : '') + t}))); }
+  const hint = $('#ezNextHint'); if (hint) { try { const [, label] = ezNextAction(EASY.step); hint.textContent = 'Next: ' + label; } catch (e) {} }
+  const np = $('#ezNoPrice'); if (np && quoteOptions().some(o => o.Q.priced)) np.remove();
+  $$('#steps .stp').forEach(b => b.classList.toggle('done', stepDone(+b.dataset.step)));
+}
 
 // ===== FAVORITES · CAMERA COMPARE · GOOGLE EARTH (KML) · PHOTO MARKUP =====
 
@@ -6134,7 +6209,7 @@ function buildKML() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>${kmlEsc(S.project.name)}</name>${styles}${pm.join('\n')}</Document></kml>\n`;
 }
 function exportKML() {
-  const k = buildKML(); if (!k) { toast('Set the site address first (Site → map) so the design can be placed on Google Earth.', 'err', 5000); return; }
+  const k = buildKML(); if (!k) { return openGeoNeeded(); }
   saveFile(safeName(S.project.name) + '.kml', new Blob([k], {type:'application/vnd.google-earth.kml+xml'}));
 }
 
@@ -6164,6 +6239,18 @@ async function markupPhoto(srcUrl, title) {
     let done = false; const fin = (v) => { if (done) return; done = true; resolve(v); };
     const d = dialog({title:title || 'Mark up photo', cls:'wide', onClose:() => fin(null), body:el('div', {}, [tools, el('div', {class:'mubox'}, [cv])]), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', id:'muSave', text:'Save markup', onclick:() => { const url = shapes.length ? cv.toDataURL('image/jpeg', 0.88) : null; fin(url); d.close(); }})]});
   });
+}
+
+// address typed ≠ located on the map: say which, and offer to look the address up
+function siteGeoStatus() { const p = S.project; const ms = mapState(); return ms ? {state:'located', text:`On the map · ${ms.lat.toFixed(5)}, ${ms.lng.toFixed(5)}`} : (p.address || '').trim() ? {state:'address', text:'Address entered · not on the map yet'} : {state:'none', text:'No site address yet'}; }
+function openGeoNeeded() {
+  const st = siteGeoStatus(); const addr = el('input', {class:'field', id:'geoAddr', value:S.project.address || '', placeholder:'Street, city, state — or GPS like 32.7555, -97.3308', 'aria-label':'Site address'}); const msg = el('p', {class:'note', id:'geoMsg', text:''}); let d;
+  const go = async () => { const q = addr.value.trim(); if (!q) { msg.textContent = 'Type the address first.'; return; } msg.textContent = 'Looking it up…';
+    try { const r = await geocode(q); if (!r.length) { msg.textContent = 'No match — try the full address or GPS coordinates.'; return; } if (!S.project.address) tx('Site address', () => { touchMeta(); S.project.address = q; }); setMapLocation(r[0].lat, r[0].lng, q); d.close(); toast('Found it: ' + r[0].name.split(',').slice(0, 3).join(','), '', 4000); const k = buildKML(); if (k) saveFile(safeName(S.project.name) + '.kml', new Blob([k], {type:'application/vnd.google-earth.kml+xml'})); }
+    catch (e) { msg.textContent = e.userMessage || 'Address search is unavailable — enter GPS coordinates instead.'; } };
+  addr.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  d = dialog({title:'Put the site on the map', cls:'mid', body:el('div', {}, [el('p', {class:'geostate ' + st.state, id:'geoState', text:st.text}), el('p', {class:'note', text:'Google Earth needs the site’s map location (latitude and longitude), not just the address text. Look the address up once and the KML and satellite map both use it.'}), el('div', {class:'form'}, [el('label', {text:'Site address'}), addr]), msg]), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', id:'geoGo', text:'Find it & export KML', onclick:go})]});
+  return d;
 }
 
 // ===== WELCOME · STEP CHECKLISTS · NEXT-STEP GUIDE · UNDO TOASTS · PRESENT TO CUSTOMER · CHANGE ORDERS · UPS RUNTIME =====
@@ -6616,7 +6703,7 @@ changeHooks.push(debounce(() => { try { checkBadges(); updateTrophyChip(); } cat
 
 // ---------- phone camera: snap the floor plan or site photos straight from the camera ----------
 const isTouchDevice = () => { try { return matchMedia('(pointer:coarse)').matches; } catch (e) { return false; } };
-function snapPlanPhoto() { const i = el('input', {type:'file', accept:'image/*', capture:'environment'}); i.addEventListener('change', () => { if (i.files.length) { importFiles(i.files); toast('Got it — next, set the scale with two points you know.', '', 4500); } }); i.click(); return i; }
+function snapPlanPhoto() { return pickFiles('planCamIn', {accept:'image/*', capture:'environment', multiple:null}, (f) => { importFiles(f); toast('Got it — next, set the scale with two points you know.', '', 4500); }); }
 
 // ===== TOOLBOX · FIX EVERYTHING · LENS CALCULATOR · QR DEVICE LABELS · VMS CAMERA LIST · DICTATION · SOUNDS =====
 // Ideas from the tools integrators use every day (JVSG lens calculator, AXIS Site Designer VMS export,
@@ -6754,6 +6841,7 @@ function toolboxTools() {
     {id:'cablelabels', em:'🔖', name:'Cable labels', how:'Both ends of every run', go:openLabelsDialog},
     {id:'vms', em:'🎥', name:'Camera list for the VMS', how:'CSV with names, models, IPs, rooms', go:exportVMSList, off: !cams ? 'Add cameras first' : null},
     {id:'walk', em:'📝', name:'Site walk checklist', how:SpeechRec() ? 'Talk or type what you see on site' : 'What you see on site', go:openSiteWalk},
+    {id:'health', em:'🩺', name:'Project health', how:'Scale, coverage, wiring, storage, price, backup — with fixes', go:openHealth},
     {id:'present', em:'🎬', name:'Present to the customer', how:'Full-screen, no prices or part numbers', go:openPresent},
   ];
 }
@@ -6763,6 +6851,168 @@ function openToolbox() {
   const snd = el('label', {class:'agree', style:'margin:12px 0 0'}, [el('input', {type:'checkbox', id:'soundsToggle', checked:soundsOn(), onchange:(e) => setSounds(e.target.checked)}), el('span', {text:'🔊 Fun sounds when you place devices and earn badges'})]);
   d = dialog({title:'Toolbox', cls:'badgedlg', body:el('div', {}, [grid, snd]), footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
 }
+
+// ===== ONE SOURCE OF TRUTH FOR ROOM COVERAGE =====
+// Every place that talks about coverage — room labels on the plan, the step checklist, the design score,
+// the success message, the design check and exports — uses roomCoverage() below, with an explicit target.
+const COVER_NEEDS = [['required', 'Needs camera coverage'], ['optional', 'Not required'], ['privacy', 'No cameras (privacy)']];
+const PRIVACY_RX = /bath|restroom|toilet|\bwc\b|locker|shower|changing|lactation|nursing/i;
+const OPTIONAL_RX = /\bstor|closet|jan|mech|elec|\bidf\b|\bmdf\b|telecom|server|utility|shaft|riser/i;
+function coverTarget() { const t = +((S.project && S.project.settings && S.project.settings.coverTarget) ?? 90); return Math.min(100, Math.max(50, t || 90)); }
+function roomNeed(r) {
+  const set = r.props && r.props.coverNeed; if (set && COVER_NEEDS.some(([k]) => k === set)) return {need:set, auto:false};
+  const txt = [r.name, r.props && r.props.type].filter(Boolean).join(' ');
+  return {need: PRIVACY_RX.test(txt) ? 'privacy' : OPTIONAL_RX.test(txt) ? 'optional' : 'required', auto:true};
+}
+function roomLevel(r) { return (r.props && r.props.coverLevel) || S.overlay.level || 'detection'; }
+const COVQ = {key:'', m:new Map()};
+function roomCoverage(r) {
+  const key = S.project.id + '|' + S.project.modified + '|' + (S.txn || 0) + '|' + coverTarget(); if (COVQ.key !== key) { COVQ.key = key; COVQ.m.clear(); }
+  const level = roomLevel(r); const mk = r.id + '|' + level; let c = COVQ.m.get(mk);
+  if (!c) { const a = coverageAnalysis(r.floor, level, [r.id]); c = {pct:a.pct, total:a.total}; COVQ.m.set(mk, c); }
+  const {need, auto} = roomNeed(r); const target = coverTarget() / 100; const pct = c.pct;
+  const camsInside = need === 'privacy' ? onFloor(r.floor).filter(o => isCam(o) && r.pts && G.inPoly([o.x, o.y], r.pts)).length : 0;
+  const ok = need === 'required' ? pct >= target - 1e-9 : need === 'privacy' ? camsInside === 0 : true;
+  return {r, pct, total:c.total, level, need, auto, target, ok, camsInside};
+}
+function floorRoomCoverage(fid = S.floorId) { return onFloor(fid).filter(o => o.t === 'room' && o.pts && G.area(o.pts) >= 40).map(roomCoverage); }
+function coverageSummary(fid) {
+  const all = floorRoomCoverage(fid); const req = all.filter(x => x.need === 'required');
+  return {all, req, ok:req.filter(x => x.ok), weak:req.filter(x => !x.ok).sort((a, b) => a.pct - b.pct), optional:all.filter(x => x.need === 'optional'), privacy:all.filter(x => x.need === 'privacy'), privacyBad:all.filter(x => x.need === 'privacy' && !x.ok)};
+}
+function coverageText(s) {
+  const t = coverTarget(); if (!s.all.length) return 'No rooms drawn yet';
+  let txt = `${s.ok.length} of ${s.req.length} required room${s.req.length === 1 ? '' : 's'} at ≥${t}% coverage`;
+  const other = s.optional.length + s.privacy.length; if (other) txt += ` · ${other} not required`; return txt;
+}
+// design-check rules: under-covered required rooms, and cameras inside privacy rooms
+function coverageIssues(add) {
+  for (const f of floors()) { const rooms = onFloor(f.id).filter(o => o.t === 'room'); if (!rooms.length || rooms.length > 80) continue; if (!onFloor(f.id).some(isCam)) continue;
+    for (const x of floorRoomCoverage(f.id)) {
+      if (x.need === 'required' && !x.ok) add('warning', x.r.id, `${x.r.name || 'Room'} is ${Math.floor(x.pct * 100)}% covered at ${x.level} level (target ${coverTarget()}%)`, 'Click the room, then “Suggest cameras” — or mark it “Not required” if it doesn’t need cameras.');
+      if (x.need === 'privacy' && x.camsInside) add('error', x.r.id, `${x.r.name || 'Room'} is a privacy area but has ${x.camsInside} camera${x.camsInside > 1 ? 's' : ''} inside`, 'Remove cameras from restrooms, locker and changing rooms — or change the room’s coverage setting if this is wrong.');
+    } }
+}
+// room settings shown in the room panel (Easy and Pro)
+function roomCoverageFields(o) {
+  const x = roomCoverage(o); const pct = Math.floor(x.pct * 100);
+  const needSel = el('select', {class:'field', 'aria-label':'Coverage requirement', id:'roomNeed'}, [['', `Automatic (${COVER_NEEDS.find(([k]) => k === roomNeed({...o, props:{...o.props, coverNeed:null}}).need)[1].toLowerCase()})`], ...COVER_NEEDS].map(([v, l]) => el('option', {value:v, text:l, selected:(o.props && o.props.coverNeed || '') === v})));
+  needSel.addEventListener('change', () => { tx('Coverage requirement', () => updObj(o.id, {props:{...o.props, coverNeed:needSel.value || null}})); S.issues = runDesignCheck(); try { updateStatusCounts(); } catch (e) {} EASY.scoreCache = null; markDirty([o.id]); requestDraw(); renderRight(); if (isEasy()) renderLeft(); });
+  const lvlSel = el('select', {class:'field', 'aria-label':'Coverage level for this room', id:'roomLevel'}, [['', `Same as the plan (${S.overlay.level || 'detection'})`], ...DORI.map(d => [d.key, `${d.label} · ${d.ppm} px/m`]), ['detection', 'Detection · 25 px/m']].filter((v, i, a) => a.findIndex(w => w[0] === v[0]) === i).map(([v, l]) => el('option', {value:v, text:l, selected:(o.props && o.props.coverLevel || '') === v})));
+  lvlSel.addEventListener('change', () => { tx('Coverage level', () => updObj(o.id, {props:{...o.props, coverLevel:lvlSel.value || null}})); S.issues = runDesignCheck(); EASY.scoreCache = null; markDirty([o.id]); requestDraw(); renderRight(); if (isEasy()) renderLeft(); });
+  const status = x.need === 'privacy' ? (x.camsInside ? `⚠ ${x.camsInside} camera${x.camsInside > 1 ? 's' : ''} inside a privacy area` : 'No cameras inside ✓') : x.need === 'optional' ? `${pct}% covered · not required` : `${pct}% covered at ${x.level} — target ${coverTarget()}% ${x.ok ? '✓' : '✗'}`;
+  return el('div', {class:'covfields', id:'roomCovFields'}, [F('Coverage', needSel), F('Level', lvlSel), el('p', {class:'note covstatus' + (x.ok ? ' ok' : ' bad'), id:'roomCovStatus', text:status})]);
+}
+// "9 of 9 covered" is clickable: every room, its real percentage, its requirement — click a row to go to it
+function openCoverageDetails() {
+  const s = coverageSummary(); const t = coverTarget(); let d;
+  const tgt = el('select', {class:'field', id:'coverTarget', 'aria-label':'Coverage target'}, [70, 80, 90, 95, 100].map(v => el('option', {value:v, text:`${v}% of each required room`, selected:v === t})));
+  tgt.addEventListener('change', () => { tx('Coverage target', () => { touchMeta(); S.project.settings.coverTarget = +tgt.value; }); S.issues = runDesignCheck(); EASY.scoreCache = null; d.close(); renderLeft(); openCoverageDetails(); });
+  const row = (x) => { const pct = Math.floor(x.pct * 100); const st = x.need === 'privacy' ? (x.ok ? 'privacy ✓' : 'camera inside!') : x.need === 'optional' ? 'not required' : x.ok ? '✓ meets target' : `✗ below ${t}%`;
+    return el('button', {class:'covrow ' + (x.ok ? 'ok' : 'bad') + ' ' + x.need, 'data-room':x.r.id, onclick:() => { d.close(); focusObj(x.r.id); }}, [el('b', {text:x.r.name || 'Room'}), el('span', {class:'covbar'}, [el('i', {style:`width:${x.need === 'privacy' ? 0 : pct}%`})]), el('span', {class:'covpct', text: x.need === 'privacy' ? '—' : pct + '%'}), el('span', {class:'covst', text:st}), el('span', {class:'covlvl', text:x.level})]); };
+  const body = el('div', {class:'covdetail', id:'covDetail'}, [el('p', {class:'note', style:'margin-top:0', text:`${coverageText(s)}. A required room passes when at least the target share of its floor area is covered at its level. Rooms named storage, IDF, closet, mechanical… default to “not required”; restrooms and locker rooms are privacy areas. Change any room in its panel.`}),
+    el('div', {class:'form', style:'margin-bottom:10px'}, [el('label', {text:'Target'}), tgt]), el('div', {class:'covlist'}, [...s.weak, ...s.ok, ...s.privacy, ...s.optional].map(row))]);
+  d = dialog({title:'Room coverage — ' + (floorLabel(S.floorId) || 'this floor'), cls:'mid', body, footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
+}
+
+// ===== PROJECT HEALTH · PREFLIGHT BEFORE PROPOSALS & DRAWINGS · ASSUMPTIONS SHEET · BACKUPS · SCALE CHECK =====
+const NEEDS_WIRE = (o) => isCam(o) || ['reader', 'lock', 'rex', 'contact', 'controller', 'nvr', 'switch'].includes(kindOf(o).role) || ['pir', 'glassbreak', 'keypad', 'siren', 'smoke', 'heat', 'pull', 'hornstrobe'].includes(o.kind);
+function looseDevices() { const g = buildGraph(); return Object.values(objs()).filter(o => o.t === 'dev' && kindOf(o).cat !== 'site' && !(KINDS[o.kind] || {}).room && NEEDS_WIRE(o) && !neighbors(g, o.id).length); }
+function planFloors() { return floors().filter(f => (f.building || buildingOfFloor(f.id) || {}).kind !== 'site'); }
+function floorScale(f) {
+  const bg = f.bg; const drawn = onFloor(f.id).some(o => o.t === 'wall' || o.t === 'room');
+  if (!bg) return drawn ? {state:'ok', src:'drawn', text:'Drawn to scale in the app'} : {state:'none', src:'none', text:'No plan'};
+  if (bg.vector || f.calSrc === 'dxf') return {state:'ok', src:'dxf', text:'From the CAD file’s units'};
+  if (f.calibrated) return {state:'ok', src:f.calSrc || 'calibrated', text: f.calSrc === 'map' ? 'From the satellite map' : 'Set by two-point calibration'};
+  return {state:'fail', src:'unset', text:'Plan scale NOT set — distances and coverage are unverified'};
+}
+function planWidthFt(f) { const bg = f.bg; if (bg && bg.w && bg.ftPerPx) return bg.w * bg.ftPerPx; const pts = []; for (const o of onFloor(f.id)) { if (o.t === 'wall') pts.push([o.x1, o.y1], [o.x2, o.y2]); else if (o.pts) pts.push(...o.pts); } return pts.length ? G.bbox(pts).w : 0; }
+function scaleSanity(f) { const w = planWidthFt(f); if (!w) return null; if (w < 15) return `${floorLabel(f.id)} is only ${fmtLen(w)} wide — check the distance you typed`; if (w > 3000) return `${floorLabel(f.id)} comes out ${Math.round(w).toLocaleString()} ft wide — check the distance (feet, not inches?)`; return null; }
+function daysAgo(ts) { return ts ? Math.floor((Date.now() - ts) / 864e5) : null; }
+
+// every check in one list: {id, group, label, state:'ok'|'warn'|'fail', detail, fix, fixLabel, for:['proposal','drawings']}
+function projectHealth() {
+  const p = S.project; const out = []; const add = (o) => out.push({for:['proposal', 'drawings'], ...o});
+  const devs = Object.values(objs()).filter(o => o.t === 'dev' && !(prod(o.product) || {}).nobom);
+  // geometry & scale
+  const pf = planFloors().filter(f => f.bg || onFloor(f.id).length); if (!pf.length) add({id:'plan', group:'Plan', label:'Floor plan', state:'fail', detail:'No floor plan yet', fix:() => setStep(1), fixLabel:'Add a plan'});
+  for (const f of pf) { const sc = floorScale(f); const bad = scaleSanity(f);
+    add({id:'scale-' + f.id, group:'Plan', label:'Scale · ' + floorLabel(f.id), state: sc.state === 'fail' ? 'fail' : bad ? 'warn' : 'ok', detail: bad || sc.text, fix:() => { switchFloor(f.id); setStep(1); setTool('calibrate'); }, fixLabel:'Set the scale'}); }
+  // coverage (required rooms on every floor), privacy
+  let req = 0, ok = 0; const weakNames = [], privacyBad = [], notReq = [];
+  for (const f of pf) { if (!onFloor(f.id).some(isCam)) continue; const s = coverageSummary(f.id); req += s.req.length; ok += s.ok.length; weakNames.push(...s.weak.map(x => `${x.r.name || 'Room'} ${Math.floor(x.pct * 100)}%`)); privacyBad.push(...s.privacyBad.map(x => x.r.name || 'Room')); notReq.push(...[...s.optional, ...s.privacy].map(x => x.r.name || 'Room')); }
+  if (devs.some(isCam)) add({id:'coverage', group:'Coverage', label:'Required rooms covered', state: req && ok < req ? 'fail' : 'ok', detail: req ? `${ok} of ${req} at ≥${coverTarget()}%${weakNames.length ? ' · below: ' + weakNames.slice(0, 6).join(', ') : ''}` : 'No rooms drawn — coverage can’t be measured', fix:() => { setStep(2); openCoverageDetails(); }, fixLabel:'See rooms'});
+  if (privacyBad.length) add({id:'privacy', group:'Coverage', label:'Privacy areas', state:'fail', detail:'Cameras inside: ' + privacyBad.join(', '), fix:() => { setStep(2); openCoverageDetails(); }, fixLabel:'Show'});
+  // wiring, design check, storage
+  if (devs.length) { const L = looseDevices(); add({id:'wiring', group:'Wiring', label:'Every device connected', state: L.length ? 'fail' : 'ok', detail: L.length ? `${L.length} not wired: ${L.slice(0, 6).map(o => o.name).join(', ')}` : `${devs.length} devices wired`, fix:() => { setStep(2); wireItUp(); }, fixLabel:'Wire it all up'}); }
+  const issues = (() => { try { return runDesignCheck(); } catch (e) { return []; } })(); const errs = issues.filter(i => i.sev === 'error');
+  if (devs.length) add({id:'check', group:'Design check', label:'No design errors', state: errs.length ? 'fail' : 'ok', detail: errs.length ? errs.slice(0, 3).map(i => i.msg).join(' · ') : `${issues.filter(i => i.sev === 'warning').length} warnings to review`, fix:() => { S.issues = issues; setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, fixLabel:'Open the check'});
+  try { const bw = bandwidthReport(); const short = bw.perRec.filter(r => r.cap && r.tb > r.cap); if (bw.rows.length) add({id:'storage', group:'Recording', label:'Recorder storage', state: short.length ? 'fail' : bw.unassigned ? 'warn' : 'ok', detail: short.length ? short.map(r => `${r.r.name} needs ${r.tb.toFixed(1)} TB, has ${r.cap} TB`).join(' · ') : bw.unassigned ? `${bw.unassigned} cameras not assigned to a recorder` : `${bw.total.tb.toFixed(1)} TB for ${((p.settings || {}).recording || {}).days || REC_DEFAULTS.days} days`, fix:() => { setMode('reports'); REPORT_TAB = 'bandwidth'; renderReports(); }, fixLabel:'Bandwidth & storage'}); } catch (e) {}
+  // customer, company, price
+  add({id:'customer', group:'Customer', label:'Customer & site address', state: p.customer && p.address ? 'ok' : 'warn', detail: [p.customer || 'no customer name', p.address || 'no site address'].join(' · '), fix:() => openSettings(), fixLabel:'Add them'});
+  const B = brandInfo(); add({id:'company', group:'Your company', label:'Company name & contact', state: B.name && B.name !== 'Your Security Co.' && (B.phone || B.email) ? 'ok' : 'warn', detail: [B.name || 'no company name', B.phone || B.email || 'no phone or email', B.logo ? 'logo ✓' : 'no logo'].join(' · '), fix:() => openSettings(), fixLabel:'Company info'});
+  const priced = bomOn() ? !buildQuote().missing : quoteOptions().some(o => o.Q.priced);
+  out.push({for:['proposal'], id:'price', group:'Price', label: bomOn() ? 'Every item priced' : 'At least one option priced', state: priced ? 'ok' : 'fail', detail: priced ? quoteOptions().filter(o => o.Q.priced !== false).map(o => `${o.name} ${money(o.Q.total)}`).join(' · ') : 'Type your price in step 3', fix:() => setStep(3), fixLabel:'Type a price'});
+  // data safety
+  const local = !(typeof TEAM !== 'undefined' && TEAM.on) && !(typeof CLOUD !== 'undefined' && CLOUD.ready); const bk = daysAgo(p.lastBackup);
+  out.push({for:[], id:'backup', group:'Your data', label: local ? 'Backup of this project' : 'Synced to your account', state: !local ? 'ok' : bk == null ? 'warn' : bk > 7 ? 'warn' : 'ok', detail: !local ? 'Saved on the server as you work' : bk == null ? 'Only saved in this browser — download a backup file' : `Last backup ${bk === 0 ? 'today' : bk + ' day' + (bk > 1 ? 's' : '') + ' ago'}`, fix:() => downloadBackup(), fixLabel:'Download backup'});
+  out.push({for:[], id:'proposal', group:'Deliverables', label:'Proposal sent', state: p.quoteSent ? 'ok' : 'warn', detail: p.quoteSent ? `${p.quoteSentBy === 'link' ? 'Customer link' : 'Proposal PDF'} · ${new Date(p.quoteSent).toLocaleDateString()}` : 'Not sent yet', fix:() => setStep(3), fixLabel:'Step 3'});
+  return out;
+}
+function healthRow(h, close) { return el('div', {class:'hrow ' + h.state, 'data-health':h.id}, [el('span', {class:'hico', 'aria-hidden':'true', text: h.state === 'ok' ? '✓' : h.state === 'fail' ? '✗' : '!'}), el('span', {class:'htxt'}, [el('b', {text:h.label}), el('i', {text:h.detail})]), h.state !== 'ok' && h.fix ? el('button', {class:'btn sm', text:h.fixLabel || 'Fix', onclick:() => { close && close(); try { h.fix(); } catch (e) { reportError('Could not open that', e); } }}) : null]); }
+function openHealth() {
+  const list = projectHealth(); const groups = [...new Set(list.map(h => h.group))]; let d; const fails = list.filter(h => h.state === 'fail').length, warns = list.filter(h => h.state === 'warn').length;
+  const body = el('div', {class:'health', id:'healthDlg'}, [el('div', {class:'hsum ' + (fails ? 'fail' : warns ? 'warn' : 'ok'), text: fails ? `${fails} thing${fails > 1 ? 's' : ''} to fix before this goes to a customer` : warns ? `Ready — ${warns} thing${warns > 1 ? 's' : ''} worth a look` : 'Everything checks out ✓'}),
+    ...groups.map(g => el('div', {class:'hgrp'}, [el('h4', {text:g}), ...list.filter(h => h.group === g).map(h => healthRow(h, () => d.close()))]))]);
+  d = dialog({title:'Project health', cls:'mid', body, footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
+}
+// gate before a customer-facing export. Resolves true to continue. Nothing to fix → no dialog at all.
+const preflightOn = () => { try { return localStorage.getItem('ssd-preflight') !== 'off'; } catch (e) { return true; } };
+function preflight(kind) {
+  if (!preflightOn()) return Promise.resolve(true);
+  const items = projectHealth().filter(h => h.for.includes(kind) && h.state !== 'ok'); if (!items.some(h => h.state === 'fail')) return Promise.resolve(true);
+  return new Promise((res) => { let d, go = false; const skip = el('input', {type:'checkbox', id:'pfSkip', 'aria-label':'Don’t check before exporting on this device'});
+    const body = el('div', {class:'health', id:'preflight'}, [el('p', {class:'note', style:'margin-top:0', text: kind === 'proposal' ? 'Before this proposal goes to your customer:' : 'Before you print these drawings:'}), ...items.sort((a, b) => (a.state === 'fail' ? 0 : 1) - (b.state === 'fail' ? 0 : 1)).map(h => healthRow(h, () => d.close())), el('label', {class:'agree', style:'margin:12px 0 0'}, [skip, el('span', {text:'Don’t check before exporting on this device'})])]);
+    d = dialog({title: kind === 'proposal' ? 'Check before sending' : 'Check before printing', cls:'mid', body, onClose:() => res(go), footer:[el('button', {class:'btn', id:'pfFix', text:'Fix first', onclick:() => d.close()}), el('button', {class:'btn primary', id:'pfGo', text:'Export anyway', onclick:() => { go = true; if (skip.checked) try { localStorage.setItem('ssd-preflight', 'off'); } catch (e) {} d.close(); }})]}); });
+}
+// plain-language assumptions & verification — printed in proposals and on a drawing sheet
+function assumptionsLines() {
+  const p = S.project; const st = p.settings || {}; const rec = {...REC_DEFAULTS, ...(st.recording || {})}; const L = [];
+  for (const f of planFloors().filter(f => f.bg || onFloor(f.id).length)) L.push(`Scale — ${floorLabel(f.id)}: ${floorScale(f).text}.`);
+  const cams = Object.values(objs()).filter(isCam); const mh = cams.map(c => +(c.props.mountH ?? 10)); if (cams.length) L.push(`Cameras: ${cams.length}, mounted ${Math.min(...mh)}–${Math.max(...mh)} ft high as shown; ceiling height assumed ${st.ceilingH || 10} ft.`);
+  const all = planFloors().flatMap(f => floorRoomCoverage(f.id)); const nr = all.filter(x => x.need === 'optional').map(x => x.r.name || 'Room'), pv = all.filter(x => x.need === 'privacy').map(x => x.r.name || 'Room');
+  if (all.length) L.push(`Coverage target: ${coverTarget()}% of each required room at its level (IEC 62676-4 pixel density: detect 25, observe 62.5, recognize 125, identify 250 px/m).`);
+  if (nr.length) L.push(`Not required to be covered: ${nr.join(', ')}.`); if (pv.length) L.push(`Privacy areas — no cameras: ${pv.join(', ')}.`);
+  if (cams.length) { let tb = null; try { tb = bandwidthReport().total.tb; } catch (e) {} L.push(`Recording: ${rec.days} days, ${String(rec.codec).toUpperCase()}, ${rec.fps} fps, ${rec.mode === 'motion' ? 'motion-based' : 'continuous'}${tb != null ? ` — about ${tb.toFixed(1)} TB` : ''}.`); }
+  const used = [...new Set(Object.values(objs()).filter(o => o.t === 'dev').map(o => o.product))].map(prod).filter(q => q && !q.nobom);
+  const ver = used.filter(q => q.verified).length, gen = used.filter(q => q.mfr === 'Generic').length, other = used.length - ver - gen;
+  if (used.length) L.push(`Products: ${ver} model${ver === 1 ? '' : 's'} checked against manufacturer datasheets${gen ? `, ${gen} generic placeholder${gen > 1 ? 's' : ''} to confirm` : ''}${other ? `, ${other} not yet verified` : ''}.`);
+  L.push('Coverage is a 2-D estimate from the plan. Shelving, signage, trees, lighting and glare that are not drawn are not modelled — verify on site.');
+  return L;
+}
+async function downloadBackup() { await exportProjectFile(); toast('Backup downloaded — keep it with the job folder', '', 4000); }
+// gentle reminder for projects that live only in this browser
+const BACKUP_NAG = new Set();
+function maybeRemindBackup() {
+  const p = S.project; if (!p || BACKUP_NAG.has(p.id) || (navigator.webdriver && !window.__ssdBackupTest)) return false;
+  if ((typeof TEAM !== 'undefined' && TEAM.on) || (typeof CLOUD !== 'undefined' && CLOUD.ready) || S.readOnly || p._shareView) return false;
+  const devs = Object.values(p.objects || {}).filter(o => o.t === 'dev').length; const bk = daysAgo(p.lastBackup); const age = daysAgo(p.created);
+  if (devs < 3 || (bk != null && bk <= 7) || (bk == null && (age == null || age < 1))) return false;
+  BACKUP_NAG.add(p.id); offer(bk == null ? 'This project is only saved in this browser. Download a backup?' : `Last backup was ${bk} days ago. Download a fresh one?`, 'Download backup', downloadBackup, 12000); return true;
+}
+// one line of plan facts under step 1: file, size, scale and real-world width
+function planFacts(f = curFloor()) {
+  if (!f || !f.bg) return null; const bg = f.bg; const sc = floorScale(f); const w = planWidthFt(f), h = bg.h && bg.ftPerPx ? bg.h * bg.ftPerPx : 0;
+  return [bg.source ? String(bg.source).slice(0, 40) : 'Plan image', bg.vector ? 'CAD (vector)' : `${bg.w}×${bg.h} px image`, sc.text, sc.state === 'ok' && w ? `${fmtLen(w)} × ${fmtLen(h)}` : null].filter(Boolean).join(' · ');
+}
+
+// paste a screenshot or a copied PDF/image file straight in (Ctrl+V / ⌘V) — no file window needed
+document.addEventListener('paste', (e) => {
+  const t = e.target; if (t && (/INPUT|TEXTAREA|SELECT/.test(t.tagName) || t.isContentEditable)) return; if (!S.project || S.readOnly || document.querySelector('.backdrop')) return;
+  const files = [...((e.clipboardData && e.clipboardData.files) || [])].filter(f => /^image\/|pdf$/i.test(f.type) || /\.(pdf|png|jpe?g|webp|dxf)$/i.test(f.name || ''));
+  if (!files.length) return; e.preventDefault(); const f = files[0]; const named = f.name && f.name !== 'image.png' ? f : new File([f], 'Pasted plan ' + new Date().toLocaleDateString().replace(/\//g, '-') + '.png', {type:f.type || 'image/png'});
+  importFiles([named]); toast('Pasted — importing it as the floor plan', '', 3000);
+});
 
 // ===== START (after every module has loaded) =====
 boot().catch(e => { console.error(e); const l = $('#loading'); if (l) l.textContent = 'The designer could not start: ' + e.message; });
