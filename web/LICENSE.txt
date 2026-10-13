@@ -1,0 +1,6 @@
+Security Site Designer
+Copyright (c) 2026 Bradley Hall. All rights reserved.
+
+Created by Bradley Hall. This software and its source code are proprietary.
+No part of it may be copied, modified, redistributed, sublicensed or sold
+without the written permission of Bradley Hall.
