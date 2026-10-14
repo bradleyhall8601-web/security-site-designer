@@ -1,0 +1,8 @@
+{
+  "name": "security-site-designer-browser-qa",
+  "private": true,
+  "description": "Live-site browser QA for Security Site Designer (created by Brad Hall).",
+  "type": "module",
+  "scripts": { "qa": "node prod-qa.mjs" },
+  "dependencies": { "playwright": "1.56.0" }
+}

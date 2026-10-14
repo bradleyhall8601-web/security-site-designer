@@ -1,0 +1,62 @@
+# Live-site browser QA on Windows: real Google Chrome and real Microsoft Edge (current stable)
+# run the full user/admin workflow against the deployed site. Security Site Designer — created by Brad Hall.
+name: Browser QA (Windows Chrome + Edge)
+on:
+  workflow_dispatch:
+    inputs:
+      url: { description: 'Site to test', default: 'https://bradleyhall8601-web.github.io/security-site-designer/' }
+  workflow_run:
+    workflows: ['Publish web app']
+    types: [completed]
+permissions: { contents: read }
+jobs:
+  qa:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, msedge]
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      BASE_URL: ${{ github.event.inputs.url || 'https://bradleyhall8601-web.github.io/security-site-designer/' }}
+      BROWSER: ${{ matrix.browser }}
+      OUT: qa-out
+      HEADED: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install test runner
+        working-directory: e2e
+        run: npm install --no-audit --no-fund
+      - name: Update ${{ matrix.browser }} to the current stable release
+        working-directory: e2e
+        continue-on-error: true
+        run: npx playwright install --force ${{ matrix.browser }}
+      - name: Wait for the new deploy to be served
+        if: ${{ github.event_name == 'workflow_run' }}
+        shell: pwsh
+        run: Start-Sleep -Seconds 60
+      - name: Run the live-site QA workflow
+        working-directory: e2e
+        run: node prod-qa.mjs
+      - name: Summary
+        if: always()
+        working-directory: e2e
+        shell: pwsh
+        run: |
+          $f = Get-ChildItem qa-out/results-*.json -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $f) { "No results file" >> $env:GITHUB_STEP_SUMMARY; exit 0 }
+          $r = Get-Content $f -Raw | ConvertFrom-Json
+          "## $($r.env.browser) $($r.env.version) — $($r.pass)/$($r.total) passed (app v$($r.env.appVersion))" >> $env:GITHUB_STEP_SUMMARY
+          "| Area | Check | Result | Observed |" >> $env:GITHUB_STEP_SUMMARY
+          "|---|---|---|---|" >> $env:GITHUB_STEP_SUMMARY
+          foreach ($x in $r.results) { $ok = if ($x.pass) { 'PASS' } else { 'FAIL' }; $o = ($x.observed -replace '\|', '/'); "| $($x.area) | $($x.name) | $ok | $o |" >> $env:GITHUB_STEP_SUMMARY }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-${{ matrix.browser }}
+          path: e2e/qa-out
+          retention-days: 30
