@@ -38,7 +38,7 @@ const must = (c, m) => { if (!c) throw new Error(m || 'check failed'); };
 async function t(area, name, expected, fn) {
   const e0 = errors.length, t0 = Date.now(); let observed = '', pass = false, err = '';
   try { observed = (await Promise.race([fn(), new Promise((_, rej) => setTimeout(() => rej(new Error('timed out after 150 s')), 150000))])) || 'as expected'; const ne = errors.slice(e0).filter(e => !noise(e)); if (ne.length) throw new Error('console error: ' + ne.join(' | ').slice(0, 300)); pass = true; }
-  catch (e) { err = String(e.message || e).split('\n')[0].slice(0, 400); }
+  catch (e) { err = String(e.message || e).split('\n')[0].slice(0, 900); }
   const shot = `shots/${CH}-${String(++n).padStart(2, '0')}${pass ? '' : '-FAIL'}.png`; try { await P.screenshot({path: path.join(OUT, shot)}); } catch {}
   if (!pass) { try { await P.keyboard.press('Escape'); await P.keyboard.press('Escape'); await ev(() => document.querySelectorAll('.backdrop').forEach(b => b.remove())); } catch {} }
   R.push({area, name, expected, observed: pass ? observed : err, pass, ms: Date.now() - t0, evidence: shot});
@@ -230,7 +230,9 @@ await t('Export', 'PDF drawing set', 'Preflight (if anything fails) → multi-sh
 let projectFile = EXPORTS.find(e => e.label === 'Project file');
 await t('Persistence', 'Reload keeps plan, scale, rooms, devices, cables and prices', 'Same state after a full page reload', async () => {
   await sleep(1500); const a = await state(); await P.reload(); await P.waitForFunction(() => window.SSD && SSD.S.project, null, {timeout:60000}); await sleep(1500); const b = await state();
-  must(JSON.stringify(a) === JSON.stringify(b), 'before ' + JSON.stringify(a) + ' after ' + JSON.stringify(b)); return JSON.stringify(b);
+  // the app reopens on a building floor even if you were last on the satellite map, so compare the project, not the view
+  const keys = ['id', 'name', 'floors', 'rooms', 'cams', 'devs', 'cables', 'scales', 'prices']; const diff = keys.filter(k => JSON.stringify(a[k]) !== JSON.stringify(b[k]));
+  must(!diff.length, diff.map(k => `${k}: ${JSON.stringify(a[k])} → ${JSON.stringify(b[k])}`).join(' · ')); return keys.map(k => `${k}=${typeof b[k] === 'string' ? b[k] : JSON.stringify(b[k])}`).join(' · ') + ` · reopened on ${b.floor}${a.floor !== b.floor ? ` (was on ${a.floor})` : ''}`;
 });
 await t('Persistence', 'Back / forward returns to the same project', 'Leave the site, press Back, the same project reopens', async () => {
   const a = await state(); await P.goto('about:blank'); await P.goBack(); await P.waitForFunction(() => window.SSD && SSD.S.project, null, {timeout:60000}); await sleep(1200); const b = await state();
