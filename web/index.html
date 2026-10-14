@@ -2934,7 +2934,7 @@ function updateStatusCounts() {
   if (!S.project || !$('#sbCams')) return; const c = projectCounts(S.project);
   $('#sbCams').innerHTML = `<b>${c.cameras}</b> cameras`; $('#sbDoors').innerHTML = `<b>${c.accessDoors}</b> access doors`; $('#sbCables').innerHTML = `<b>${c.cables}</b> cable runs`;
   const e = S.issues.filter(i => i.sev === 'error').length, w = S.issues.filter(i => i.sev === 'warning').length, s = S.issues.filter(i => i.sev === 'suggestion').length;
-  $('#sbIssues').innerHTML = (e ? `<i class="dot err"></i><b>${e}</b> errors ` : '') + (w ? `<i class="dot warn"></i><b>${w}</b> warnings ` : '') + (!e && !w ? `<i class="dot ok"></i> Check clean` : '') + (s ? ` · ${s} tips` : '');
+  $('#sbIssues').innerHTML = (e ? `<i class="dot err"></i><b>${e}</b> error${e === 1 ? '' : 's'} ` : '') + (w ? `<i class="dot warn"></i><b>${w}</b> warning${w === 1 ? '' : 's'} ` : '') + (!e && !w ? `<i class="dot ok"></i> Check clean` : '') + (s ? ` · ${s} tip${s === 1 ? '' : 's'}` : '');
   clearTimeout(updateStatusCounts.t); updateStatusCounts.t = setTimeout(() => { try { updateReadyBtn(); } catch (err) {} }, 500);
 }
 function issuesMenu(btn) {
@@ -7326,7 +7326,7 @@ function openBuildReady() {
   const groups = [...new Set(list.map(h => h.group))];
   const ring = (() => { const r = 26, c = 2 * Math.PI * r; const col = pct >= 90 ? 'var(--ok)' : pct >= 60 ? 'var(--accent)' : 'var(--err)'; return el('div', {class:'ring brring', role:'img', 'aria-label':`Readiness ${pct} percent`, html:`<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="${r}" class="rbg"/><circle cx="32" cy="32" r="${r}" class="rfg" style="stroke:${col};stroke-dasharray:${(c * pct / 100).toFixed(1)} ${c.toFixed(1)}"/></svg><b>${pct}</b>`}); })();
   const body = el('div', {class:'health buildready', id:'healthDlg'}, [
-    el('div', {class:'brtop'}, [ring, el('div', {}, [el('div', {class:'brq', text:'Can this be installed today?'}), el('div', {class:'hsum ' + (v.state === 'none' ? 'warn' : v.state), id:'brVerdict', text:v.text}), el('p', {class:'note', style:'margin:4px 0 0', text:`Readiness ${pct}% · ${traceLine()}`})])]),
+    el('div', {class:'brtop'}, [ring, el('div', {}, [el('div', {class:'brq', text:'Can this be installed today?'}), el('div', {class:'hsum ' + (v.state === 'none' ? 'warn' : v.state), id:'brVerdict', text:v.text}), el('p', {class:'note', id:'brCounts', style:'margin:4px 0 0', text:(() => { const b = list.filter(h => h.build && h.state !== 'none'), o = list.filter(h => !h.build && h.state !== 'ok' && h.state !== 'none'); return `Build checks: ${b.filter(h => h.state === 'ok').length} of ${b.length} pass · Paperwork open: ${o.length ? o.map(h => h.label.toLowerCase()).join(', ') : 'none'} · Readiness ${pct}% overall · ${traceLine()}`; })()})])]),
     el('div', {class:'hgrp'}, [el('h4', {text:'System — what has actually been done'}), pipelineEl(s, {onFix:close})]),
     el('div', {class:'hgrp'}, [el('h4', {text:'Plan scale, per floor'}), scaleTable(close)]),
     ...groups.map(g => el('div', {class:'hgrp'}, [el('h4', {text:g}), ...list.filter(h => h.group === g).map(h => healthRow(h, close))])),
