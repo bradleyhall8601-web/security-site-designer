@@ -8,7 +8,7 @@ on:
   workflow_run:
     workflows: ['Publish web app']
     types: [completed]
-permissions: { contents: read }
+permissions: { contents: read, actions: read }
 jobs:
   qa:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
@@ -60,3 +60,20 @@ jobs:
           name: qa-${{ matrix.browser }}
           path: e2e/qa-out
           retention-days: 30
+  # keep the latest results readable without downloading artifacts: results.json, screenshots and every exported file
+  publish:
+    needs: qa
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: results }
+      - name: Publish to the qa-results branch
+        run: |
+          cd results
+          echo "run ${{ github.run_id }} · commit ${{ github.sha }} · ${{ github.event_name }}" > RUN.txt
+          git init -q -b qa-results
+          git add -A
+          git -c user.name=qa-bot -c user.email=qa-bot@users.noreply.github.com commit -qm "Browser QA results, run ${{ github.run_id }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" qa-results
