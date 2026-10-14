@@ -679,7 +679,7 @@ canvas.confetti{position:fixed; inset:0; pointer-events:none; z-index:500}
   body.easy #easydock{bottom:auto; top:10px; left:10px}
 }
 @media (max-width:1520px){ body.easy #steps .stp:not(.on) span{display:none} body.easy #steps .stp:not(.on){padding:0 5px} }
-@media (max-width:520px){ body.easy #steps .stp span{display:none} body.easy #steps .stp{padding:0 5px} body.easy #searchBtn, body.easy #checkBtn{display:none} body.easy #steps{padding:0 4px; overflow:visible} }
+@media (max-width:520px){ body.easy #steps .stp span{display:none} body.easy #steps .stp{padding:0 5px} body.easy #searchBtn, body.easy #readyBtn{display:none} body.easy #steps{padding:0 4px; overflow:visible} }
 
 .resctl{display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap} .resd{display:flex; align-items:center; gap:6px; flex:1; min-width:150px; font-size:12px; color:var(--muted)} .resd input{flex:1; min-width:60px}
 .seg.daynight{display:inline-flex; border:1px solid var(--line); border-radius:999px; padding:2px; gap:2px} .seg.daynight .btn{border:0; border-radius:999px; background:transparent; height:24px} .seg.daynight .btn.on{background:var(--accent); color:#1a1200}
@@ -817,6 +817,33 @@ label.ezcard{cursor:pointer}
 .libitem .pstat{position:absolute; right:4px; top:4px; font-style:normal; font:700 9px var(--f-ui); text-transform:uppercase; letter-spacing:.04em; padding:1px 5px; border-radius:6px} .libitem{position:relative}
 .libitem .pstat.disc{background:var(--warn-bg); color:var(--warn)} .libitem .pstat.custom{background:var(--info-bg); color:var(--info)}
 .upspick.bad, .lcout .bad i{color:var(--err); font-weight:700}
+/* ===== Build Ready dashboard · system pipeline · scale table · version compare ===== */
+.buildready .brtop{display:flex; gap:14px; align-items:center; margin-bottom:6px} .buildready .brq{font:800 15px var(--f-ui); margin-bottom:4px}
+.brring{width:64px; height:64px; flex:none} .brring b{font-size:17px}
+.syspipe{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:6px}
+.sstage{display:flex; gap:8px; align-items:center; padding:7px 9px; border:1px solid var(--line); border-radius:10px; background:var(--panel)}
+.sstage .sico{width:20px; height:20px; flex:none; border-radius:50%; display:grid; place-items:center; font:800 11px var(--f-ui); color:#fff; background:var(--muted)}
+.sstage.ok .sico{background:var(--ok)} .sstage.warn .sico{background:var(--warn)} .sstage.fail .sico{background:var(--err)} .sstage.none{opacity:.7}
+.sstage .stxt{flex:1; min-width:0} .sstage b{display:block; font-size:12.5px} .sstage i{display:block; font-style:normal; font-size:11.5px; color:var(--muted); overflow-wrap:anywhere}
+.syspipe.compact{grid-template-columns:1fr; gap:3px} .syspipe.compact .sstage{padding:4px 8px; border-radius:8px} .ezpipe{margin:8px 0 4px} .ezpipe .linkbtn{margin-top:6px; font-size:12.5px}
+.scaletbl{width:100%; font-size:12.5px} .scaletbl td, .scaletbl th{padding:5px 6px; vertical-align:top} .scaletbl tr.sc-fail td{background:var(--err-bg)} .scaletbl tr.sc-warn td{background:var(--warn-bg)}
+.sevpill.ok{background:var(--ok-bg); color:var(--ok)}
+.difflist{margin:0; padding-left:18px; line-height:1.7; font-size:13px} .difflist .d-add::marker{content:'+  '; color:var(--ok)} .difflist .d-del::marker{content:'−  '; color:var(--err)} .difflist .d-move::marker{content:'↔  '; color:var(--accent)} .difflist .d-edit::marker{content:'✎  '; color:var(--muted)}
+.readybtn .cnt{text-align:center}
+@media (max-width:520px){ .syspipe{grid-template-columns:1fr} .buildready .brtop{align-items:flex-start} .scaletbl th:nth-child(3), .scaletbl td:nth-child(3){display:none} }
+/* larger tap targets on touch screens */
+@media (pointer:coarse){ #left .btn, #right .btn, .dlg .btn, .tbtn, .ftab, .subtab, .ptab, .eztile, .dlg .ib, #right .ib, .linkbtn{min-height:44px} #left .btn.sm, #right .btn.sm, .dlg .btn.sm{min-height:40px} .dlg .ib, #right .ib{min-width:44px} .dlg input, .dlg select, #left input, #left select, #right input, #right select{min-height:40px} }
+/* high-contrast theme */
+:root[data-contrast="high"]{--fg:#000; --muted:#1f2328; --line:#000; --line2:#3b3b3b; --accent:#8a5a00; --ok:#0a6b2c; --warn:#7a4a00; --err:#a40000}
+:root[data-contrast="high"] .btn, :root[data-contrast="high"] .ezcard, :root[data-contrast="high"] .sstage, :root[data-contrast="high"] .hrow{border-width:2px; border-color:currentColor}
+:root[data-contrast="high"] :focus-visible{outline:3px solid #000 !important; outline-offset:2px}
+:root[data-contrast="high"][data-theme="dark"], :root[data-contrast="high"].dark{--fg:#fff; --muted:#e6e6e6; --line:#fff; --accent:#ffcc33; --ok:#5cff8a; --warn:#ffd24d; --err:#ff6b6b}
+@media (prefers-color-scheme: dark){ :root[data-contrast="high"]:not([data-theme="light"]){--fg:#fff; --muted:#e6e6e6; --line:#fff; --line2:#cfcfcf; --accent:#ffcc33; --ok:#5cff8a; --warn:#ffd24d; --err:#ff6b6b} }
+.explain{margin:0; padding-left:18px; line-height:1.6; font-size:13.5px} .explain li{margin-bottom:4px} .explainbtn{font:800 14px var(--f-ui)}
+.form.simple > .advset{display:none !important}
+.syspipe.compact .stxt{display:flex; gap:8px; justify-content:space-between; align-items:baseline} .syspipe.compact .sstage b{display:inline; font-size:12px; white-space:nowrap} .syspipe.compact .sstage i{display:inline; text-align:right; font-size:11.5px} .syspipe.compact .sico{width:16px; height:16px; font-size:10px}
+@media (max-width:520px){ #readyBtn svg{display:none} #readyBtn{padding:0 6px; gap:0} }
+@media (max-width:1100px){ #readyBtn .hide-s{display:none} }
 </style>
 <div id="app">
   <header id="top"></header>
@@ -1066,7 +1093,7 @@ function estimatePrice(part) { if (!part) return null; if (EST_PRICE_BY_PART[par
 
 // Security Site Designer — created by Brad Hall. Copyright (c) 2026 Brad Hall. All rights reserved.
 const APP_CREATOR = {name:'Brad Hall', year:2026};
-const APP_VERSION = '3.10';
+const APP_VERSION = '3.11';
 // ===== UTILITIES =====
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -1239,8 +1266,10 @@ function mergeLastUndo(label) {
   for (const [id, before, after] of b.objs) { if (m.has(id)) m.get(id)[2] = after; else m.set(id, [id, before, after]); }
   S.undo.push({label: label || a.label, objs:[...m.values()], meta: a.meta || b.meta ? [ (a.meta||b.meta)[0], (b.meta||a.meta)[1] ] : null, time:b.time});
 }
-function undo() { if (TOOL && TOOL.busy && TOOL.busy()) { cancelTool(); return; } const p = S.undo.pop(); if (!p) return toast('Nothing to undo'); S.redo.push(p); applyPatch(p, 0); toast('Undo: ' + p.label); }
-function redo() { const p = S.redo.pop(); if (!p) return toast('Nothing to redo'); S.undo.push(p); applyPatch(p, 1); toast('Redo: ' + p.label); }
+// a scale change moves everything on the floor — refit the view so the plan never ends up off screen
+const REFIT = /^(Calibrate scale|Import plan|Import plan page|Capture map)$/;
+function undo() { if (TOOL && TOOL.busy && TOOL.busy()) { cancelTool(); return; } const p = S.undo.pop(); if (!p) return toast('Nothing to undo'); S.redo.push(p); applyPatch(p, 0); if (REFIT.test(p.label)) { try { R.bgKey = null; redrawAll(); requestAnimationFrame(() => zoomToFit()); } catch (e) {} } toast('Undo: ' + p.label); }
+function redo() { const p = S.redo.pop(); if (!p) return toast('Nothing to redo'); S.undo.push(p); applyPatch(p, 1); if (REFIT.test(p.label)) { try { R.bgKey = null; redrawAll(); requestAnimationFrame(() => zoomToFit()); } catch (e) {} } toast('Redo: ' + p.label); }
 
 // ===== CHANGE PROPAGATION =====
 let changeHooks = [];
@@ -1604,7 +1633,7 @@ function makeDevice(productId, x, y, extra={}) {
 // severity: error | warning | suggestion. Each issue references objects so clicking zooms to them.
 function runDesignCheck() {
   const out = []; const all = objs(); const g = buildGraph(); const list = Object.values(all);
-  const add = (sev, id, msg, fix) => out.push({sev, id, msg, fix, floor: all[id] && all[id].floor});
+  const add = (sev, id, msg, fix) => out.push({sev, id, msg, fix, floor: all[id] ? all[id].floor : (typeof floorById === 'function' && floorById(String(id).replace(/^scale:/, ''))) ? String(id).replace(/^scale:/, '') : undefined});
   const devs = list.filter(o => o.t === 'dev');
   // duplicate names
   const names = new Map(); for (const o of list) if ((o.t === 'dev' || o.t === 'door' || o.t === 'cable') && o.name) { const key = (o.t === 'cable' ? 'c:' : 'd:') + o.name; if (!names.has(key)) names.set(key, []); names.get(key).push(o); }
@@ -1695,7 +1724,7 @@ function runDesignCheck() {
   // standby batteries
   for (const ps of devs.filter(o => o.kind === 'psu')) { const L = psuLoad(ps); if (L.battMax && L.ah > L.battMax) add('warning', ps.id, `${ps.name}: ${L.hours} h standby needs ${L.ah.toFixed(1)} Ah — more than the enclosure holds (${L.battMax} Ah)`); }
   for (const u of devs.filter(o => o.kind === 'ups')) { const L = upsLoad(u); if (L.w > L.capW * 0.8) add('warning', u.id, `${u.name}: estimated load ${L.w.toFixed(0)} W is over 80% of its ${L.capW.toFixed(0)} W rating`); }
-  detectorSpacingIssues(add); ipIssues(add); fireIssues(add); wirelessIssues(add); coverageIssues(add); connectivityIssues(add);
+  detectorSpacingIssues(add); ipIssues(add); fireIssues(add); wirelessIssues(add); coverageIssues(add); connectivityIssues(add); scaleIssues(add);
   // open comments
   const open = list.filter(o => o.t === 'comment' && o.status !== 'resolved').length;
   if (open) { const c = list.find(o => o.t === 'comment' && o.status !== 'resolved'); add('suggestion', c.id, `${open} open review comment${open>1?'s':''}`); }
@@ -1712,7 +1741,7 @@ const updateRoomCoverage = debounce(() => {
   S.roomCov = next; if (changed.length) markDirty(changed);
 }, 450);
 function issuesKey() { return S.project ? S.project.id + '|' + (S.txn || 0) + '|' + S.project.modified : ''; }
-function freshIssues() { if (!S.project) return []; const k = issuesKey(); if (S.issuesKey !== k) { try { S.issues = runDesignCheck(); } catch (e) { console.error('design check failed', e); S.issues = []; } S.issuesKey = k; S.checkedAt = Date.now(); } return S.issues; }
+function freshIssues() { if (!S.project) return []; const k = issuesKey(); if (S.issuesKey !== k) { try { S.issues = runDesignCheck(); } catch (e) { console.error('design check failed', e); S.issues = []; } S.issuesKey = k; S.checkedAt = Date.now(); try { updateStatusCounts(); } catch (e) {} } return S.issues; }
 const scheduleValidate = debounce(() => { if (!S.project) return; S.issuesKey = null; freshIssues(); updateStatusCounts(); if (S.mode === 'reports') renderReports(); updateRoomCoverage(); }, 350);
 
 // ===== BILL OF MATERIALS =====
@@ -2507,14 +2536,14 @@ TOOLS.calibrate = {
   up() {}, busy() { return !!this.a; }, cancel() { this.a = null; this.pair = null; }, end() { this.a = null; this.pair = null; },
 };
 function applyCalibration(a, b, realFt, scaleObjects) {
-  const f = curFloor(); const cur = G.dist(a, b); if (!cur || !realFt) return; const k = realFt / cur;
+  const f = curFloor(); const cur = G.dist(a, b); if (!cur) return toast('Those two points are the same spot — click two different points.', 'warn'); if (!(realFt > 0) || !isFinite(realFt)) return toast('Enter a distance greater than zero, such as 25\' or 7.6 m', 'warn'); const k = realFt / cur;
   tx('Calibrate scale', () => {
     touchMeta(); const fl = floorById(S.floorId);
     if (fl.bg) { fl.bg.ftPerPx *= k; fl.bg.x *= k; fl.bg.y *= k; }
     if (scaleObjects) for (const o of onFloor()) { touch(o.id); const sc = (q) => [q[0]*k, q[1]*k]; if (o.t === 'wall') { o.x1*=k; o.y1*=k; o.x2*=k; o.y2*=k; } else if (o.pts) o.pts = o.pts.map(sc); else { o.x *= k; o.y *= k; } if (o.w) o.w *= 1; }
     fl.calibrated = true; fl.calSrc = 'two-point'; fl.calHist = [...(fl.calHist || []), {at:Date.now(), by:S.project.designer || '', a:a.map(v => +v.toFixed(2)), b:b.map(v => +v.toFixed(2)), ft:+realFt, ftPerPx: fl.bg ? +fl.bg.ftPerPx.toPrecision(6) : null, source: fl.bg ? fl.bg.source || '' : ''}].slice(-20);
   });
-  R.bgKey = null; redrawAll(); setTool('select'); zoomToFit(); const bad = scaleSanity(curFloor()); if (bad) toast(bad, 'warn', 8000); else toast(`Scale set: ${fmtLen(realFt)} between the two points${planWidthFt(curFloor()) ? ' · plan is ' + fmtLen(planWidthFt(curFloor())) + ' wide' : ''}`, '', 4500);
+  R.bgKey = null; redrawAll(); setTool('select'); zoomToFit(); try { renderLeft(); updateReadyBtn(); } catch (e) {} const bad = scaleSanity(curFloor()); if (bad) toast(bad, 'warn', 8000); else toast(`Scale set: ${fmtLen(realFt)} between the two points${planWidthFt(curFloor()) ? ' · plan is ' + fmtLen(planWidthFt(curFloor())) + ' wide' : ''}`, '', 4500);
 }
 
 // ===== HOVER INFO (what is this?) =====
@@ -2700,7 +2729,7 @@ function smartAfterCable(c) {
 }
 
 // ===== FLOORS / BUILDINGS =====
-function switchFloor(fid, keepSel) { S.roomCov = null; setTimeout(() => updateRoomCoverage(), 0); if (!floorById(fid)) return; if (TOOL && TOOL.cancel && TOOL.busy && TOOL.busy()) TOOL.cancel(); if (fid !== S.floorId) resetToolOnContextChange(); S.floorId = fid; if (!keepSel) S.sel.clear(); R.bgKey = null; redrawAll(); updateFloorTabs(); renderTree(); onSelectionChanged(); requestAnimationFrame(() => zoomToFit()); refreshMode(); }
+function switchFloor(fid, keepSel) { try { if (S.project && floorById(fid)) localStorage.setItem('ssd-floor-' + S.project.id, fid); } catch (e) {} S.roomCov = null; setTimeout(() => updateRoomCoverage(), 0); if (!floorById(fid)) return; if (TOOL && TOOL.cancel && TOOL.busy && TOOL.busy()) TOOL.cancel(); if (fid !== S.floorId) resetToolOnContextChange(); S.floorId = fid; if (!keepSel) S.sel.clear(); R.bgKey = null; redrawAll(); updateFloorTabs(); renderTree(); onSelectionChanged(); requestAnimationFrame(() => zoomToFit()); refreshMode(); }
 function addBuilding(name) { let b; tx('Add building', () => { touchMeta(); b = {id:uid('b'), name: name || 'Building ' + String.fromCharCode(65 + S.project.buildings.filter(x => x.kind !== 'site').length), kind:'building', floors:[{id:uid('f'), name:'Floor 1', bg:null}]}; S.project.buildings.push(b); }); switchFloor(b.floors[0].id); return b; }
 function addFloor(bid, name) { const b = S.project.buildings.find(x => x.id === bid) || buildingOfFloor(S.floorId); let f; tx('Add floor', () => { touchMeta(); const bb = S.project.buildings.find(x => x.id === b.id); f = {id:uid('f'), name: name || (bb.kind === 'site' ? 'Area ' : 'Floor ') + (bb.floors.length + 1), bg:null}; bb.floors.push(f); }); switchFloor(f.id); return f; }
 function renameFloor(fid, name) { tx('Rename floor', () => { touchMeta(); floorById(fid).name = name; }); }
@@ -2775,7 +2804,7 @@ function dialog({title, body, footer, cls='', onClose}) {
   const b = el('div', {class:'body'}); if (typeof body === 'string') b.innerHTML = body; else if (body) b.append(body); d.append(b);
   if (footer) { const f = el('footer'); footer.forEach(x => f.append(x)); d.append(f); }
   bd.append(d); bd.addEventListener('pointerdown', (e) => { if (e.target === bd) close(); }); document.addEventListener('keydown', onKey, true); document.body.append(bd);
-  setTimeout(() => { const f = d.querySelector('input:not([type=checkbox]):not([type=file]),select,textarea') || d.querySelector('footer .btn.primary') || d.querySelector('button'); f && f.focus({preventScroll:true}); }, 30);
+  setTimeout(() => { const a = document.activeElement; if (a && a !== document.body && d.contains(a)) return; /* already typing in this dialog — leave focus alone */ const f = d.querySelector('input:not([type=checkbox]):not([type=file]),select,textarea') || d.querySelector('footer .btn.primary') || d.querySelector('button'); f && f.focus({preventScroll:true}); }, 30);
   return {close, el:d, body:b};
 }
 function confirmBox(msg, okLabel, fn) { const d = dialog({title:'Confirm', body: el('p', {text:msg, style:'margin:0'}), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', text:okLabel, onclick:() => { d.close(); fn(); }})]}); }
@@ -2810,7 +2839,7 @@ function buildChrome() {
     el('div', {class:'tb-right'}, [
       el('button', {class:'searchbtn', id:'searchBtn', 'aria-label':'Search or run a command (Ctrl+K)', onclick:() => openPalette(), html:`${icon('search','width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8"')}<span class="t">Search or run a command</span><kbd>Ctrl K</kbd>`}),
       el('button', {class:'save ok', id:'saveStatus', text:'Saved', onclick:() => { if (S.saveState === 'error') saveNow(); else saveNow(); }}),
-      el('button', {class:'btn checkbtn', id:'checkBtn', title:'Run design check', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`${icon('check')}<span class="hide-s">Check</span><span class="cnt ok" id="checkCnt">0</span>`}),
+      el('button', {class:'btn checkbtn readybtn', id:'readyBtn', title:'Build Ready — can this be installed today?', 'aria-label':'Build Ready dashboard', onclick:() => openBuildReady(), html:`${icon('check')}<span class="hide-s">Build ready</span><span class="cnt" id="checkCnt">—</span>`}),
       el('button', {class:'btn primary', id:'exportBtn', 'aria-label':'Export', onclick:() => openExport(), html:`${icon('export')}<span class="hide-s">Export</span>`}),
       el('button', {class:'ib tbbtn', id:'toolboxBtn', 'aria-label':'Toolbox', 'data-tip':'Toolbox', 'data-desc':'Lens calculator, QR labels, VMS list, UPS, conduit, IP plan…', html:'<span aria-hidden="true" style="font-size:17px;line-height:1">🧰</span>', onclick:() => openToolbox()}),
       el('button', {class:'ib', id:'helpBtn', 'aria-label':'Help', 'data-tip':'Help', 'data-desc':'Guided tour and keyboard shortcuts', html:icon('help'), onclick:(e) => { const r = e.currentTarget.getBoundingClientRect(); popMenu(r.right - 220, r.bottom + 4, [{label:'Take the 1-minute tour', fn:startTour}, {label:'Keyboard shortcuts', key:'?', fn:openShortcuts}, {label:'About Security Site Designer', fn:() => openAbout()}, {label:'Open the example project', fn:openExample}]); }}),
@@ -2905,8 +2934,8 @@ function updateStatusCounts() {
   if (!S.project || !$('#sbCams')) return; const c = projectCounts(S.project);
   $('#sbCams').innerHTML = `<b>${c.cameras}</b> cameras`; $('#sbDoors').innerHTML = `<b>${c.accessDoors}</b> access doors`; $('#sbCables').innerHTML = `<b>${c.cables}</b> cable runs`;
   const e = S.issues.filter(i => i.sev === 'error').length, w = S.issues.filter(i => i.sev === 'warning').length, s = S.issues.filter(i => i.sev === 'suggestion').length;
-  $('#sbIssues').innerHTML = (e ? `<i class="dot err"></i><b>${e}</b> errors ` : '') + (w ? `<i class="dot warn"></i><b>${w}</b> warnings ` : '') + (!e && !w ? `<i class="dot ok"></i> No problems` : '') + (s ? ` · ${s} tips` : '');
-  const cnt = $('#checkCnt'); cnt.textContent = e + w; cnt.className = 'cnt ' + (e ? 'err' : w ? 'warn' : 'ok');
+  $('#sbIssues').innerHTML = (e ? `<i class="dot err"></i><b>${e}</b> errors ` : '') + (w ? `<i class="dot warn"></i><b>${w}</b> warnings ` : '') + (!e && !w ? `<i class="dot ok"></i> Check clean` : '') + (s ? ` · ${s} tips` : '');
+  clearTimeout(updateStatusCounts.t); updateStatusCounts.t = setTimeout(() => { try { updateReadyBtn(); } catch (err) {} }, 500);
 }
 function issuesMenu(btn) {
   const r = btn.getBoundingClientRect(); const list = S.issues.slice(0, 14);
@@ -3311,6 +3340,7 @@ function renderRight() {
   const o = sel[0];
   const typeLabel = o.t === 'dev' ? kindOf(o).label : {wall:'Wall', room:'Room', door:'Door', window:'Window', cable:'Cable', measure: o.kind === 'area' ? 'Area' : 'Dimension', text:'Text', comment:'Comment', shape: SHAPE_LABELS[o.kind] || 'Shape'}[o.t];
   head.append(...[el('h2', {text: typeLabel}), o.locked ? el('span', {class:'typebadge', text:'Locked'}) : null].filter(Boolean), el('button', {class:'ib', title:'Duplicate (Ctrl+D)', 'aria-label':'Duplicate', html:icon('duplicate'), onclick:() => duplicateSelection()}), el('button', {class:'ib', title:'Delete (Del)', 'aria-label':'Delete', html:icon('trash'), onclick:deleteSelection}));
+  try { if (['dev', 'room', 'cable', 'door'].includes(o.t)) head.append(explainBtn()); } catch (e) {}
   if (o.t === 'dev') body.append(devProps(o));
   else if (o.t === 'door') body.append(doorProps(o));
   else if (o.t === 'cable') body.append(cableProps(o));
@@ -3546,8 +3576,9 @@ function renderBOMView() {
 }
 function renderReports() {
   if (S.mode !== 'reports') return; const sh = $('#sheet'); sh.innerHTML = ''; const wrap = el('div', {class:'sheet-in'});
-  const tabs = [['check','Design check'],['bandwidth','Bandwidth & storage'],['riser','Riser diagram'],['cables','Cable schedule'],['devices','Device schedule'],['doors','Door schedule'],['comments','Comments'],['versions','Version history']];
+  const tabs = [['check','Design check'],['bandwidth','Bandwidth & storage'],['riser','Riser diagram'],['cables','Cable schedule'],['devices','Device schedule'],['doors','Door schedule'],['comments','Comments'],['versions','Version history'],['activity','Activity']];
   wrap.append(el('div', {class:'sheethead'}, [el('h1', {text:'Reports'}), el('button', {class:'btn', html:icon('check') + 'Run design check', onclick:() => { S.issues = runDesignCheck(); updateStatusCounts(); REPORT_TAB = 'check'; renderReports(); toast('Design check complete'); }}), el('button', {class:'btn primary', html:icon('export') + 'Export…', onclick:() => openExport()})]));
+  { const uns = planFloors().filter(f => onFloor(f.id).some(o => o.t === 'dev' || o.t === 'cable' || o.t === 'room') && floorScale(f).state === 'fail'); if (uns.length) wrap.append(el('div', {class:'ezalert soft', id:'scaleBanner', style:'margin:0 0 10px'}, [el('b', {text:'Scale not set on ' + uns.map(f => floorLabel(f.id)).join(', ')}), el('p', {text:'Lengths, coverage and storage on ' + (uns.length > 1 ? 'these floors' : 'this floor') + ' are estimates (marked ≈) until you calibrate the plan.'}), el('button', {class:'btn sm', text:'Set the scale', onclick:() => { switchFloor(uns[0].id); setMode('floor'); setTool('calibrate'); }})])); }
   wrap.append(el('div', {class:'subtabs', role:'tablist'}, tabs.map(([k, l]) => el('button', {class:'subtab' + (REPORT_TAB === k ? ' on' : ''), role:'tab', text:l, onclick:() => { REPORT_TAB = k; renderReports(); }}))));
   const table = (heads, rows, onRow, numCols=[]) => { const t = el('table', {class:'grid'}); t.append(el('thead', {}, [el('tr', {}, heads.map((h, i) => el('th', {class: numCols.includes(i) ? 'n' : '', text:h})))])); const tb = el('tbody'); if (!rows.length) tb.append(el('tr', {}, [el('td', {colspan:heads.length, class:'note', text:'Nothing here yet.'})])); rows.forEach((r) => { const tr = el('tr', {class: onRow ? 'click' : ''}, r.cells.map((c, i) => el('td', {class: numCols.includes(i) ? 'n' : '', html: c}))); if (onRow) tr.addEventListener('click', () => onRow(r)); tb.append(tr); }); t.append(tb); return el('div', {class:'tablewrap'}, [t]); };
   if (REPORT_TAB === 'check') {
@@ -3561,8 +3592,11 @@ function renderReports() {
     wrap.querySelectorAll('[data-unaccept]').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); unacceptIssue(b.dataset.unaccept); }));
     const log = (S.project.audit || []).slice(-15).reverse(); if (log.length) wrap.append(el('h3', {text:'Fix history', style:'margin:16px 0 6px'}), table(['When','What','Detail','By'], log.map(a => ({cells:[esc(new Date(a.at).toLocaleString()), esc(a.action), esc(a.detail), esc(a.by || '')]}))));
     wrap.append(el('p', {class:'note', style:'margin-top:8px', text:'Click an issue to jump to it on the plan. The check runs automatically after every change.'}));
+  } else if (REPORT_TAB === 'activity') {
+    const p = S.project; const ev = [...(p.audit || []).map(a => ({at:a.at, what:a.action, detail:a.detail, by:a.by || ''})), ...(p.exportLog || []).map(e => ({at:e.at, what: e.ok ? 'Exported' : 'Export failed', detail:`${e.name} · ${fmtBytes(e.size || 0)}${e.sha ? ' · sha256 ' + String(e.sha).slice(0, 8) : ''}${e.err ? ' · ' + e.err : ''}`, by:''})), ...(p.created ? [{at:p.created, what:'Project created', detail:p.name, by:p.designer || ''}] : [])].sort((a, b) => b.at - a.at).slice(0, 300);
+    wrap.append(el('p', {class:'note', text:'Every recorded fix, design action, approval and export on this project, newest first. Saved versions (with “What changed?”) are under Version history.'}), table(['When', 'What', 'Detail', 'By'], ev.map(a => ({cells:[esc(new Date(a.at).toLocaleString()), esc(a.what), esc(a.detail || ''), esc(a.by)]}))));
   } else if (REPORT_TAB === 'cables') {
-    const rows = Object.values(objs()).filter(o => o.t === 'cable').sort((a,b) => String(a.name).localeCompare(String(b.name), undefined, {numeric:true})).map(c => { const k = cableCalc(c); const wl = k.ct.wireless || k.ct.pathway; return {id:c.id, cells:[esc(c.name), esc((objs()[c.from]||{}).name || '—'), esc((objs()[c.to]||{}).name || '—'), esc(c.ctype), fmtLen(k.measured), wl ? '—' : '+ ' + fmtLen(k.vertical), wl ? '—' : '+ ' + fmtLen(k.loop), wl ? '—' : `+ ${k.wastePct}% (${fmtLen(k.waste)})`, '<b>' + fmtLen(k.final) + '</b>', esc(floorLabel(c.floor)), esc((c.props||{}).path || ''), esc((c.props||{}).notes || '')]}; });
+    const rows = Object.values(objs()).filter(o => o.t === 'cable').sort((a,b) => String(a.name).localeCompare(String(b.name), undefined, {numeric:true})).map(c => { const k = cableCalc(c); const wl = k.ct.wireless || k.ct.pathway; const est = floorById(c.floor) && floorScale(floorById(c.floor)).state === 'fail' ? '≈ ' : ''; return {id:c.id, cells:[esc(c.name), esc((objs()[c.from]||{}).name || '—'), esc((objs()[c.to]||{}).name || '—'), esc(c.ctype), est + fmtLen(k.measured), wl ? '—' : '+ ' + fmtLen(k.vertical), wl ? '—' : '+ ' + fmtLen(k.loop), wl ? '—' : `+ ${k.wastePct}% (${fmtLen(k.waste)})`, '<b>' + est + fmtLen(k.final) + '</b>', esc(floorLabel(c.floor)), esc((c.props||{}).path || ''), esc((c.props||{}).notes || '')]}; });
     wrap.append(el('div', {class:'sheethead'}, [el('span', {class:'sub', style:'flex:1', text:`${rows.length} runs`}), el('button', {class:'btn sm', html:icon('export') + 'CSV', onclick:() => exportScheduleCSV('cables')})]));
     wrap.append(table(['Cable ID','Source','Destination','Type','Measured','Vertical','Service loops','Waste','Calculated','Floor','Path','Notes'], rows, (r) => { setMode('cabling'); focusObj(r.id); }, [4,5,6,7,8])); wrap.append(el('p', {class:'note', text:'Calculated = measured path + vertical rise + service loops, plus the waste allowance on that total. Change any of them on the cable; this table updates at once.'}));
   } else if (REPORT_TAB === 'devices') {
@@ -3597,7 +3631,7 @@ async function renderVersions(wrap) {
   const tb = el('tbody'); if (!list.length) tb.append(el('tr', {}, [el('td', {colspan:7, class:'note', text:'No versions yet.'})]));
   for (const v of list) { const c = v.counts || {}; const d = (k) => { const x = (cur[k]||0) - (c[k]||0); return x ? (x > 0 ? '+' : '') + x + ' ' + k : ''; };
     tb.append(el('tr', {}, [el('td', {text:fmtTime(v.time)}), el('td', {text:v.label}), el('td', {class:'n', text:String(c.cameras ?? '')}), el('td', {class:'n', text:String(c.accessDoors ?? '')}), el('td', {class:'n', text:String(c.cables ?? '')}), el('td', {class:'note', text:['cameras','accessDoors','cables','walls'].map(d).filter(Boolean).join(', ') || 'Same counts'}),
-      el('td', {}, [el('div', {class:'qa'}, [el('button', {class:'btn sm', text:'Restore', onclick:() => confirmBox(`Restore “${v.label}” from ${fmtTime(v.time)}? Current work is kept as a version first, and you can undo.`, 'Restore', async () => { await saveVersion('Before restore'); restoreSnapshot(v.data); toast('Restored ' + v.label); })}), el('button', {class:'btn sm', text:'Duplicate as new project', onclick:async () => { const p = clone(v.data); p.id = uid('p'); p.name = v.data.name + ' (' + v.label + ')'; p.created = p.modified = Date.now(); await DB.put('projects', p.id, p); toast('Created ' + p.name); }})])])]));
+      el('td', {}, [el('div', {class:'qa'}, [el('button', {class:'btn sm', text:'What changed?', 'data-compare':'1', onclick:() => openVersionCompare(v)}), el('button', {class:'btn sm', text:'Restore', onclick:() => confirmBox(`Restore “${v.label}” from ${fmtTime(v.time)}? Current work is kept as a version first, and you can undo.`, 'Restore', async () => { await saveVersion('Before restore'); restoreSnapshot(v.data); toast('Restored ' + v.label); })}), el('button', {class:'btn sm', text:'Duplicate as new project', onclick:async () => { const p = clone(v.data); p.id = uid('p'); p.name = v.data.name + ' (' + v.label + ')'; p.created = p.modified = Date.now(); await DB.put('projects', p.id, p); toast('Created ' + p.name); }})])])]));
   }
   t.append(tb); box.append(el('div', {class:'tablewrap'}, [t]));
   if (TEAM.on) renderServerVersions(box);
@@ -3687,10 +3721,12 @@ function getDownloads() { if (!downloadsP) downloadsP = (window.claude && typeof
 async function saveFile(filename, data) {
   const d = await getDownloads();
   const blob0 = data instanceof Blob ? data : new Blob([data]);
-  if (d) { try { await d.save({filename, data}); toast('Saved ' + filename + ' · ' + fmtBytes(blob0.size)); logExport(filename, blob0, true); } catch (e) { logExport(filename, blob0, false, e && (e.code || e.message)); if (e && e.code === 'declined') toast('Download cancelled'); else if (e && e.code === 'rejected_extension') toast('That file type cannot be downloaded here', 'err'); else { console.error(e); toast('Could not save the file: ' + ((e && e.message) || 'unavailable'), 'err'); } } return; }
+  if (d) { try { await d.save({filename, data}); const tt = toast('Saved ' + filename + ' · ' + fmtBytes(blob0.size), '', 6000); stampToast(tt, logExport(filename, blob0, true)); } catch (e) { logExport(filename, blob0, false, e && (e.code || e.message)); if (e && e.code === 'declined') toast('Download cancelled'); else if (e && e.code === 'rejected_extension') toast('That file type cannot be downloaded here', 'err'); else { console.error(e); toast('Could not save the file: ' + ((e && e.message) || 'unavailable'), 'err'); } } return; }
   if (d === null) { toast('Downloads are not available in this view. Open the page in your browser to export files.', 'err', 6000); return; }
-  const blob = blob0; try { const url = URL.createObjectURL(blob); const a = el('a', {href:url, download:filename}); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); } catch (e) { logExport(filename, blob, false, e.message); return reportError('The download failed', e); } toast('Downloaded ' + filename + ' · ' + fmtBytes(blob.size)); logExport(filename, blob, true);
+  const blob = blob0; try { const url = URL.createObjectURL(blob); const a = el('a', {href:url, download:filename}); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); } catch (e) { logExport(filename, blob, false, e.message); return reportError('The download failed', e); } const tt = toast('Downloaded ' + filename + ' · ' + fmtBytes(blob.size), '', 6000); stampToast(tt, logExport(filename, blob, true));
 }
+// add the time, app version and checksum to the export result once the file is hashed (same values as the export log)
+function stampToast(t, recP) { Promise.resolve(recP).then(rec => { const sp = t && t.querySelector('span'); if (sp && rec && rec.sha) sp.textContent += ` · ${new Date(rec.at).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})} · v${rec.ver || APP_VERSION} · sha256 ${String(rec.sha).slice(0, 8)}`; }).catch(() => {}); }
 const safeName = (s) => String(s || 'project').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').slice(0, 60) || 'project';
 function csv(rows) { return rows.map(r => r.map(v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n'); }
 function bomRows() { const rows = buildBOM(); return [['Category','Manufacturer','Part Number','Description','Quantity','Unit','Unit Price','Extended Price','Notes'], ...rows.map(r => [r.cat, r.mfr, r.part, r.desc, r.qty, r.unit, r.price ?? '', r.ext != null ? r.ext.toFixed(2) : '', r.notes])]; }
@@ -3744,8 +3780,11 @@ function pickFiles(id, attrs, onFiles, hint) {
 function planInput() { const i = fileInput('planFileIn', {accept:PLAN_ACCEPT, multiple:null, capture:null}); if (!i.dataset.wired) { i.dataset.wired = '1'; i.addEventListener('change', () => { const f = [...(i.files || [])]; const replace = PLAN_PICK.replace; PLAN_PICK.replace = false; i.value = ''; if (f.length) importFiles(f, {replace}); }); } return i; }
 const PLAN_PICK = {replace:false};
 function pickPlanFile(replace) { const i = planInput(); PLAN_PICK.replace = !!replace; i.value = ''; watchPicker(i); i.click(); return i; }
+const PLAN_MAX_MB = 80;
 async function importFiles(files, opt={}) {
-  const f = files[0]; const name = (f.name || '').toLowerCase();
+  const f = files[0]; if (!f) return; const name = (f.name || '').toLowerCase(); const mb = (f.size || 0) / 1048576;
+  if (mb > PLAN_MAX_MB) return toast(`${f.name} is ${mb.toFixed(0)} MB — too large to load in a browser (limit ${PLAN_MAX_MB} MB). Export just the plan sheets, or save it as a smaller PDF or PNG.`, 'err', 9000);
+  if (mb > 25 && !name.endsWith('.json')) toast(`Large file (${mb.toFixed(0)} MB) — this can take a moment…`, '', 5000);
   try {
     if (name.endsWith('.json')) { await importProjectFile(await f.text()); return; }
     if (name.endsWith('.dxf')) { await importDXF(f); return; }
@@ -3764,7 +3803,7 @@ const readDataURL = (f) => new Promise((res, rej) => { const r = new FileReader(
 const imageSize = (url) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res({w: i.naturalWidth || 1600, h: i.naturalHeight || 1200}); i.onerror = () => rej(Object.assign(new Error('image decode failed'), {userMessage:'The image could not be read.'})); i.src = url; });
 async function setFloorPlan(fid, dataUrl, w, h, ftPerPx, label) {
   const key = await putAsset(dataUrl);
-  tx('Import plan', () => { touchMeta(); const fl = floorById(fid); fl.bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:0.8, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}, source:label || ''}; fl.calibrated = false; });
+  tx('Import plan', () => { touchMeta(); const fl = floorById(fid); fl.bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:0.8, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}, source:label || ''}; fl.calibrated = false; delete fl.calSrc; });
   R.bgKey = null; if (fid !== S.floorId) switchFloor(fid); else { redrawAll(); requestAnimationFrame(() => zoomToFit()); }
   S.dismissEmpty = fid; renderLeft();
   setTimeout(() => { setTool('calibrate'); toast('Plan imported. Now click two points of a known distance to set the scale.', '', 6000); }, 200);
@@ -3783,13 +3822,19 @@ async function importPDF(file) {
   for (let i = 1; i <= n; i++) { const th = await renderPage(i, 220); const cb = el('input', {type:'checkbox', checked:true}); const nm = el('input', {type:'text', value: i === n && n > 2 ? 'Roof' : 'Floor ' + i, 'aria-label':'Floor name for page ' + i}); th.c.style.aspectRatio = th.w + '/' + th.h; grid.append(el('label', {}, [th.c, el('span', {style:'display:flex;gap:6px;align-items:center'}, [cb, 'Page ' + i]), nm])); rows.push({i, cb, nm}); }
   const d = dialog({title:`Import ${n} pages from ${file.name}`, cls:'wide', body: el('div', {}, [el('p', {class:'note', style:'margin:0', html:`Each checked page becomes a floor in <b>${esc(bTarget.name)}</b>. Existing floors with the same name get the page as their plan.`}), grid]), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', text:'Import pages', onclick: async () => {
     d.close(); const chosen = rows.filter(r => r.cb.checked); if (!chosen.length) return; let firstFid = null; const tt = toast('Rendering pages…', '', 60000);
-    try { for (const r of chosen) { const pg = await renderPage(r.i, 3200); const name = r.nm.value.trim() || 'Page ' + r.i; let fl = bTarget.floors.find(f => f.name.toLowerCase() === name.toLowerCase()); if (!fl) { tx('Add floor', () => { touchMeta(); fl = {id:uid('f'), name, bg:null}; S.project.buildings.find(x => x.id === bTarget.id).floors.push(fl); }); } const key = await putAsset(pg.c.toDataURL('image/png')); tx('Import plan page', () => { touchMeta(); const f2 = floorById(fl.id); f2.bg = {asset:key, w:pg.w, h:pg.h, ftPerPx: 8/(72*pg.scale), x:0, y:0, rot:0, opacity:0.8, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}, source:file.name + ' p' + r.i}; f2.calibrated = false; }); firstFid = firstFid || fl.id; } }
-    finally { tt.remove(); }
+    // render every page first, then add the floors in ONE step — a failure part-way leaves no half-made floors
+    const ready = []; try { for (const r of chosen) { const pg = await renderPage(r.i, 3200); ready.push({r, pg, name: r.nm.value.trim() || 'Page ' + r.i, key: await putAsset(pg.c.toDataURL('image/png'))}); tt.querySelector('span') && (tt.querySelector('span').textContent = `Rendering pages… ${ready.length} of ${chosen.length}`); } }
+    catch (e) { tt.remove(); return reportError('Could not read every page — nothing was imported', Object.assign(e, {userMessage: e.userMessage || 'Try exporting the PDF again, or import the pages as images.'})); }
+    tt.remove(); const names = new Set();
+    tx(`Import ${ready.length} plan pages`, () => { touchMeta(); const b = S.project.buildings.find(x => x.id === bTarget.id);
+      for (const {r, pg, name, key} of ready) { let nm = name; let k = 2; while (names.has(nm.toLowerCase())) nm = name + ' (' + k++ + ')'; names.add(nm.toLowerCase()); let fl = b.floors.find(f => f.name.toLowerCase() === nm.toLowerCase()); if (!fl) { fl = {id:uid('f'), name:nm, bg:null}; b.floors.push(fl); }
+        fl.bg = {asset:key, w:pg.w, h:pg.h, ftPerPx: 8/(72*pg.scale), x:0, y:0, rot:0, opacity:0.8, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}, source:file.name + ' p' + r.i}; fl.calibrated = false; delete fl.calSrc; firstFid = firstFid || fl.id; } });
+    try { audit('Imported plan pages', `${ready.length} pages from ${file.name}`); } catch (e) {}
     updateFloorTabs(); renderTree(); if (firstFid) { switchFloor(firstFid); setTimeout(() => { setTool('calibrate'); toast(`Imported ${chosen.length} pages. Calibrate each floor: click two points of a known distance.`, '', 7000); }, 250); }
   }})]});
 }
 function openCalibrateDialog(a, b) {
-  const cur = G.dist(a, b); const input = el('input', {class:'field', placeholder:'e.g. 25\' or 12 ft 6 in', 'aria-label':'Real distance'}); const hasObjs = onFloor().some(o => o.t !== 'comment');
+  const cur = G.dist(a, b); if (cur < 1e-6) { TOOLS.calibrate.pair = null; requestDraw(); return toast('Those two points are the same spot — click two different points.', 'warn'); } const input = el('input', {class:'field', placeholder:'e.g. 25\' or 12 ft 6 in', 'aria-label':'Real distance'}); const hasObjs = onFloor().some(o => o.t !== 'comment');
   const chk = el('input', {type:'checkbox', checked: hasObjs && !curFloor().bg});
   const apply = () => { const L = parseLen(input.value); if (!L || L <= 0) { toast('Enter a distance such as 25\' or 7.6 m'); return; } d.close(); applyCalibration(a, b, L, chk.checked || !curFloor().bg); };
   const d = dialog({title:'Set scale', body: el('div', {class:'form'}, [el('label', {text:'Measured now'}), el('span', {class:'mono', text:fmtLen(cur)}), el('label', {text:'Real distance'}), input, el('label', {text:''}), el('label', {style:'display:flex;gap:6px;align-items:center;color:var(--fg)'}, [chk, curFloor().bg ? 'Also rescale objects already drawn on this floor' : 'Rescale objects on this floor'])]), footer:[el('button', {class:'btn', text:'Cancel', onclick:() => { d.close(); TOOLS.calibrate.pair = null; requestDraw(); }}), el('button', {class:'btn primary', text:'Apply scale', onclick:apply})], onClose:() => { TOOLS.calibrate.pair = null; }});
@@ -4015,7 +4060,7 @@ function paletteCommands() {
     ['Open layers', '', () => { LEFT_TAB = 'layers'; renderLeft(); }], ['Show hidden objects', '', showAllHidden], ['Select all', 'Ctrl+A', selectAll], ['Zoom to fit', 'F', () => zoomToFit()],
     ['Undo', 'Ctrl+Z', undo], ['Redo', 'Ctrl+Y', redo], ['Save version', 'Ctrl+S', () => saveVersion('Manual save')], ['Version history', '', () => { REPORT_TAB = 'versions'; setMode('reports'); }],
     ['Toggle dark mode', '', toggleTheme], ['Toggle grid', '', () => toggleSetting('gridShow')], ['Toggle snap', '', () => toggleSetting('snap')], ['Settings', '', openSettings], ['Keyboard shortcuts', '?', openShortcuts], ['All projects', '', openDashboard], ['New project', '', () => openWizard()],
-    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Project health (preflight)', '', () => openHealth()], ['Room coverage — every room and its %', '', () => openCoverageDetails()], ['Download a backup of this project', '', () => downloadBackup()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Review suggested fixes (cover weak rooms + wire)', '', () => openReviewFixes()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
+    ['Compare cameras', '', () => openCompare()], ['Present to customer', '', () => openPresent()], ['Help me choose a camera', '', () => openCameraPicker()], ['Site walk checklist', '', () => openSiteWalk()], ['Spec sheets PDF', '', () => exportSpecSheets()], ...(bomOn() ? [['Estimate CSV for QuickBooks / Jobber', '', () => exportEstimateCSV()]] : []), [bomOn() ? 'Hide BOM & built-in pricing (I make my own)' : 'Turn on built-in BOM & pricing', '', () => { setBomOn(!bomOn()); applyBomUI(); }], ['Export CAD drawing (DXF)', '', () => exportDXF()], ['Save selection as assembly', '', () => promptSaveAssembly()], ['Appearance: accent color & text size', '', () => openSettings()], ['UPS battery runtime', '', () => openUPSDialog()], ['Welcome / how it works', '', () => openWelcome(true)], ['Watch a 20-second demo', '', () => runDemo()], ['Badges — what to try next', '', () => openBadges()], ['Toolbox — calculators & install helpers', '', () => openToolbox()], ['Build Ready — project health & preflight', '', () => openBuildReady()], ['Record customer approval', '', () => confirmApproval()], ['Explain this (selected item)', '', () => explainSelection()], ['High contrast on / off', '', () => setContrast(document.documentElement.dataset.contrast === 'high' ? 'normal' : 'high')], ['What changed? Compare with a saved version', '', () => { setMode('reports'); REPORT_TAB = 'versions'; renderReports(); }], ['Room coverage — every room and its %', '', () => openCoverageDetails()], ['Download a backup of this project', '', () => downloadBackup()], ['Lens & pixel calculator', '', () => openLensCalc()], ['Review suggested fixes (cover weak rooms + wire)', '', () => openReviewFixes()], ['QR device labels (Avery 5160)', '', () => exportDeviceLabels()], ['Camera list for the VMS (CSV)', '', () => exportVMSList()], [soundsOn() ? 'Turn fun sounds off' : 'Turn fun sounds on', '', () => setSounds(!soundsOn())], ['Snap a photo of the floor plan', '', () => snapPlanPhoto()], ['Change order PDF', '', () => exportChangeOrder()], ['Export to Google Earth (KML)', '', exportKML], ['Easy mode (3 steps)', '', () => setUI('easy')], ['Pro tools (every tool)', '', () => setUI('pro')],
     ['Ask the design assistant', '', () => { LEFT_TAB = 'assist'; renderLeft(); }], ['3D view', '', () => open3D((selObjs().find(isCam) || {}).id)], ['IP address plan', '', openIPDialog], ['Camera advisor: click a spot for camera advice', 'G', () => setTool('advisor')], ['Conduit fill calculator', '', () => openConduitDialog()], ['About Security Site Designer', '', openAbout], ['Cable labels', '', openLabelsDialog], ['Field mode: install & test tracking', '', () => setMode('field')], ['As-built / commissioning report (PDF)', '', exportAsBuiltPDF], ['Install sheet (Excel)', '', exportInstallXLSX], ...(TEAM.on ? [['Share with customer', '', openShareDialog], ['Company & team settings', '', () => openCompanyDialog(isAdmin() ? 'company' : 'team')]] : []), ['Bandwidth & storage report', '', () => { REPORT_TAB = 'bandwidth'; setMode('reports'); }], ['Riser diagram', '', () => { REPORT_TAB = 'riser'; setMode('reports'); }], ['Quote & labor', '', () => { S.bomTab = 'quote'; setMode('bom'); }], ['Export proposal PDF', '', () => exportProposal()], ['Import CAD drawing (DXF)', '', () => pickPlanFile()],
   ].map(([label, key, fn]) => ({kind:'Command', label, key, fn}));
   for (const as of loadAssemblies()) cmds.push({kind:'Assembly', label:`Place assembly: ${as.name}`, fn:() => useAssembly(as.id)});
@@ -4059,30 +4104,34 @@ function openSettings() {
   drawLogo();
   const ds = draft.settings; const nm = ds.naming;
   const sec = (t) => el('div', {class:'lbl3 full', text:t, style:'grid-column:1/-1;margin-top:14px'});
-  const curTheme = (() => { try { return localStorage.getItem('ssd-theme') || 'system'; } catch (e) { return 'system'; } })(); const themeSel = el('select', {}, [['system','Match system'],['light','Light'],['dark','Dark']].map(([v, l]) => el('option', {value:v, text:l, selected:curTheme === v})));
+  const contrastSel = el('select', {id:'contrastSel', 'aria-label':'Contrast'}, [['normal','Normal'],['high','High contrast']].map(([v, l]) => el('option', {value:v, text:l, selected: (document.documentElement.dataset.contrast || 'normal') === v}))); const curTheme = (() => { try { return localStorage.getItem('ssd-theme') || 'system'; } catch (e) { return 'system'; } })(); const themeSel = el('select', {}, [['system','Match system'],['light','Light'],['dark','Dark']].map(([v, l]) => el('option', {value:v, text:l, selected:curTheme === v})));
   const catInput = el('input', {type:'file', accept:'.json,application/json', style:'display:none'}); catInput.addEventListener('change', async () => { try { const arr = JSON.parse(await catInput.files[0].text()); const list = (Array.isArray(arr) ? arr : arr.products || []).filter(x => x && x.id && x.kind && KINDS[x.kind] && x.model); if (!list.length) throw new Error('no valid products'); userCatalog = list; await DB.put('meta', 'catalog', list); rebuildCatalog(); renderLeft(); toast(`Imported ${list.length} products into the library`); } catch (e) { reportError('Could not import the catalog', Object.assign(e, {userMessage:'Expected a JSON array of products with id, mfr, model, part and a valid kind.'})); } });
   const body = el('div', {class:'form'}, [
     sec('Title block & company'), el('label', {text:'Company'}), inp(draft, 'company'), el('label', {text:'Designer'}), inp(draft, 'designer'), el('label', {text:'Revision'}), inp(draft, 'revision'), el('label', {text:'Drawing number'}), inp(draft, 'drawingNo'), el('label', {text:'Company logo'}), logoBox, brandSection(draft),
-    sec('Drawing'), el('label', {text:'Units'}), sel(ds, 'units', [['ft','Feet (decimal)'],['ftin','Feet & inches'],['m','Meters']]), el('label', {text:'Grid size (ft)'}), sel(ds, 'grid', [[0.5,'0.5'],[1,'1'],[2,'2'],[5,'5'],[10,'10']]), el('label', {text:'Snap strength'}), sel(ds, 'snapPx', [[6,'Light (6 px)'],[12,'Normal (12 px)'],[20,'Strong (20 px)']]), el('label', {text:'Angle snap'}), sel(ds, 'angleSnap', [[0,'Off'],[15,'15°'],[45,'45°'],[90,'90°']]), el('label', {text:'Canvas'}), sel(ds, 'canvas', [['auto','Match light/dark theme'],['paper','Always light paper'],['dark','Always dark drafting']]), el('label', {text:'Theme'}), themeSel, el('label', {text:'Keep tool after placing'}), sel(ds, 'stickyTools', [[true,'Yes — place repeatedly'],[false,'No — return to Select']]), el('label', {text:'Detail level'}), sel(ds, 'level', [['quick','Quick design (sales)'],['advanced','Advanced (engineering)']]),
+    sec('Building type & privacy rules'), el('label', {text:'Building type'}), (() => { const x = el('select', {id:'setPreset', 'aria-label':'Building type'}, [['', 'General (no preset)'], ...Object.entries(PRESETS).map(([k, v]) => [k, v.label])].map(([k, l]) => el('option', {value:k, text:l, selected:(ds.preset || '') === k}))); x.addEventListener('change', () => { if (x.value) ds.preset = x.value; else delete ds.preset; }); return x; })(), el('label', {text:''}), el('p', {class:'note', style:'margin:0', text:'Presets mark privacy rooms and the detail level each room needs. They are a starting point — follow local law and the owner’s policy; you can override any room.'}),
+    sec('Drawing'), el('label', {text:'Units'}), sel(ds, 'units', [['ft','Feet (decimal)'],['ftin','Feet & inches'],['m','Meters']]), el('label', {text:'Grid size (ft)'}), sel(ds, 'grid', [[0.5,'0.5'],[1,'1'],[2,'2'],[5,'5'],[10,'10']]), el('label', {text:'Snap strength'}), sel(ds, 'snapPx', [[6,'Light (6 px)'],[12,'Normal (12 px)'],[20,'Strong (20 px)']]), el('label', {text:'Angle snap'}), sel(ds, 'angleSnap', [[0,'Off'],[15,'15°'],[45,'45°'],[90,'90°']]), el('label', {text:'Canvas'}), sel(ds, 'canvas', [['auto','Match light/dark theme'],['paper','Always light paper'],['dark','Always dark drafting']]), el('label', {text:'Theme'}), themeSel, el('label', {text:'Contrast'}), contrastSel, el('label', {text:'Keep tool after placing'}), sel(ds, 'stickyTools', [[true,'Yes — place repeatedly'],[false,'No — return to Select']]), el('label', {text:'Detail level'}), sel(ds, 'level', [['quick','Quick design (sales)'],['advanced','Advanced (engineering)']]),
     sec('Automatic naming — {###} increments, {A} device type, {B} building, {F} floor'), ...['camera','access','network','door'].flatMap(k => [el('label', {text:k[0].toUpperCase() + k.slice(1)}), inp(nm, k)]),
     sec('Cable & BOM rules'), el('label', {text:'Vertical rise (ft)'}), inp(ds, 'vertical', {type:'number'}), el('label', {text:'Service loop (ft)'}), inp(ds, 'serviceLoop', {type:'number'}), el('label', {text:'Waste %'}), inp(ds, 'waste', {type:'number'}), el('label', {text:'Mount per camera'}), sel(ds, 'mountsPerCamera', [[true,'Add automatically'],[false,'No']]), el('label', {text:'License per camera'}), sel(ds, 'licensePerCamera', [[true,'Add automatically'],[false,'No']]), el('label', {text:'Default VMS license'}), inp(ds, 'vmsLicense'),
     sec('Recording defaults (bandwidth & storage estimates)'), el('label', {text:'Frame rate'}), sel(ds.recording || (ds.recording = {...REC_DEFAULTS}), 'fps', [[5,'5 fps'],[10,'10 fps'],[15,'15 fps'],[20,'20 fps'],[30,'30 fps']]), el('label', {text:'Codec'}), sel(ds.recording, 'codec', [['h264','H.264'],['h265','H.265'],['smart','Smart codec']]), el('label', {text:'Scene activity'}), sel(ds.recording, 'quality', [['low','Low'],['medium','Medium'],['high','High']]), el('label', {text:'Recording mode'}), sel(ds.recording, 'mode', [['continuous','Continuous'],['motion','On motion']]), el('label', {text:'Retention (days)'}), inp(ds.recording, 'days', {type:'number'}),
     el('label', {text:'Access standby (hours)'}), inp(ds, 'standbyHours', {type:'number'}),
     sec('Product library'), el('label', {text:'Catalog'}), el('div', {class:'qa'}, [el('button', {class:'btn sm', type:'button', text:'Import catalog JSON…', onclick:() => catInput.click()}), el('button', {class:'btn sm', type:'button', text:'Export full catalog', onclick:() => saveFile('security-catalog.json', JSON.stringify(catalog.list, null, 1))}), userCatalog.length ? el('button', {class:'btn sm ghost', type:'button', text:`Remove ${userCatalog.length} imported`, onclick:async () => { userCatalog = []; await DB.put('meta', 'catalog', []); rebuildCatalog(); renderLeft(); toast('Imported catalog removed'); }}) : null, catInput].filter(Boolean)),
-    el('label', {text:''}), el('p', {class:'note', style:'margin:0', text:`${catalog.list.length} products from ${new Set(catalog.list.map(x => x.mfr)).size} manufacturers. Built-in specs are representative examples — verify against current datasheets before ordering.`}),
-    sec('Data & testing'), el('label', {text:'Project'}), el('div', {class:'qa'}, [el('button', {class:'btn sm', type:'button', text:'Export project file', onclick:() => exportProjectFile()}), el('button', {class:'btn sm', type:'button', text:'Save as company template', onclick:saveCompanyTemplate}), el('button', {class:'btn sm', type:'button', text:'Generate large test floor', onclick:() => { d.close(); stressTest(); }})]),
+    el('label', {text:''}), el('p', {class:'note', style:'margin:0', text:`${catalog.list.length} products from ${new Set(catalog.list.map(x => x.mfr)).size} manufacturers. ${catalog.list.filter(x => x.verified).length} branded models are checked against the manufacturer’s datasheet (source on each product); generic items are placeholders. Confirm part numbers and pricing with your distributor before ordering.`}),
+    sec('Data & testing'), el('label', {text:'Project'}), el('div', {class:'qa'}, [el('button', {class:'btn sm', type:'button', text:'Export project file', onclick:() => exportProjectFile()}), el('button', {class:'btn sm', type:'button', text:'Save as company template', onclick:saveCompanyTemplate})]),
     el('label', {text:''}), el('p', {class:'note', style:'margin:0', text: CLOUD.ready ? 'Cloud sync is on: projects and plan images sync privately to your Claude account and appear on any device you sign in from.' : DB.ok ? 'Projects save automatically in this browser on this device. Open this app inside Claude (signed in) for cloud sync, or export the project file to move it.' : 'Browser storage is unavailable here — work is kept only while this page is open. Export the project file to keep it.'}),
   ]);
   body.prepend(lookSection()); const bomSec = bomSection(); body.insertBefore(bomSec, body.querySelector('#brandSec') ? body.querySelector('#brandSec').nextSibling : null);
+  { let adv = false; for (const c of [...body.children]) { if (c.classList.contains('lbl3')) adv = /^(Automatic naming|Cable & BOM rules|Recording defaults|Product library|Data & testing)/.test(c.textContent); if (adv) c.classList.add('advset'); }
+    if (isEasy()) { body.classList.add('simple'); body.prepend(el('div', {style:'grid-column:1/-1;margin:0 0 6px'}, [el('button', {class:'btn sm ghost', type:'button', id:'advToggle', 'aria-expanded':'false', text:'Show advanced settings (naming, cable rules, recording, catalog)', onclick:(e) => { const on = body.classList.toggle('simple'); e.currentTarget.setAttribute('aria-expanded', String(!on)); e.currentTarget.textContent = on ? 'Show advanced settings (naming, cable rules, recording, catalog)' : 'Hide advanced settings'; }})])); } }
   const d = dialog({title:'Settings', cls:'mid', body, footer:[el('button', {class:'btn', text:'Cancel', onclick:() => d.close()}), el('button', {class:'btn primary', text:'Save settings', onclick:() => {
-    tx('Change settings', () => { touchMeta(); Object.assign(S.project, {company:draft.company, designer:draft.designer, revision:draft.revision, drawingNo:draft.drawingNo, logo:logoKey, brand:{...(draft.brand || {})}}); S.project.settings = {...S.project.settings, ...draft.settings, naming:{...draft.settings.naming}}; });
+    tx('Change settings', () => { touchMeta(); Object.assign(S.project, {company:draft.company, designer:draft.designer, revision:draft.revision, drawingNo:draft.drawingNo, logo:logoKey, brand:{...(draft.brand || {})}}); S.project.settings = {...S.project.settings, ...draft.settings, naming:{...draft.settings.naming}}; if (!draft.settings.preset) delete S.project.settings.preset; });
     { const v = bomSec.querySelector('#bomMode').value === 'on'; if (v !== bomOn()) { setBomOn(v); applyBomUI(); } }
     if (draft.brandKeep && draft.brandKeep()) saveDeviceCompany({company:draft.company, logo:logoKey, brand:{...(draft.brand || {})}});
-    setTheme(themeSel.value); applyCanvasTheme(); d.close(); redrawAll(); renderLeft(); renderRight(); updateToggles(); toast('Settings saved');
+    setTheme(themeSel.value); setContrast(contrastSel.value); applyCanvasTheme(); d.close(); redrawAll(); renderLeft(); renderRight(); updateToggles(); toast('Settings saved');
   }})]});
 }
 function applyCanvasTheme() { const c = S.project ? S.project.settings.canvas : 'auto'; const dark = c === 'dark' || (c === 'auto' && effectiveTheme() === 'dark'); $('#canvasWrap').classList.toggle('cv-dark', dark); R.svg.classList.toggle('cv-dark', dark); }
 function effectiveTheme() { const a = document.documentElement.dataset.theme; if (a) return a; return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+function setContrast(v) { if (v === 'high') document.documentElement.dataset.contrast = 'high'; else delete document.documentElement.dataset.contrast; try { localStorage.setItem('ssd-contrast', v); } catch (e) {} }
 function setTheme(v) { if (v === 'system') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v; try { localStorage.setItem('ssd-theme', v); } catch (e) {} updateThemeBtn(); applyCanvasTheme(); requestDraw(); }
 function toggleTheme() { setTheme(effectiveTheme() === 'dark' ? 'light' : 'dark'); }
 function updateThemeBtn() { const b = $('#themeBtn'); if (b) { b.innerHTML = icon(effectiveTheme() === 'dark' ? 'sun' : 'moon'); b.title = effectiveTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'; } }
@@ -4151,21 +4200,22 @@ function thumbSVG(p) {
   return s + '</svg>';
 }
 async function openWizard() {
-  const st = {step:1, name:'', customer:'', address:'', start:'draw', template:null}; const companyTpls = (await DB.get('meta', 'templates')) || [];
+  const st = {step:1, name:'', customer:'', address:'', start:'draw', template:null, preset:''}; const companyTpls = (await DB.get('meta', 'templates')) || [];
   const body = el('div'); const footer = []; let d;
   const render = () => {
     body.innerHTML = '';
     if (!isEasy()) body.append(el('div', {class:'steps'}, [['1','Project'],['2','Start'],['3','Scale'],['4','Place devices']].map(([n, l], i) => el('span', {class: i+1 === st.step ? 'on' : i+1 < st.step ? 'done' : '', html:`<b>${i+1 < st.step ? '✓' : n}</b>${l}`}))));
     if (st.step === 1) {
       const f = (label, key, ph) => { const i = el('input', {value:st[key], placeholder:ph, 'aria-label':label}); i.addEventListener('input', () => st[key] = i.value); i.addEventListener('keydown', (e) => { if (e.key === 'Enter') next(); }); return [el('label', {text:label}), i]; };
-      body.append(el('div', {class:'form'}, [...f('Project name', 'name', 'e.g. Westside Middle School'), ...f('Customer', 'customer', 'Customer or company'), ...f('Site address', 'address', 'Street, city, state')]));
+      const ps = el('select', {id:'wizPreset', 'aria-label':'Building type'}, [['', 'General (no preset)'], ...Object.entries(PRESETS).map(([k, v]) => [k, v.label])].map(([k, l]) => el('option', {value:k, text:l, selected: st.preset === k}))); const pnote = el('p', {class:'note', id:'wizPresetNote', style:'grid-column:1/-1;margin:2px 0 0', text: st.preset ? PRESETS[st.preset].note + ' You can change any room later.' : 'Pick a building type to start with privacy rules and detail levels for that kind of site.'}); ps.addEventListener('change', () => { st.preset = ps.value; pnote.textContent = st.preset ? PRESETS[st.preset].note + ' You can change any room later.' : 'Pick a building type to start with privacy rules and detail levels for that kind of site.'; });
+      body.append(el('div', {class:'form'}, [...f('Project name', 'name', 'e.g. Westside Middle School'), ...f('Customer', 'customer', 'Customer or company'), ...f('Site address', 'address', 'Street, city, state'), el('label', {text:'Building type'}), ps, pnote]));
     } else if (st.step === 2) {
       const opt = (k, ic, t, dsc) => el('button', {class: st.start === k ? 'on' : '', onclick:() => { st.start = k; st.template = null; render(); }, html:`${icon(ic)}<span><b>${t}</b><i>${dsc}</i></span>`});
       body.append(el('div', {class:'startgrid'}, [opt('import','import','Import floor plan','PDF, PNG, JPG or SVG'), opt('map','map','Use satellite map','Aerial image of the site'), opt('draw','pencil','Draw floor plan','Walls, rooms, doors'), opt('blank','blank','Blank canvas','Place devices right away')]));
       body.append(el('div', {class:'lbl3', text:'Or start from a template'}), el('div', {class:'tpls'}, TEMPLATES.map(([k, n, dsc]) => el('button', {class: st.template === k ? 'on' : '', onclick:() => { st.template = k; st.start = 'template'; render(); }, html:`<b>${n}</b><i>${dsc}</i>`})).concat(companyTpls.map(t => el('button', {class: st.template === t.id ? 'on' : '', onclick:() => { st.template = t.id; st.start = 'company'; render(); }, html:`<b>${esc(t.name)}</b><i>Company template</i>`})))));
     }
     d && d.el.querySelector('footer').replaceChildren(...buttons());
-    setTimeout(() => { const i = body.querySelector('input'); i && i.focus(); }, 20);
+    setTimeout(() => { const i = body.querySelector('input'); const a = document.activeElement; if (i && !(a && a !== i && body.contains(a))) i.focus(); }, 20); // never pull focus back from a field the person is already typing in
   };
   const buttons = () => [el('button', {class:'btn', text: st.step === 1 ? 'Cancel' : 'Back', onclick:() => { if (st.step === 1) d.close(); else { st.step--; render(); } }}), el('button', {class:'btn primary', text: st.step === 2 || isEasy() ? 'Create project' : 'Next', onclick:next})];
   const next = async () => { if (st.step === 1) { if (!st.name.trim()) { toast('Give the project a name'); return; } if (isEasy()) { st.start = 'easy'; d.close(); await createFromWizard(st, companyTpls); return; } st.step = 2; render(); return; } d.close(); await createFromWizard(st, companyTpls); };
@@ -4175,7 +4225,7 @@ async function createFromWizard(st, companyTpls) {
   let p;
   if (st.start === 'company') { const t = companyTpls.find(x => x.id === st.template); p = migrateProject(clone(t.data)); p.id = uid('p'); p.name = st.name.trim(); p.customer = st.customer; p.address = st.address; p.created = p.modified = Date.now(); }
   else { p = newProject({name:st.name.trim(), customer:st.customer, address:st.address}); if (st.address) p.location = {query:st.address, lat:'', lng:''}; if (st.start === 'template') { const t = buildTemplate(st.template, p); for (const o of t.objects) { o.id = uid(o.t[0]); p.objects[o.id] = o; } } }
-  await applyCompanyDefaults(p); await DB.put('projects', p.id, p); await openProject(p.id, {local:true}); if (TEAM.on) await teamSave(S.project);
+  await applyCompanyDefaults(p); if (st.preset) applyPreset(p, st.preset); await DB.put('projects', p.id, p); await openProject(p.id, {local:true}); if (TEAM.on) await teamSave(S.project);
   const bfloor = S.project.buildings.find(b => b.kind !== 'site').floors[0].id;
   if (st.start === 'import') { switchFloor(bfloor); setTimeout(() => pickPlanFile(), 50); toast('Step 3: choose the plan, then click two known points to set the scale.', '', 6000); }
   else if (st.start === 'map') { setMode('site'); openMapDialog(); }
@@ -4201,7 +4251,8 @@ async function openProject(id, opts={}) {
   S.project = migrateProject(p); S.undo = []; S.redo = []; S.sel = new Set(); S.suggest = null; S.dismissEmpty = null; ASSIST_LOG.length = 0;
   rebuildCatalog();
   const nonSite = S.project.buildings.filter(b => b.kind !== 'site').flatMap(b => b.floors); const withObjs = nonSite.find(f => Object.values(S.project.objects).some(o => o.floor === f.id));
-  S.floorId = (withObjs || nonSite[0] || floors()[0]).id;
+  const lastF = (() => { try { return localStorage.getItem('ssd-floor-' + S.project.id); } catch (e) { return null; } })(); // reopen on the floor you were working on
+  S.floorId = (lastF && floorById(lastF) ? floorById(lastF) : (withObjs || nonSite[0] || floors()[0])).id;
   $('#dash').hidden = true; applyCanvasTheme(); updateTitle(); updateFloorTabs(); updateToggles();
   let mode = 'floor'; try { mode = localStorage.getItem('ssd-mode') || 'floor'; } catch (e) {} if (mode === 'site') mode = 'floor';
   S.issuesKey = null; try { freshIssues(); } catch (e) {}
@@ -4247,6 +4298,7 @@ function stressTest() {
 // ===== BOOT =====
 async function boot() {
   try { const th = localStorage.getItem('ssd-theme'); if (th && th !== 'system') document.documentElement.dataset.theme = th; } catch (e) {}
+  try { if (localStorage.getItem('ssd-contrast') === 'high') document.documentElement.dataset.contrast = 'high'; } catch (e) {}
   initCanvas(); buildChrome(); buildStatus(); initPointer(); initKeys(); initTooltips();
   try { const pn = JSON.parse(localStorage.getItem('ssd-panels') || 'null'); if (pn && innerWidth > 900) { $('#app').classList.toggle('lcol', !!pn.l); $('#app').classList.toggle('rcol', !!pn.r); } } catch (e) {}
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { updateThemeBtn(); applyCanvasTheme(); });
@@ -4276,7 +4328,7 @@ async function boot() {
   exposeTestHooks();
 }
 function exposeTestHooks() {
-  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {planInput, issueActions, issueKey, acceptIssue, unacceptIssue, openReviewFixes, proposeFixes, signoffProblems, setInstall, instOf, logExport, traceLine, sha256Hex, prodStatus, prodOptionLabel, hitStack, freshIssues, renderReports, audit, connectivityIssues, renderRight, layerFor, startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
+  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {APP_VERSION, exportScheduleCSV, explainLines, explainSelection, saveVersion, openSettings, systemStatus, statusLine, openBuildReady, readiness, readyVerdict, scaleRecord, diffProjects, openVersionCompare, markApproved, confirmApproval, PRESETS, applyPreset, roomLevel, presetLevel, setContrast, isCam, bandwidthReport, scaleIssues, updateReadyBtn, importPDF, PLAN_MAX_MB, openCalibrateDialog, planInput, issueActions, issueKey, acceptIssue, unacceptIssue, openReviewFixes, proposeFixes, signoffProblems, setInstall, instOf, logExport, traceLine, sha256Hex, prodStatus, prodOptionLabel, hitStack, freshIssues, renderReports, audit, connectivityIssues, renderRight, layerFor, startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
   if (typeof TEAM !== 'undefined') { window.SSD.TEAM = TEAM; window.SSD.mergeProjects = mergeProjects; }
 }
 
@@ -5894,7 +5946,7 @@ function designScore() {
   const cov = (area ? covArea / area : (devs.some(isCam) ? 1 : 0)) * (cs.privacyBad.length ? 0.5 : 1);
   const g = buildGraph(); const needs = devs.filter(o => isCam(o) || ['reader', 'lock', 'rex', 'contact', 'controller', 'nvr', 'switch'].includes(kindOf(o).role) || ['pir','glassbreak','keypad','siren','smoke','heat','pull','hornstrobe'].includes(o.kind));
   const loose = needs.filter(o => !neighbors(g, o.id).length);
-  const issues = S.issues || []; const errs = issues.filter(i => i.sev === 'error').length, warns = issues.filter(i => i.sev === 'warning').length;
+  const issues = freshIssues(); const errs = issues.filter(i => i.sev === 'error').length, warns = issues.filter(i => i.sev === 'warning').length;
   const wire = needs.length ? 1 - loose.length / needs.length : 1;
   const score = devs.length ? Math.round(60 * cov + 25 * wire + Math.max(0, 15 - 5 * errs - warns)) : 0;
   const label = !devs.length ? 'Just starting' : score >= 90 ? 'Excellent' : score >= 75 ? 'Good' : score >= 50 ? 'Getting there' : 'Needs work';
@@ -5905,7 +5957,7 @@ function scoreRing(v) {
   const r = 30, c = 2 * Math.PI * r, f = v.score / 100; const col = v.score >= 90 ? 'var(--ok)' : v.score >= 60 ? 'var(--accent)' : 'var(--err)';
   return el('div', {class:'ring', role:'img', 'aria-label':`Design score ${v.score} out of 100, ${v.label}`, html:`<svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="${r}" class="rbg"/><circle cx="38" cy="38" r="${r}" class="rfg" style="stroke:${col};stroke-dasharray:${(c * f).toFixed(1)} ${c.toFixed(1)}"/></svg><b>${v.score}</b>`});
 }
-function maybeCelebrate(v) { const k = S.project.id; if (v.score >= 90 && v.devs && !v.weak.length && !v.loose.length && !EASY.celebrated.has(k)) { EASY.celebrated.add(k); confetti(); try { funSound('win'); } catch (e) {} toast(v.rooms ? `Excellent design — all ${v.rooms} required rooms meet ${coverTarget()}% coverage and everything is wired! 🎉` : 'Excellent design — everything is wired! 🎉', '', 4500); } }
+function maybeCelebrate(v) { const k = S.project.id; if (v.score >= 90 && v.devs && !v.weak.length && !v.loose.length && !v.errs && !v.warns && !EASY.celebrated.has(k)) { EASY.celebrated.add(k); confetti(); try { funSound('win'); } catch (e) {} toast(v.rooms ? `Excellent design — all ${v.rooms} required rooms meet ${coverTarget()}% coverage and everything is wired! 🎉` : 'Excellent design — everything is wired! 🎉', '', 4500); } }
 function confetti() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; const cv = el('canvas', {class:'confetti', 'aria-hidden':'true'}); cv.width = innerWidth; cv.height = innerHeight; document.body.append(cv); const g = cv.getContext('2d');
   const cols = ['#e0a81c', '#2f7de1', '#0f8a5f', '#7c3aed', '#d12f2f', '#0891b2']; const P = Array.from({length:140}, () => ({x:innerWidth / 2 + (Math.random() - 0.5) * 200, y:innerHeight * 0.35, vx:(Math.random() - 0.5) * 14, vy:-Math.random() * 13 - 4, s:4 + Math.random() * 5, c:cols[(Math.random() * cols.length) | 0], r:Math.random() * 6}));
@@ -5929,7 +5981,7 @@ function renderEasyLeft(L) {
   try { ezTrophyMini(body); } catch (e) {}
 }
 function ezStep1() {
-  const fl = curFloor(); const all = onFloor(); const hasPlan = !!(fl && fl.bg) || all.some(o => o.t === 'wall' || o.t === 'room'); const needsScale = fl && fl.bg && !fl.calibrated && !all.some(o => o.t === 'wall');
+  const fl = curFloor(); const all = onFloor(); const hasPlan = !!(fl && fl.bg) || all.some(o => o.t === 'wall' || o.t === 'room'); const needsScale = !!(fl && fl.bg && floorScale(fl).state === 'fail');
   const out = [ezHead(1, 'Your floor plan', 'Start with the building. Pick one — you can mix them.')];
   { const facts = planFacts(fl); if (facts) out.push(el('p', {class:'note planfacts', id:'ezPlanFacts', text:'Plan: ' + facts})); const bad = fl && scaleSanity(fl); if (bad && !needsScale) out.push(el('div', {class:'ezalert soft', id:'ezScaleWarn'}, [el('b', {text:'Check the scale'}), el('p', {text:bad}), el('button', {class:'btn', text:'Set the scale again', onclick:() => setTool('calibrate')})])); }
   if (needsScale) out.push(el('div', {class:'ezalert'}, [el('b', {text:'One quick thing: set the scale'}), el('p', {text:'Click two points on the plan you know the distance between (a door is about 3 ft, a parking space 9 ft), then type the distance.'}), el('button', {class:'btn primary', text:'Set the scale now', onclick:() => setTool('calibrate')})]));
@@ -5955,7 +6007,8 @@ function ezStep2() {
   if (v.loose.length) tips.push(el('button', {class:'eztip', onclick:wireItUp, html:`<b>${v.loose.length} device${v.loose.length > 1 ? 's' : ''}</b> not wired yet <span>Wire up →</span>`}));
   if (v.weak.length + (v.loose.length ? 1 : 0) >= 2) tips.push(el('button', {class:'btn primary sm ezfixall', id:'ezFixAll', html:'✨ Review suggested fixes', onclick:() => openReviewFixes()}));
   if (v.errs) tips.push(el('button', {class:'eztip', onclick:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, html:`<b>${v.errs} problem${v.errs > 1 ? 's' : ''}</b> in the design check <span>Show →</span>`}));
-  out.push(el('div', {class:'ezscore'}, [scoreRing(v), el('div', {}, [el('b', {text:`Design score · ${v.label}`}), v.cs.all.length ? el('button', {class:'linkbtn covlink', id:'ezCovLink', text:v.covText + ' — see every room →', onclick:() => openCoverageDetails()}) : el('p', {class:'note', text:`${v.devs} device${v.devs === 1 ? '' : 's'} placed`}), ...tips])]));
+  out.push(el('div', {class:'ezscore'}, [scoreRing(v), el('div', {}, [el('b', {text:`Design score · ${v.label}`}), v.cs.all.length ? el('button', {class:'linkbtn covlink', id:'ezCovLink', text:v.covText + (curFloor() && floorScale(curFloor()).state === 'fail' ? ' (estimate — scale not set)' : '') + ' — see every room →', onclick:() => openCoverageDetails()}) : el('p', {class:'note', text:`${v.devs} device${v.devs === 1 ? '' : 's'} placed`}), ...tips])]));
+  if (v.devs) { try { out.push(el('div', {class:'ezpipe'}, [pipelineEl(systemStatus(), {compact:true}), el('button', {class:'linkbtn', id:'ezBuildReady', text:'Can this be installed today? Open Build Ready →', onclick:() => openBuildReady()})])); } catch (e) { console.warn(e); } }
   out.push(ezCard({ic:'target', title:'✨ Auto-design cameras', text: onFloor().some(o => o.t === 'room') ? 'Covers every room on this floor' + (EASY.outside ? ' and the outside corners' : '') : 'Draw or find rooms in step 1 first', onclick:() => autoDesignFloor({outside:EASY.outside}), primary:!v.devs, id:'ezAuto'}));
   out.push(el('label', {class:'ezcheck'}, [el('input', {type:'checkbox', checked:EASY.outside, onchange:(e) => { EASY.outside = e.target.checked; renderLeft(); }}), 'Include the outside of the building']));
   out.push(ezCard({ic:'target', title:'Camera advisor', text:'Click any spot — room, corner, wall or pole', onclick:() => setTool('advisor'), id:'ezAdvisor', badge:'G'}));
@@ -6002,7 +6055,7 @@ function ezStep3Tail(out, Q) {
   // scope of work
   const sow = el('textarea', {class:'field', rows:5, 'aria-label':'Scope of work'}); sow.value = S.project.scope || scopeOfWork(null).text; sow.addEventListener('change', () => tx('Edit scope of work', () => { touchMeta(); S.project.scope = sow.value; }));
   out.push(el('div', {class:'ezsec'}, [el('div', {class:'ezsecH'}, [el('h3', {text:'Scope of work'}), el('button', {class:'btn sm ghost', text:'Rewrite from design', onclick:() => { tx('Rewrite scope', () => { touchMeta(); S.project.scope = ''; }); renderLeft(); }})]), sow]));
-  { let hl = []; try { hl = projectHealth().filter(h => h.for.includes('proposal')); } catch (e) {} const f = hl.filter(h => h.state === 'fail').length, w = hl.filter(h => h.state === 'warn').length; out.push(ezCard({ic:'check', title:'Project health', text: f ? `${f} to fix before sending · ${w} to review` : w ? `Ready to send · ${w} worth a look` : 'Everything checks out ✓', onclick:() => openHealth(), id:'ezHealth', badge: f ? String(f) : null})); }
+  { let hl = []; try { hl = projectHealth().filter(h => h.for.includes('proposal')); } catch (e) {} const f = hl.filter(h => h.state === 'fail').length, w = hl.filter(h => h.state === 'warn').length; out.push(ezCard({ic:'check', title:'Build Ready', text: f ? `${f} to fix before sending · ${w} to review` : w ? `Ready to send · ${w} worth a look` : 'Every check passes ✓', onclick:() => openBuildReady(), id:'ezHealth', badge: f ? String(f) : null})); }
   out.push(el('div', {class:'ezsec'}, [el('h3', {text:'Send it'}), el('div', {class:'ezgrid'}, [
     ezCard({ic:'file', title:'Proposal PDF', text:'Options, scope, price, signature line', onclick:() => exportProposal(), primary:true, id:'ezProposal'}),
     TEAM.on ? ezCard({ic:'share', title:'Customer link', text:'They review it and approve online — you can let them pick an option', onclick:() => openShareDialog(), id:'ezShare'}) : ezCard({ic:'export', title:'Project file', text:'Save or send the design itself', onclick:() => exportProjectFile(), id:'ezFile'}),
@@ -6059,17 +6112,17 @@ async function autoFindRooms() {
 
 // ---------- auto-design: best option for every room (+ outside corners) ----------
 async function autoDesignFloor({outside=true}={}) {
-  const rooms = onFloor().filter(o => o.t === 'room' && o.pts && G.area(o.pts) >= 40 && !/stor|closet|jan|mech|elec|idf|mdf|telecom|bath|restroom|toilet|shower/i.test(o.name || ''));
+  const rooms = onFloor().filter(o => o.t === 'room' && o.pts && G.area(o.pts) >= 40 && roomNeed(o).need === 'required'); // never privacy or not-required rooms
   if (!rooms.length && !outside) return toast('Draw or find rooms first (step 1).', 'warn');
   const t = toast('Designing… 0%', '', 120000); const picks = []; const total = rooms.length + (outside ? 4 : 0); let n = 0;
   ADVISOR.level = S.overlay.level || 'detection'; ADVISOR.brand = EASY.brand === 'Generic' ? 'Best match' : EASY.brand;
   try {
     for (const r of rooms) {
       const c = G.centroid(r.pts); const p = G.inPoly(c, r.pts) ? c : r.pts[0].map((v, i) => (v + c[i]) / 2);
-      const opts = await adviseAt(p); n++; t.querySelector('span').textContent = `Designing… ${Math.round(n / total * 100)}%`;
+      ADVISOR.level = roomLevel(r); const opts = await adviseAt(p); n++; t.querySelector('span').textContent = `Designing… ${Math.round(n / total * 100)}%`;
       const best = opts[0]; if (!best || (best.existing || 0) >= 0.8) continue; picks.push({o:best, type:ADVISOR.ctx.type, label:r.name});
     }
-    if (outside) {
+    if (outside) { ADVISOR.level = S.overlay.level || 'detection';
       const walls = onFloor().filter(o => o.t === 'wall'); const pts = []; walls.forEach(w => pts.push([w.x1, w.y1], [w.x2, w.y2])); onFloor().filter(o => o.t === 'room').forEach(r => pts.push(...r.pts));
       if (pts.length) { const bb = G.bbox(pts); const corners = [[bb.x0 - 1.5, bb.y0 - 1.5], [bb.x1 + 1.5, bb.y0 - 1.5], [bb.x1 + 1.5, bb.y1 + 1.5], [bb.x0 - 1.5, bb.y1 + 1.5]];
         const prevR = ADVISOR.radius; ADVISOR.radius = 50;
@@ -6083,7 +6136,9 @@ async function autoDesignFloor({outside=true}={}) {
   tx(`Auto-design ${picks.reduce((a, p) => a + p.o.cams.length, 0)} cameras`, () => { for (const {o, type} of picks) { const mount = mountFor(type, o); for (const c of o.cams) { const d = addObj(makeDevice(c.product, c.x, c.y, {rot:Math.round(c.rot)})); d.props = {...d.props, hfov:+c.props.hfov, mountH:c.props.mountH, tilt:c.props.tilt, mount: c.kind === 'fisheye' ? 'Ceiling' : mount}; made.push(d); } } });
   invalidateOcc(); S.sel = new Set(made.map(d => d.id)); onSelectionChanged(); requestDraw(); EASY.scoreCache = null;
   setTimeout(() => { renderLeft(); }, 500);
-  undoToast(`Placed ${made.length} camera${made.length > 1 ? 's' : ''} across ${picks.length} area${picks.length > 1 ? 's' : ''}.`);
+  let line = ''; try { line = statusLine(); } catch (e) {}
+  undoToast(`Placed ${made.length} camera${made.length > 1 ? 's' : ''} across ${picks.length} area${picks.length > 1 ? 's' : ''}. ${line}`);
+  try { audit('Auto-design', `${made.length} cameras placed · ${line}`); } catch (e) {}
   return made;
 }
 
@@ -6130,7 +6185,9 @@ function wireItUp() {
   });
   EASY.scoreCache = null; invalidateOcc(); requestDraw(); setTimeout(() => renderLeft(), 400);
   if (grown.length) toast('Recorder storage raised for 30-day retention: ' + grown.join(', '), '', 5000);
-  if (cables || made.length) undoToast(`Added ${made.length ? made.map(d => d.name).join(', ') + ' and ' : ''}${cables} cable run${cables === 1 ? '' : 's'}.`); else toast('Everything is already wired.', '', 3500);
+  let line = ''; try { line = statusLine(); } catch (e) {}
+  if (cables || made.length) undoToast(`Added ${made.length ? made.map(d => d.name).join(', ') + ' and ' : ''}${cables} cable run${cables === 1 ? '' : 's'}. ${line}`); else toast('Nothing new to connect. ' + line, '', 5000);
+  try { audit('Wire it all up', `${made.length} devices, ${cables} cables added · ${line}`); } catch (e) {}
 }
 
 // ---------- secure a door tool ----------
@@ -6147,7 +6204,7 @@ TOOLS.securedoor = {
 // ---------- easy properties panel ----------
 function renderEasyRight(Rp, sel) {
   Rp.innerHTML = ''; const o = sel[0];
-  const head = el('div', {class:'phead ezphead'}, [el('h2', {text: o.t === 'dev' ? kindOf(o).label : o.t === 'door' ? 'Door' : o.t === 'room' ? 'Room' : o.t === 'cable' ? 'Cable' : 'Item'}), el('button', {class:'ib', 'aria-label':'Close', html:'&times;', onclick:() => { S.sel.clear(); onSelectionChanged(); }})]);
+  const head = el('div', {class:'phead ezphead'}, [el('h2', {text: o.t === 'dev' ? kindOf(o).label : o.t === 'door' ? 'Door' : o.t === 'room' ? 'Room' : o.t === 'cable' ? 'Cable' : 'Item'}), sel.length === 1 && ['dev', 'room', 'cable', 'door'].includes(o.t) ? explainBtn() : null, el('button', {class:'ib', 'aria-label':'Close', html:'&times;', onclick:() => { S.sel.clear(); onSelectionChanged(); }})].filter(Boolean));
   const body = el('div', {class:'pbody props ezprops'}); Rp.append(head, body);
   if (sel.length > 1) { body.append(el('p', {text:`${sel.length} items selected.`}), el('div', {class:'qa'}, [sel.filter(o => o.t === 'dev').length > 1 ? el('button', {class:'btn', id:'saveAsmBtn', text:'Save as assembly…', onclick:() => promptSaveAssembly()}) : null, el('button', {class:'btn', html:icon('trash') + 'Delete all', onclick:() => deleteSelection()})].filter(Boolean))); return; }
   if (o.t === 'dev') {
@@ -6325,14 +6382,17 @@ function openWelcome(force) {
 // ---------- step checklist + the one thing to do next ----------
 function ezChecklist(step) {
   const all = onFloor(); const fl = curFloor(); const devs = Object.values(objs()).filter(o => o.t === 'dev' && kindOf(o).cat !== 'site');
-  if (step === 1) return [['Plan added', !!(fl && fl.bg) || all.some(o => o.t === 'wall' || o.t === 'room')], ['Scale set', !(fl && fl.bg) || !!fl.calibrated || all.some(o => o.t === 'wall')], ['Rooms marked', all.some(o => o.t === 'room')]];
-  if (step === 2) { const v = designScore(); return [['Devices placed', v.devs > 0], ['Rooms covered', v.devs > 0 && !v.weak.length], ['Everything wired', v.devs > 0 && !v.loose.length], ['No problems', v.devs > 0 && !v.errs]]; }
+  // “Scale set” only after a valid saved calibration (or a CAD / drawn-to-scale plan) that passes the sanity check
+  if (step === 1) { const sc = fl ? floorScale(fl) : {state:'none'}; return [['Plan added', !!(fl && fl.bg) || all.some(o => o.t === 'wall' || o.t === 'room')], ['Scale set', sc.state === 'ok' && !scaleSanity(fl)], ['Rooms marked', all.some(o => o.t === 'room')]]; }
+  // “Everything wired” = connected AND powered, networked and on a recorder; “Design Check clean” = no errors AND no open warnings
+  if (step === 2) { const v = designScore(); const s = systemStatus(); const by = Object.fromEntries(s.stages.map(x => [x.k, x.state])); const wired = v.devs > 0 && !v.loose.length && (!s.cams || (by.powered === 'ok' && by.networked === 'ok' && by.recorded === 'ok'));
+    return [['Devices placed', v.devs > 0], ['Rooms covered', v.devs > 0 && v.rooms > 0 && !v.weak.length && !v.cs.privacyBad.length], ['Everything wired', wired], ['Design Check clean', v.devs > 0 && !s.errs && !s.warns]]; }
   if (!bomOn()) return [['Prices entered', quoteOptions().some(o => o.Q.priced)], ['Option picked', !!S.project.quoteOption], ['Proposal sent', !!S.project.quoteSent]];
   const Q = buildQuote(); return [['Option picked', !!S.project.quoteOption], ['Prices filled', !Q.missing], ['Proposal sent', !!S.project.quoteSent]];
 }
 function ezNextAction(step) {
   const all = onFloor(); const fl = curFloor();
-  if (step === 1) { if (fl && fl.bg && !fl.calibrated && !all.some(o => o.t === 'wall')) return ['#left .ezalert .btn.primary', 'Set the scale']; if (!all.some(o => o.t === 'room' || o.t === 'wall') && !(fl && fl.bg)) return ['#ezUpload', 'Add your floor plan']; if (fl && fl.bg && !all.some(o => o.t === 'room')) return ['#ezFindRooms', 'Find the rooms']; return ['#left .eznext', 'Go to step 2']; }
+  if (step === 1) { if (fl && fl.bg && floorScale(fl).state === 'fail') return ['#left .ezalert .btn.primary', 'Set the scale']; if (!all.some(o => o.t === 'room' || o.t === 'wall') && !(fl && fl.bg)) return ['#ezUpload', 'Add your floor plan']; if (fl && fl.bg && !all.some(o => o.t === 'room')) return ['#ezFindRooms', 'Find the rooms']; return ['#left .eznext', 'Go to step 2']; }
   if (step === 2) { const v = designScore(); if (!v.devs) return ['#ezAuto', 'Auto-design cameras']; if (v.weak.length) return ['#left .eztip', 'Cover ' + (v.weak[0].r.name || 'the open room')]; if (v.loose.length) return ['#ezWire', 'Wire it all up']; return ['#left .eznext', 'Go to step 3']; }
   if (!bomOn() && !quoteOptions().some(o => o.Q.priced)) return ['#left [data-price="recommended"]', 'Type your price'];
   const Q = buildQuote(); if (bomOn() && Q.missing) return ['#ezMissing input', 'Type your costs']; if (!S.project.quoteSent) return ['#ezProposal', 'Send the proposal']; return ['#ezPresent', 'Present it to the customer'];
@@ -6888,7 +6948,7 @@ function toolboxTools() {
     {id:'cablelabels', em:'🔖', name:'Cable labels', how:'Both ends of every run', go:openLabelsDialog},
     {id:'vms', em:'🎥', name:'Camera list for the VMS', how:'CSV with names, models, IPs, rooms', go:exportVMSList, off: !cams ? 'Add cameras first' : null},
     {id:'walk', em:'📝', name:'Site walk checklist', how:SpeechRec() ? 'Talk or type what you see on site' : 'What you see on site', go:openSiteWalk},
-    {id:'health', em:'🩺', name:'Project health', how:'Scale, coverage, wiring, storage, price, backup — with fixes', go:openHealth},
+    {id:'health', em:'🩺', name:'Build Ready', how:'Can this be installed today? Scale, coverage, power, recording, cables, approvals — with fixes', go:() => openBuildReady()},
     {id:'present', em:'🎬', name:'Present to the customer', how:'Full-screen, no prices or part numbers', go:openPresent},
   ];
 }
@@ -6906,12 +6966,29 @@ const COVER_NEEDS = [['required', 'Needs camera coverage'], ['optional', 'Not re
 const PRIVACY_RX = /bath|restroom|toilet|\bwc\b|locker|shower|changing|lactation|nursing/i;
 const OPTIONAL_RX = /\bstor|closet|jan|mech|elec|\bidf\b|\bmdf\b|telecom|server|utility|shaft|riser/i;
 function coverTarget() { const t = +((S.project && S.project.settings && S.project.settings.coverTarget) ?? 90); return Math.min(100, Math.max(50, t || 90)); }
+// building-type presets: starting design rules the designer can change room by room. They are not legal advice —
+// follow local law and the owner's policy for recording in sensitive areas.
+const PRESETS = {
+  office:     {label:'Office', privacy:['break ?room', 'lounge', 'wellness', 'mother'], levels:[['entr|lobby|reception|vestibule', 'recognition']], note:'Break rooms and wellness rooms are treated as privacy areas until you approve a camera there.'},
+  medical:    {label:'Medical / clinic', privacy:['exam', 'treatment', 'procedure', 'patient', 'recovery', 'consult', 'triage', 'x-?ray', 'imaging', 'infusion', 'break ?room'], levels:[['entr|lobby|reception|waiting|check.?in', 'recognition'], ['pharm|drug|medication|med room', 'identification']], target:90, note:'Exam, treatment, procedure, patient and break rooms are privacy areas; pharmacy and medication rooms are designed to identification detail.'},
+  retail:     {label:'Retail store', privacy:['fitting', 'dressing', 'break ?room'], levels:[['entr|vestibule|exit', 'recognition'], ['cash|register|pos|checkout|wrap', 'identification'], ['stock|back ?room|receiving', 'observation']], note:'Fitting rooms are privacy areas; registers are designed to identification detail.'},
+  warehouse:  {label:'Warehouse / industrial', privacy:['break ?room', 'locker'], levels:[['dock|receiving|shipping', 'observation'], ['entr|lobby|gate', 'recognition']], note:'Docks are designed to observation detail, entrances to recognition.'},
+  school:     {label:'School', privacy:['nurse', 'health', 'counsel', 'locker'], levels:[['entr|vestibule|lobby|main office|front office', 'recognition'], ['corridor|hall|cafeteria|gym', 'observation']], note:'Nurse, counselling and locker rooms are privacy areas; entrances are designed to recognition detail.'},
+  restaurant: {label:'Restaurant', privacy:['break ?room', 'staff room'], levels:[['cash|register|pos|bar|host', 'identification'], ['entr|vestibule', 'recognition']], note:'Staff break rooms are privacy areas; registers and the bar are designed to identification detail.'},
+  church:     {label:'Church / worship', privacy:['nursery', 'counsel', 'confession', 'prayer'], levels:[['entr|narthex|lobby|foyer', 'recognition'], ['office|safe|count', 'identification']], note:'Nursery, counselling and prayer rooms are privacy areas; the count room is designed to identification detail.'},
+  parking:    {label:'Parking', privacy:[], levels:[['entr|exit|gate|booth|pay', 'identification'], ['stair|elev', 'recognition']], note:'Entry and exit lanes are designed to identification detail (plates and faces).'},
+  residential:{label:'Residential / multifamily', privacy:['bed', 'unit', 'apartment', 'apt'], levels:[['entr|lobby|mail|package', 'recognition']], note:'Units and bedrooms are privacy areas; lobbies and mail rooms are designed to recognition detail.'},
+};
+const presetOf = () => PRESETS[(S.project && S.project.settings && S.project.settings.preset) || ''] || null;
+const presetRx = (words) => words && words.length ? new RegExp(words.join('|'), 'i') : null;
 function roomNeed(r) {
   const set = r.props && r.props.coverNeed; if (set && COVER_NEEDS.some(([k]) => k === set)) return {need:set, auto:false};
-  const txt = [r.name, r.props && r.props.type].filter(Boolean).join(' ');
-  return {need: PRIVACY_RX.test(txt) ? 'privacy' : OPTIONAL_RX.test(txt) ? 'optional' : 'required', auto:true};
+  const txt = [r.name, r.props && r.props.type].filter(Boolean).join(' '); const pr = presetOf(); const prx = pr && presetRx(pr.privacy);
+  return {need: PRIVACY_RX.test(txt) || (prx && prx.test(txt)) ? 'privacy' : OPTIONAL_RX.test(txt) ? 'optional' : 'required', auto:true, preset: !!(prx && prx.test(txt) && !PRIVACY_RX.test(txt))};
 }
-function roomLevel(r) { return (r.props && r.props.coverLevel) || S.overlay.level || 'detection'; }
+function presetLevel(r) { const pr = presetOf(); if (!pr || !pr.levels) return null; const txt = [r.name, r.props && r.props.type].filter(Boolean).join(' '); for (const [rx, lv] of pr.levels) if (new RegExp(rx, 'i').test(txt)) return lv; return null; }
+function roomLevel(r) { return (r.props && r.props.coverLevel) || presetLevel(r) || S.overlay.level || 'detection'; }
+function applyPreset(p, key) { p.settings = p.settings || {}; if (!key || !PRESETS[key]) { delete p.settings.preset; return; } p.settings.preset = key; if (PRESETS[key].target) p.settings.coverTarget = PRESETS[key].target; }
 const COVQ = {key:'', m:new Map()};
 function roomCoverage(r) {
   const key = S.project.id + '|' + S.project.modified + '|' + (S.txn || 0) + '|' + coverTarget(); if (COVQ.key !== key) { COVQ.key = key; COVQ.m.clear(); }
@@ -6979,7 +7056,7 @@ function daysAgo(ts) { return ts ? Math.floor((Date.now() - ts) / 864e5) : null;
 
 // every check in one list: {id, group, label, state:'ok'|'warn'|'fail', detail, fix, fixLabel, for:['proposal','drawings']}
 function projectHealth() {
-  const p = S.project; const out = []; const add = (o) => out.push({for:['proposal', 'drawings'], ...o});
+  const p = S.project; const out = []; const add = (o) => out.push({for:['proposal', 'drawings'], build:true, ...o});
   const devs = Object.values(objs()).filter(o => o.t === 'dev' && !(prod(o.product) || {}).nobom);
   // geometry & scale
   const pf = planFloors().filter(f => f.bg || onFloor(f.id).length); if (!pf.length) add({id:'plan', group:'Plan', label:'Floor plan', state:'fail', detail:'No floor plan yet', fix:() => setStep(1), fixLabel:'Add a plan'});
@@ -6990,19 +7067,32 @@ function projectHealth() {
   for (const f of pf) { if (!onFloor(f.id).some(isCam)) continue; const s = coverageSummary(f.id); req += s.req.length; ok += s.ok.length; weakNames.push(...s.weak.map(x => `${x.r.name || 'Room'} ${Math.floor(x.pct * 100)}%`)); privacyBad.push(...s.privacyBad.map(x => x.r.name || 'Room')); notReq.push(...[...s.optional, ...s.privacy].map(x => x.r.name || 'Room')); }
   if (devs.some(isCam)) add({id:'coverage', group:'Coverage', label:'Required rooms covered', state: req && ok < req ? 'fail' : 'ok', detail: req ? `${ok} of ${req} at ≥${coverTarget()}%${weakNames.length ? ' · below: ' + weakNames.slice(0, 6).join(', ') : ''}` : 'No rooms drawn — coverage can’t be measured', fix:() => { setStep(2); openCoverageDetails(); }, fixLabel:'See rooms'});
   if (privacyBad.length) add({id:'privacy', group:'Coverage', label:'Privacy areas', state:'fail', detail:'Cameras inside: ' + privacyBad.join(', '), fix:() => { setStep(2); openCoverageDetails(); }, fixLabel:'Show'});
-  // wiring, design check, storage
-  if (devs.length) { const L = looseDevices(); add({id:'wiring', group:'Wiring', label:'Every device connected', state: L.length ? 'fail' : 'ok', detail: L.length ? `${L.length} not wired: ${L.slice(0, 6).map(o => o.name).join(', ')}` : `${devs.length} devices wired`, fix:() => { setStep(2); wireItUp(); }, fixLabel:'Wire it all up'}); }
-  const issues = (() => { try { return runDesignCheck(); } catch (e) { return []; } })(); const errs = issues.filter(i => i.sev === 'error');
-  if (devs.length) add({id:'check', group:'Design check', label:'No design errors', state: errs.length ? 'fail' : 'ok', detail: errs.length ? errs.slice(0, 3).map(i => i.msg).join(' · ') : `${issues.filter(i => i.sev === 'warning').length} warnings to review`, fix:() => { S.issues = issues; setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, fixLabel:'Open the check'});
+  // wiring, power, recording, cable runs, design check, storage
+  const sys = devs.length ? systemStatus() : null; const stg = sys ? Object.fromEntries(sys.stages.map(x => [x.k, x])) : {};
+  if (devs.length) { const L = looseDevices(); add({id:'wiring', group:'System', label:'Every device connected', state: L.length ? 'fail' : 'ok', detail: L.length ? `${L.length} not wired: ${L.slice(0, 6).map(o => o.name).join(', ')}` : `${devs.length} devices wired`, fix:() => { setStep(2); wireItUp(); }, fixLabel:'Wire it all up'}); }
+  if (sys && sys.cams) for (const k of ['powered', 'recorded', 'cables']) { const x = stg[k]; add({id: k === 'powered' ? 'power' : k === 'recorded' ? 'recording' : 'cables', group:'System', label: k === 'powered' ? 'Cameras powered (PoE)' : k === 'recorded' ? 'Cameras on a recorder (NVR)' : 'Cable runs', state: x.state === 'none' ? 'warn' : x.state, detail:x.value, fix:x.fix, fixLabel:x.fixLabel}); }
+  const issues = (() => { try { return freshIssues(); } catch (e) { return []; } })(); const errs = issues.filter(i => i.sev === 'error'), warns = issues.filter(i => i.sev === 'warning');
+  const openCheck = () => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); };
+  if (devs.length) { add({id:'check', group:'Design check', label:'No design errors', state: errs.length ? 'fail' : 'ok', detail: errs.length ? errs.slice(0, 3).map(i => i.msg).join(' · ') : 'No errors', fix:openCheck, fixLabel:'Open the check'});
+    add({id:'warnings', group:'Design check', label:'Warnings reviewed', state: warns.length ? 'warn' : 'ok', detail: warns.length ? `${warns.length} open: ` + warns.slice(0, 3).map(i => i.msg).join(' · ') : `None open${(S.acceptedIssues || []).length ? ` · ${(S.acceptedIssues || []).length} accepted with a reason` : ''}`, fix:openCheck, fixLabel:'Review them'}); }
   try { const bw = bandwidthReport(); const short = bw.perRec.filter(r => r.cap && r.tb > r.cap); if (bw.rows.length) add({id:'storage', group:'Recording', label:'Recorder storage', state: short.length ? 'fail' : bw.unassigned ? 'warn' : 'ok', detail: short.length ? short.map(r => `${r.r.name} needs ${r.tb.toFixed(1)} TB, has ${r.cap} TB`).join(' · ') : bw.unassigned ? `${bw.unassigned} cameras not assigned to a recorder` : `${bw.total.tb.toFixed(1)} TB for ${((p.settings || {}).recording || {}).days || REC_DEFAULTS.days} days`, fix:() => { setMode('reports'); REPORT_TAB = 'bandwidth'; renderReports(); }, fixLabel:'Bandwidth & storage'}); } catch (e) {}
+  // access control & fire — shown when those systems are in the design
+  const accDoors = Object.values(objs()).filter(o => o.t === 'door' && Object.values(objs()).some(x => x.doorId === o.id)); const accIss = issues.filter(i => (i.sev === 'error' || i.sev === 'warning') && /^(Door |Reader |Lock )|door controller|-door controller/.test(i.msg));
+  if (accDoors.length) add({id:'access', group:'Access & fire', label:'Access-controlled doors', state: accIss.some(i => i.sev === 'error') ? 'fail' : accIss.length ? 'warn' : 'ok', detail: `${accDoors.length} door${accDoors.length > 1 ? 's' : ''}${accIss.length ? ' · ' + accIss.slice(0, 3).map(i => i.msg).join(' · ') : ' · reader, lock, REX, contact and power all in place'}`, fix:openCheck, fixLabel:'Show'});
+  const fireDevs = devs.filter(o => ['smoke', 'heat', 'pull', 'hornstrobe', 'facp'].includes(o.kind)); const fireIss = issues.filter(i => (i.sev === 'error' || i.sev === 'warning') && fireDevs.some(f => f.id === i.id));
+  if (fireDevs.length) add({id:'fire', group:'Access & fire', label:'Fire alarm layout (layout aid)', state: fireIss.some(i => i.sev === 'error') ? 'fail' : fireIss.length ? 'warn' : 'ok', detail: `${fireDevs.length} devices${fireIss.length ? ' · ' + fireIss.slice(0, 2).map(i => i.msg).join(' · ') : ''} · a licensed fire alarm designer must engineer and permit the final system (NFPA 72 / local AHJ)`, fix:openCheck, fixLabel:'Show'});
   // customer, company, price
-  add({id:'customer', group:'Customer', label:'Customer & site address', state: p.customer && p.address ? 'ok' : 'warn', detail: [p.customer || 'no customer name', p.address || 'no site address'].join(' · '), fix:() => openSettings(), fixLabel:'Add them'});
-  const B = brandInfo(); add({id:'company', group:'Your company', label:'Company name & contact', state: B.name && B.name !== 'Your Security Co.' && (B.phone || B.email) ? 'ok' : 'warn', detail: [B.name || 'no company name', B.phone || B.email || 'no phone or email', B.logo ? 'logo ✓' : 'no logo'].join(' · '), fix:() => openSettings(), fixLabel:'Company info'});
+  add({build:false, id:'customer', group:'Customer', label:'Customer & site address', state: p.customer && p.address ? 'ok' : 'warn', detail: [p.customer || 'no customer name', p.address || 'no site address'].join(' · '), fix:() => openSettings(), fixLabel:'Add them'});
+  const B = brandInfo(); add({build:false, id:'company', group:'Your company', label:'Company name & contact', state: B.name && B.name !== 'Your Security Co.' && (B.phone || B.email) ? 'ok' : 'warn', detail: [B.name || 'no company name', B.phone || B.email || 'no phone or email', B.logo ? 'logo ✓' : 'no logo'].join(' · '), fix:() => openSettings(), fixLabel:'Company info'});
   const priced = bomOn() ? !buildQuote().missing : quoteOptions().some(o => o.Q.priced);
   out.push({for:['proposal'], id:'price', group:'Price', label: bomOn() ? 'Every item priced' : 'At least one option priced', state: priced ? 'ok' : 'fail', detail: priced ? quoteOptions().filter(o => o.Q.priced !== false).map(o => `${o.name} ${money(o.Q.total)}`).join(' · ') : 'Type your price in step 3', fix:() => setStep(3), fixLabel:'Type a price'});
   // data safety
   const local = !(typeof TEAM !== 'undefined' && TEAM.on) && !(typeof CLOUD !== 'undefined' && CLOUD.ready); const bk = daysAgo(p.lastBackup);
   out.push({for:[], id:'backup', group:'Your data', label: local ? 'Backup of this project' : 'Synced to your account', state: !local ? 'ok' : bk == null ? 'warn' : bk > 7 ? 'warn' : 'ok', detail: !local ? 'Saved on the server as you work' : bk == null ? 'Only saved in this browser — download a backup file' : `Last backup ${bk === 0 ? 'today' : bk + ' day' + (bk > 1 ? 's' : '') + ' ago'}`, fix:() => downloadBackup(), fixLabel:'Download backup'});
+  const log = p.exportLog || []; const last = (rx) => log.slice().reverse().find(e => e.ok && rx.test(e.name)); const dw = last(/-drawings-rev/), pr = last(/-proposal\.pdf$/);
+  const stale = (e) => e && p.modified && p.modified > e.at + 3000;
+  out.push({for:[], id:'exports', group:'Deliverables', label:'Drawings & proposal exported', state: dw && pr && !stale(dw) && !stale(pr) ? 'ok' : 'warn', detail: [dw ? `Drawings ${fmtTime(dw.at)}${stale(dw) ? ' (design changed since)' : ''}` : 'Drawings not exported', pr ? `Proposal ${fmtTime(pr.at)}${stale(pr) ? ' (design changed since)' : ''}` : 'Proposal not exported'].join(' · '), fix:() => openExport(), fixLabel:'Export'});
+  const ap = p.approvedSnap; out.push({for:[], id:'approval', group:'Deliverables', label:'Customer approval', state: ap ? 'ok' : 'warn', detail: ap ? `${ap.optionName || 'Quote'} · ${money(ap.total)} · ${new Date(ap.ts).toLocaleDateString()}` : (typeof TEAM !== 'undefined' && TEAM.on) ? 'Waiting — the customer approves from the share link' : 'Not recorded yet', fix:() => confirmApproval(), fixLabel:'Record approval'});
   out.push({for:[], id:'proposal', group:'Deliverables', label:'Proposal sent', state: p.quoteSent ? 'ok' : 'warn', detail: p.quoteSent ? `${p.quoteSentBy === 'link' ? 'Customer link' : 'Proposal PDF'} · ${new Date(p.quoteSent).toLocaleDateString()}` : 'Not sent yet', fix:() => setStep(3), fixLabel:'Step 3'});
   return out;
 }
@@ -7013,6 +7103,8 @@ function openHealth() {
     ...groups.map(g => el('div', {class:'hgrp'}, [el('h4', {text:g}), ...list.filter(h => h.group === g).map(h => healthRow(h, () => d.close()))]))]);
   d = dialog({title:'Project health', cls:'mid', body, footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
 }
+// one trusted panel: the Build Ready dashboard replaces the separate health list
+openHealth = openBuildReady;
 // gate before a customer-facing export. Resolves true to continue. Nothing to fix → no dialog at all.
 const preflightOn = () => { try { return localStorage.getItem('ssd-preflight') !== 'off'; } catch (e) { return true; } };
 function preflight(kind) {
@@ -7089,6 +7181,9 @@ function issueActions(i) {
   const m = String(i.msg); const o = objs()[i.id]; const acts = [];
   if (/has no network connection|not connected to (a|the) fire alarm|not connected to (an|the) intrusion panel|is not assigned to a controller|has no power supply|has no uplink|no NVR or recording server|but no fire alarm control panel|but no intrusion panel/.test(m)) acts.push(['Wire it up', () => wireFix(i, 'One-click wire')]);
   if (o && o.t === 'room' && /covered at .* \(target/.test(m)) acts.push(['Suggest cameras', () => { onFloorOf(i.id); if (isEasy()) setStep(2); ezFixRoom(o); audit('Opened camera suggestions', o.name, [o.id]); }], ['Not required', () => { tx('Coverage requirement', () => updObj(o.id, {props:{...o.props, coverNeed:'optional'}})); audit('Marked room not required', o.name, [o.id]); S.issuesKey = null; freshIssues(); if (S.mode === 'reports') renderReports(); renderRight(); }]);
+  if (/plan scale not set|check the distance/.test(m)) { const fid = String(i.id).replace(/^scale:/, ''); acts.push(['Set the scale', () => { const f = floorById(fid); if (!f) return; switchFloor(f.id); if (isEasy()) setStep(1); else setMode('floor'); setTool('calibrate'); toast('Click two points of a known distance on the plan, then type the distance.', '', 6000); audit('Opened scale calibration', floorLabel(f.id)); }]); }
+  if (o && isRole(o, 'nvr') && /needs [\d.]+ TB for the retention set/.test(m)) acts.push(['Raise storage', () => { const need = +m.match(/needs ([\d.]+) TB/)[1]; const tb = Math.ceil(need / 4) * 4; tx('Raise recorder storage', () => updObj(o.id, {props:{...o.props, storageTB:tb}})); audit('Raised recorder storage', `${o.name} → ${tb} TB`, [o.id]); toast(`${o.name} storage set to ${tb} TB`, '', 3500); S.issuesKey = null; freshIssues(); if (S.mode === 'reports') renderReports(); }]);
+  if (/Recording capacity: .* more licenses\/channels needed/.test(m)) acts.push(['Add a recorder', () => wireFix(i, 'Added recorder capacity')]);
   if (i.sev !== 'error') acts.push(['Accept…', () => promptBox('Accept this as an exception', 'Reason (shown in the audit trail)', '', (r) => acceptIssue(i, r || 'Reviewed'))]);
   return acts;
 }
@@ -7168,6 +7263,141 @@ TOOLS.doorasm = { hint() { const t = (S.doorTpl && DOOR_TEMPLATES.concat(S.proje
   down(e, p, hit) { const o = hit && hit.obj; const d = o && o.t === 'door' ? o : onFloor().filter(x => x.t === 'door').map(x => ({x, d:G.dist(p, [x.x, x.y])})).filter(x => x.d < 3).sort((a, b) => a.d - b.d).map(x => x.x)[0];
     if (!d) { toast('That’s not a door — click a door on the plan (or add one with the Door tool).', 'warn', 3500); return; } applyDoorTemplate(d.id, S.doorTpl); audit('Applied door assembly', `${d.name}: ${S.doorTpl}`, [d.id]); },
   move() {}, up() {} };
+
+// ===== BUILD READY · one trusted answer to “can this be installed today?” =====
+// Every number here comes from the same live model the plan, Design Check, schedules and exports use.
+const POE_SRC = (x) => isRole(x, 'switch') || isRole(x, 'nvr');
+// the system pipeline, in the order a job is actually built
+function systemStatus() {
+  const all = Object.values(objs()); const g = buildGraph(); const cams = all.filter(isCam);
+  const others = all.filter(o => o.t === 'dev' && !isCam(o) && kindOf(o).cat !== 'site' && !(KINDS[o.kind] || {}).room && !(prod(o.product) || {}).nobom);
+  const issues = freshIssues(); const errs = issues.filter(i => i.sev === 'error'), warns = issues.filter(i => i.sev === 'warning');
+  const powered = cams.filter(c => neighbors(g, c.id).some(POE_SRC)); const poeOver = errs.filter(i => /PoE budget|PoE ports|PoE devices on/.test(i.msg));
+  const networked = cams.filter(c => !!findUp(g, c.id, (x) => isRole(x, 'switch') || isRole(x, 'nvr') || x.kind === 'router', 6));
+  const recs = all.filter(o => isRole(o, 'nvr')); const recorded = cams.filter(c => !!recorderOf(g, c)); const chanErr = errs.find(i => /Recording capacity/.test(i.msg));
+  const cables = all.filter(o => o.t === 'cable'); const openEnds = cables.filter(c => !c.from || !c.to || !objs()[c.from] || !objs()[c.to]); const tooLong = errs.filter(i => /exceeds the 100 m|exceeds the typical/.test(i.msg));
+  let longest = null; for (const c of cables) { try { const k = cableCalc(c); if (!longest || k.final > longest.ft) longest = {c, ft:k.final}; } catch (e) {} }
+  const floorsWithCams = [...new Set(cams.map(c => c.floor))].map(floorById).filter(Boolean); const unscaled = floorsWithCams.filter(f => floorScale(f).state === 'fail');
+  let req = 0, ok = 0; for (const f of floorsWithCams) { const s = coverageSummary(f.id); req += s.req.length; ok += s.ok.length; }
+  const n = cams.length; const frac = (k) => `${k} of ${n}`;
+  const st = (good, partial) => good ? 'ok' : partial ? 'warn' : 'fail';
+  const stages = [
+    {k:'placed', label:'Cameras placed', state: n ? 'ok' : 'none', value: n ? `${n} camera${n > 1 ? 's' : ''}${others.length ? ` + ${others.length} other device${others.length > 1 ? 's' : ''}` : ''}` : 'None yet', fix:() => { setStep(2); }, fixLabel:'Add cameras'},
+    {k:'coverage', label:'Coverage calculated', state: !n ? 'none' : !req ? 'warn' : unscaled.length ? 'warn' : st(ok === req, ok > 0), value: !n ? '—' : !req ? 'No rooms to measure' : `${ok} of ${req} required rooms at ≥${coverTarget()}%${unscaled.length ? ' · estimate (scale not set)' : ''}`, fix:() => { setStep(2); openCoverageDetails(); }, fixLabel:'See rooms'},
+    {k:'powered', label:'Powered (PoE)', state: !n ? 'none' : poeOver.length ? 'fail' : st(powered.length === n, powered.length > 0), value: !n ? '—' : poeOver.length ? `${frac(powered.length)} · PoE over budget` : frac(powered.length), fix:() => wireItUp(), fixLabel:'Wire it all up'},
+    {k:'networked', label:'Networked', state: !n ? 'none' : st(networked.length === n, networked.length > 0), value: !n ? '—' : frac(networked.length), fix:() => wireItUp(), fixLabel:'Wire it all up'},
+    {k:'recorded', label:'Recorder assigned', state: !n ? 'none' : !recs.length ? 'fail' : chanErr ? 'fail' : st(recorded.length === n, recorded.length > 0), value: !n ? '—' : !recs.length ? 'No NVR in the design' : chanErr ? chanErr.msg : `${frac(recorded.length)} on ${recs.length} recorder${recs.length > 1 ? 's' : ''}`, fix:() => wireItUp(), fixLabel:'Wire it all up'},
+    {k:'cables', label:'Cables routed', state: !n && !others.length ? 'none' : !cables.length ? 'fail' : tooLong.length ? 'fail' : openEnds.length ? 'warn' : 'ok', value: !cables.length ? 'No cables yet' : `${cables.length} run${cables.length > 1 ? 's' : ''}${longest ? ` · longest ${fmtLen(longest.ft)} (${longest.c.name})` : ''}${tooLong.length ? ` · ${tooLong.length} too long` : ''}${openEnds.length ? ` · ${openEnds.length} with an open end` : ''}`, fix:() => { setMode('reports'); REPORT_TAB = 'cables'; renderReports(); }, fixLabel:'Cable schedule'},
+    {k:'check', label:'Design Check clean', state: errs.length ? 'fail' : warns.length ? 'warn' : (n || others.length) ? 'ok' : 'none', value: errs.length || warns.length ? `${errs.length} error${errs.length === 1 ? '' : 's'} · ${warns.length} warning${warns.length === 1 ? '' : 's'}` : (n || others.length) ? 'No errors or warnings' : '—', fix:() => { setMode('reports'); REPORT_TAB = 'check'; renderReports(); }, fixLabel:'Open the check'},
+  ];
+  return {stages, cams:n, others:others.length, errs:errs.length, warns:warns.length, unscaled, loose:looseDevices().length};
+}
+// the plain-English line used after Auto-design and Wire it all up, so nothing implies more than what was done
+function statusLine(s = systemStatus()) {
+  const by = Object.fromEntries(s.stages.map(x => [x.k, x])); const W = {powered:'powered', networked:'networked', recorded:'on a recorder'}; const notYet = ['powered', 'networked', 'recorded'].filter(k => by[k].state !== 'ok').map(k => W[k]);
+  const list = (a) => a.length > 1 ? a.slice(0, -1).join(', ') + ' or ' + a[a.length - 1] : a[0];
+  return [by.coverage.value !== '—' ? 'Coverage: ' + by.coverage.value : null, notYet.length ? 'Not yet ' + list(notYet) + ' — next: Wire it all up' : 'Powered, networked and on a recorder', by.check.state === 'ok' ? 'Design Check clean' : 'Design Check: ' + by.check.value].filter(Boolean).join(' · ');
+}
+function pipelineEl(s = systemStatus(), {compact=false, onFix} = {}) {
+  return el('ol', {class:'syspipe' + (compact ? ' compact' : ''), id: compact ? 'ezPipeline' : 'brPipeline', 'aria-label':'System status'}, s.stages.map(x => el('li', {class:'sstage ' + x.state, 'data-stage':x.k}, [el('span', {class:'sico', 'aria-hidden':'true', text: x.state === 'ok' ? '✓' : x.state === 'fail' ? '✗' : x.state === 'warn' ? '!' : '·'}), el('span', {class:'stxt'}, [el('b', {text:x.label}), el('i', {text:x.value})]), !compact && x.state !== 'ok' && x.state !== 'none' && x.fix ? el('button', {class:'btn sm', text:x.fixLabel, onclick:() => { onFix && onFix(); x.fix(); }}) : null])));
+}
+// per-floor scale record: source, reference dimension, resulting scale, validation
+function scaleRecord(f) {
+  const sc = floorScale(f); const bg = f.bg; const h = (f.calHist || []).slice(-1)[0]; const bad = scaleSanity(f); const w = planWidthFt(f), hh = bg && bg.h && bg.ftPerPx ? bg.h * bg.ftPerPx : 0;
+  const source = sc.src === 'two-point' || sc.src === 'calibrated' ? 'Two-point calibration' : sc.src === 'map' ? 'Satellite map' : sc.src === 'dxf' ? 'CAD file units' : sc.src === 'drawn' ? 'Drawn in the app' : sc.src === 'none' ? '—' : 'Not set';
+  const ref = sc.src === 'two-point' && h ? `${fmtLen(h.ft)} between two points · ${new Date(h.at).toLocaleDateString()}${h.by ? ' · ' + h.by : ''}` : sc.src === 'map' ? 'Map imagery at the captured zoom' : sc.src === 'dxf' ? 'Units in the drawing header' : sc.src === 'drawn' ? 'Walls and rooms drawn in feet' : sc.src === 'unset' ? 'No reference dimension yet' : '—';
+  const result = bg && bg.ftPerPx && sc.state === 'ok' && !bg.vector ? `1 px = ${(+bg.ftPerPx).toPrecision(3)} ft · ${fmtLen(w)} × ${fmtLen(hh)}` : w && sc.state === 'ok' ? `${fmtLen(w)} wide` : sc.state === 'fail' ? 'Assumed — not measured' : '—';
+  return {f, state: sc.state === 'fail' ? 'fail' : bad ? 'warn' : sc.state === 'none' ? 'none' : 'ok', source, ref, result, check: sc.state === 'fail' ? 'NOT set — distances, coverage and cable lengths are estimates' : bad || (sc.state === 'none' ? 'No plan' : 'Valid')};
+}
+function scaleTable(close) {
+  const rows = planFloors().filter(f => f.bg || onFloor(f.id).length).map(scaleRecord);
+  if (!rows.length) return el('p', {class:'note', text:'No floors with a plan yet.'});
+  return el('table', {class:'grid scaletbl', id:'scaleTable'}, [el('thead', {}, [el('tr', {}, ['Floor', 'Scale source', 'Reference', 'Result', 'Check', ''].map(t => el('th', {text:t})))]), el('tbody', {}, rows.map(r => el('tr', {class:'sc-' + r.state, 'data-floor':r.f.id}, [el('td', {text:floorLabel(r.f.id)}), el('td', {text:r.source}), el('td', {text:r.ref}), el('td', {text:r.result}), el('td', {}, [el('span', {class:'sevpill ' + (r.state === 'fail' ? 'error' : r.state === 'warn' ? 'warning' : 'ok'), text: r.state === 'fail' ? 'not set' : r.state === 'warn' ? 'check' : r.state === 'none' ? '—' : 'valid'}), el('span', {class:'note', text:' ' + (r.state === 'ok' ? '' : r.check)})]), el('td', {}, [r.state === 'none' || r.source === 'CAD file units' || r.source === 'Drawn in the app' ? null : el('button', {class:'btn sm', text: r.state === 'ok' ? 'Recalibrate' : 'Set the scale', onclick:() => { close && close(); switchFloor(r.f.id); if (isEasy()) setStep(1); else setMode('floor'); setTool('calibrate'); toast('Click two points of a known distance on the plan.', '', 5000); }})])])))]);
+}
+// readiness: every row counts — ok 1, review ½, blocker 0
+function readiness(list = projectHealth()) { const rows = list.filter(h => h.state !== 'none'); if (!rows.length) return 0; return Math.round(100 * rows.reduce((a, h) => a + (h.state === 'ok' ? 1 : h.state === 'warn' ? 0.5 : 0), 0) / rows.length); }
+function readyVerdict(list = projectHealth()) {
+  const build = list.filter(h => h.build); const fails = build.filter(h => h.state === 'fail'), warns = build.filter(h => h.state === 'warn');
+  if (!Object.values(objs()).some(o => o.t === 'dev')) return {state:'none', text:'Not started — add a plan and devices first', fails, warns};
+  return fails.length ? {state:'fail', text:`Not yet — ${fails.length} blocker${fails.length > 1 ? 's' : ''} to fix before install`, fails, warns} : warns.length ? {state:'warn', text:`Buildable after review — ${warns.length} item${warns.length > 1 ? 's' : ''} to check`, fails, warns} : {state:'ok', text:'Yes — every build check passes', fails, warns};
+}
+function openBuildReady() {
+  let d; const close = () => d && d.close(); const list = projectHealth(); const v = readyVerdict(list); const pct = readiness(list); const s = systemStatus();
+  const groups = [...new Set(list.map(h => h.group))];
+  const ring = (() => { const r = 26, c = 2 * Math.PI * r; const col = pct >= 90 ? 'var(--ok)' : pct >= 60 ? 'var(--accent)' : 'var(--err)'; return el('div', {class:'ring brring', role:'img', 'aria-label':`Readiness ${pct} percent`, html:`<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="${r}" class="rbg"/><circle cx="32" cy="32" r="${r}" class="rfg" style="stroke:${col};stroke-dasharray:${(c * pct / 100).toFixed(1)} ${c.toFixed(1)}"/></svg><b>${pct}</b>`}); })();
+  const body = el('div', {class:'health buildready', id:'healthDlg'}, [
+    el('div', {class:'brtop'}, [ring, el('div', {}, [el('div', {class:'brq', text:'Can this be installed today?'}), el('div', {class:'hsum ' + (v.state === 'none' ? 'warn' : v.state), id:'brVerdict', text:v.text}), el('p', {class:'note', style:'margin:4px 0 0', text:`Readiness ${pct}% · ${traceLine()}`})])]),
+    el('div', {class:'hgrp'}, [el('h4', {text:'System — what has actually been done'}), pipelineEl(s, {onFix:close})]),
+    el('div', {class:'hgrp'}, [el('h4', {text:'Plan scale, per floor'}), scaleTable(close)]),
+    ...groups.map(g => el('div', {class:'hgrp'}, [el('h4', {text:g}), ...list.filter(h => h.group === g).map(h => healthRow(h, close))])),
+  ]);
+  d = dialog({title:'Build Ready', cls:'wide', body, footer:[el('button', {class:'btn', text:'Design Check', onclick:() => { close(); setMode('reports'); REPORT_TAB = 'check'; renderReports(); }}), el('button', {class:'btn primary', text:'Close', onclick:close})]});
+  try { audit('Build Ready opened', v.text); } catch (e) {} return d;
+}
+// the top-bar button: readiness at a glance, opens the dashboard
+function updateReadyBtn() {
+  const b = $('#readyBtn'); if (!b || !S.project) return; let pct = 0, v; try { const list = projectHealth(); pct = readiness(list); v = readyVerdict(list); } catch (e) { return; }
+  const c = b.querySelector('.cnt'); c.className = 'cnt ' + (v.state === 'fail' ? 'err' : v.state === 'warn' ? 'warn' : v.state === 'ok' ? 'ok' : ''); c.textContent = v.state === 'none' ? '—' : pct + '%'; b.setAttribute('aria-label', `Build Ready: ${pct}% — ${v.text}. Open the dashboard`); b.title = v.text;
+}
+// customer approval: uses the project's approval snapshot (locks the price; later edits become a change order)
+function confirmApproval() { const opt = S.project.quoteOption || 'recommended'; const o = quoteOptions().find(x => x.key === opt) || quoteOptions()[0]; if (!o || !o.Q || o.Q.priced === false) { toast('Type a price in step 3 first — approval locks in the price.', 'warn', 5000); return; } confirmBox(`Record that the customer approved the ${o.name} option (${money(o.Q.total)})? Later changes will show as a change order.`, 'Customer approved', () => { markApproved(); try { audit('Customer approved', `${o.name} ${money(o.Q.total)}`); } catch (e) {} }); }
+// what changed between a saved version and now — “CAM-04 moved 12 ft”, “Added NVR-02”, “Cable total increased 185 ft”
+function diffProjects(a, b) {
+  const A = a.objects || {}, B = b.objects || {}; const out = []; const named = (o) => o.name || o.label || o.t; const floorName = (p, fid) => { for (const bl of p.buildings || []) for (const f of bl.floors || []) if (f.id === fid) return f.name; return ''; };
+  const devs = (O) => Object.values(O).filter(o => o.t === 'dev' || o.t === 'door' || o.t === 'room');
+  for (const o of devs(B)) { const p = A[o.id]; if (!p) { out.push({k:'add', text:`Added ${named(o)}${o.t === 'room' ? ' (room)' : ''}`}); continue; }
+    if (o.x != null && p.x != null) { const dd = Math.hypot(o.x - p.x, o.y - p.y); if (dd >= 0.5) out.push({k:'move', text:`${named(o)} moved ${fmtLen(dd)}${o.floor !== p.floor ? ` (to ${floorName(b, o.floor)})` : ''}`}); }
+    if (o.product !== p.product && o.t === 'dev') { const q = prod(o.product) || {}, r = prod(p.product) || {}; out.push({k:'edit', text:`${named(o)} changed from ${r.model || p.product} to ${q.model || o.product}`}); }
+    if (o.name !== p.name && p.name) out.push({k:'edit', text:`${p.name} renamed to ${o.name}`}); if (o.t === 'dev' && Math.round(o.rot || 0) !== Math.round(p.rot || 0)) out.push({k:'edit', text:`${named(o)} re-aimed ${Math.round(p.rot || 0)}° → ${Math.round(o.rot || 0)}°`}); }
+  for (const o of devs(A)) if (!B[o.id]) out.push({k:'del', text:`Removed ${named(o)}`});
+  const total = (O) => Object.values(O).filter(o => o.t === 'cable').reduce((s, c) => s + (c.pts ? G.plen(c.pts) : 0), 0); const ca = Object.values(A).filter(o => o.t === 'cable').length, cb = Object.values(B).filter(o => o.t === 'cable').length; const ta = total(A), tb = total(B);
+  if (ca !== cb) out.push({k: cb > ca ? 'add' : 'del', text:`Cable runs ${ca} → ${cb}`}); if (Math.abs(tb - ta) >= 1) out.push({k:'edit', text:`Measured cable total ${tb > ta ? 'increased' : 'decreased'} ${fmtLen(Math.abs(tb - ta))} (${fmtLen(ta)} → ${fmtLen(tb)})`});
+  for (const [k, l] of [['name', 'Project name'], ['customer', 'Customer'], ['address', 'Address']]) if ((a[k] || '') !== (b[k] || '')) out.push({k:'edit', text:`${l}: “${a[k] || '—'}” → “${b[k] || '—'}”`});
+  const fl = (p) => (p.buildings || []).flatMap(bl => (bl.floors || []).map(f => ({id:f.id, cal:!!f.calibrated, k:f.bg ? +f.bg.ftPerPx : null, name:f.name}))); const fa = fl(a), fb = fl(b);
+  for (const f of fb) { const p = fa.find(x => x.id === f.id); if (!p) out.push({k:'add', text:`Added floor ${f.name}`}); else if (p.k && f.k && Math.abs(p.k - f.k) / p.k > 0.001) out.push({k:'edit', text:`${f.name} scale changed (${p.k.toPrecision(3)} → ${f.k.toPrecision(3)} ft/px)`}); }
+  for (const f of fa) if (!fb.find(x => x.id === f.id)) out.push({k:'del', text:`Removed floor ${f.name}`});
+  return out;
+}
+function openVersionCompare(v) {
+  const ch = diffProjects(v.data, S.project); let d;
+  const body = el('div', {id:'compareDlg'}, [el('p', {class:'note', style:'margin-top:0', text:`“${v.label}” (${fmtTime(v.time)}) compared with the design now.`}), ch.length ? el('ul', {class:'difflist'}, ch.map(c => el('li', {class:'d-' + c.k, text:c.text}))) : el('p', {text:'No differences — the design matches this version.'})]);
+  d = dialog({title:`What changed since “${v.label}”`, cls:'mid', body, footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
+}
+// Design Check rule: work drawn on a floor whose plan scale was never set (or fails the sanity check)
+function scaleIssues(add) {
+  for (const f of planFloors()) { const content = onFloor(f.id).some(o => o.t === 'dev' || o.t === 'room' || o.t === 'cable'); if (!content) continue; const sc = floorScale(f);
+    if (sc.state === 'fail') add('warning', 'scale:' + f.id, `${floorLabel(f.id)}: plan scale not set — distances, coverage and cable lengths are estimates`, 'Set the scale: click two points of a known distance, then type it.');
+    else { const bad = scaleSanity(f); if (bad) add('warning', 'scale:' + f.id, bad, 'Recalibrate with a longer known dimension.'); } }
+}
+// ===== EXPLAIN THIS — plain-English reasons for any selected camera, device, room or cable, from the live model =====
+function explainLines(o) {
+  const L = []; const all = objs(); const g = buildGraph(); const p = prod(o.product) || {}; const iss = freshIssues().filter(i => i.id === o.id);
+  const roomAt = (x, y, fid) => onFloor(fid).find(r => r.t === 'room' && r.pts && G.inPoly([x, y], r.pts));
+  const sc = floorById(o.floor) ? floorScale(floorById(o.floor)) : null; const est = sc && sc.state === 'fail' ? ' (estimate — this floor’s scale is not set)' : '';
+  if (isCam(o)) { const cp = camParams(o); const room = roomAt(o.x, o.y, o.floor);
+    L.push(`${o.name} is a ${p.mfr && p.mfr !== 'Generic' ? p.mfr + ' ' : ''}${p.model || kindOf(o).label} — ${cp.res && p.res ? p.res[0] + '×' + p.res[1] : cp.res + ' px wide'}, ${cp.circular ? '360°' : Math.round(cp.hfov) + '°'} view, mounted ${fmtLen(cp.mountH)} high${room ? ' in ' + (room.name || 'a room') : ''}.`);
+    L.push(`Detail reach${est}: ${cp.bands.map(b => `${b.label.toLowerCase()} to ${fmtLen(Math.min(b.ft, 999))}`).join(', ')} (IEC 62676-4 pixel density).${cp.limitedBy === 'ir' ? ` At night the IR reaches ${fmtLen(cp.ir)}, so the design range is capped there.` : ''}`);
+    if (room) { const rc = roomCoverage(room); L.push(`${room.name || 'This room'} is ${rc.need === 'required' ? `required at ${rc.level} detail and is ${Math.floor(rc.pct * 100)}% covered (target ${Math.round(rc.target * 100)}%)` : rc.need === 'privacy' ? 'a privacy area — cameras should not be here unless the owner approves' : 'not required to be covered'}.`); }
+    const sw = neighbors(g, o.id).find(POE_SRC); const rec = recorderOf(g, o); L.push(sw ? `Power and network: PoE from ${sw.name}${p.watts ? ` (draws about ${p.watts} W${p.poeClass != null ? ', class ' + p.poeClass : ''})` : ''}.` : 'Power and network: not connected yet — use Wire it all up or draw a cable to a PoE switch.');
+    L.push(rec ? `Recorded on ${rec.name}.` : 'Not on a recorder yet.');
+    if (p.verified && p.src) L.push(`Specs checked against the manufacturer datasheet (${p.src}).`); else if (p.mfr === 'Generic') L.push('Generic model — pick the exact camera before ordering.');
+  } else if (o.t === 'dev') { const k = kindOf(o); L.push(`${o.name} is a ${k.label.toLowerCase()}${p.model ? ' (' + (p.mfr && p.mfr !== 'Generic' ? p.mfr + ' ' : '') + p.model + ')' : ''}.`);
+    if (o.doorId && all[o.doorId]) L.push(`Part of door ${all[o.doorId].name}.`); const nb = neighbors(g, o.id); L.push(nb.length ? 'Connected to ' + nb.map(n => n.name).join(', ') + '.' : 'Not connected to anything yet.');
+    if (['smoke', 'heat', 'pull', 'hornstrobe', 'facp'].includes(o.kind)) L.push('Fire alarm devices here are a layout aid; a licensed fire alarm designer must engineer and permit the system (NFPA 72 / local AHJ).');
+  } else if (o.t === 'room') { const rc = roomCoverage(o); const nd = roomNeed(o); const pr = presetOf();
+    L.push(`${o.name || 'Room'} — ${fmtArea(G.area(o.pts))}${est}.`);
+    L.push(nd.need === 'privacy' ? `Privacy area${nd.auto ? (nd.preset && pr ? ` (the ${pr.label} building type treats this kind of room as private)` : ' (its name marks it as a restroom, locker or changing area)') : ' (set by you)'} — no cameras unless the owner approves.` : nd.need === 'optional' ? `Not required to be covered${nd.auto ? ' (storage, closet or equipment room)' : ' (set by you)'}.` : `Needs ${rc.level} detail${presetLevel(o) && !(o.props && o.props.coverLevel) ? ` (${pr.label} rule for this kind of room)` : ''}: ${Math.floor(rc.pct * 100)}% covered against a ${Math.round(rc.target * 100)}% target.`);
+    const cams = onFloor(o.floor).filter(c => isCam(c) && G.inPoly([c.x, c.y], o.pts)); L.push(cams.length ? `Cameras inside: ${cams.map(c => c.name).join(', ')}.` : 'No cameras inside this room (cameras outside it may still see in).');
+  } else if (o.t === 'cable') { const k = cableCalc(o); L.push(`${o.name}: ${o.ctype} from ${(all[o.from] || {}).name || '—'} to ${(all[o.to] || {}).name || '—'}.`); L.push(`Pull length ${fmtLen(k.final)} = measured ${fmtLen(k.measured)} + vertical ${fmtLen(k.vertical)} + service loops ${fmtLen(k.loop)} + ${k.wastePct}% waste${est}.`); }
+  else if (o.t === 'door') { const parts = Object.values(all).filter(x => x.doorId === o.id); L.push(`Door ${o.name}${parts.length ? ' with ' + parts.map(x => x.name).join(', ') : ' — no access hardware yet'}.`); }
+  for (const i of iss) L.push(`${i.sev === 'error' ? 'Problem' : i.sev === 'warning' ? 'Warning' : 'Tip'}: ${i.msg}${i.fix ? ' — ' + i.fix : ''}`);
+  return L;
+}
+function explainSelection() {
+  const o = selObjs()[0]; if (!o) return toast('Select a camera, device, room, door or cable first.'); const lines = explainLines(o); let d;
+  d = dialog({title:'Explain: ' + (o.name || o.t), cls:'mid', body: el('div', {id:'explainDlg'}, [el('ul', {class:'explain'}, lines.map(t => el('li', {text:t})))]), footer:[el('button', {class:'btn primary', text:'Close', onclick:() => d.close()})]}); return d;
+}
+const explainBtn = () => el('button', {class:'ib explainbtn', id:'explainBtn', title:'Explain this — why it is here and what it does', 'aria-label':'Explain this', text:'?', onclick:() => explainSelection()});
 
 // ===== START (after every module has loaded) =====
 boot().catch(e => { console.error(e); const l = $('#loading'); if (l) l.textContent = 'The designer could not start: ' + e.message; });

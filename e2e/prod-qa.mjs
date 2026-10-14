@@ -48,7 +48,7 @@ const fixture = (f) => path.join(FX, f);
 const toastText = () => ev(() => [...document.querySelectorAll('#toasts .toast')].map(x => x.textContent).join(' | '));
 const clearToasts = () => ev(() => document.querySelectorAll('#toasts .toast').forEach(x => x.remove()));
 const state = () => ev(() => { const o = Object.values(SSD.S.project.objects); const c = (f) => o.filter(f).length; const fl = SSD.curFloor();
-  return {id:SSD.S.project.id, name:SSD.S.project.name, floors:SSD.floors().map(f => f.name + (f.bg ? '+plan' : '')), rooms:c(x => x.t === 'room'), cams:c(x => x.t === 'dev' && SSD.kindOf(x).cat === 'camera'), devs:c(x => x.t === 'dev'), cables:c(x => x.t === 'cable'), calibrated:!!fl.calibrated, ftPerPx: fl.bg ? +fl.bg.ftPerPx.toPrecision(6) : null, prices:JSON.stringify(SSD.S.project.ownPrices || {})}; });
+  return {id:SSD.S.project.id, name:SSD.S.project.name, floor:SSD.floorLabel ? SSD.floorLabel(SSD.S.floorId) : fl.name, floors:SSD.floors().map(f => f.name + (f.bg ? '+plan' : '')), rooms:c(x => x.t === 'room'), cams:c(x => x.t === 'dev' && SSD.kindOf(x).cat === 'camera'), devs:c(x => x.t === 'dev'), cables:c(x => x.t === 'cable'), calibrated:!!fl.calibrated, ftPerPx: fl.bg ? +fl.bg.ftPerPx.toPrecision(6) : null, scales:SSD.floors().map(f => `${f.name}:${f.calibrated ? 'cal' : '-'}:${f.bg ? (+f.bg.ftPerPx).toPrecision(6) : '-'}`).join(' '), prices:JSON.stringify(SSD.S.project.ownPrices || {})}; });
 const toScreen = (w) => ev((p) => SSD.toScreen(p), w);
 async function clickWorld(w) { const [x, y] = await toScreen(w); await P.mouse.click(x, y); await sleep(120); }
 async function grab(label, act, ms = 120000) {
@@ -66,7 +66,7 @@ async function closeWelcome() { if (await P.isVisible('.welcome')) { await P.key
 async function newProject(name, customer = 'QA Customer (disposable)', address = '') {
   await closeWelcome(); await P.click('#brand'); await P.waitForSelector('#dash:not([hidden])'); await P.click('#dash >> text=New project');
   await P.fill('.dlg input[aria-label="Project name"]', name); await P.fill('.dlg input[aria-label="Customer"]', customer); if (address) await P.fill('.dlg input[aria-label="Site address"]', address);
-  await P.click('.dlg footer >> text=Create project'); await P.waitForFunction((n) => SSD.S.project && SSD.S.project.name === n, name, {timeout:15000}); await sleep(800);
+  await P.click('.dlg footer >> text=Create project'); try { await P.waitForFunction((n) => SSD.S.project && SSD.S.project.name === n, name, {timeout:15000}); } catch (e) { throw new Error(`new project not opened — current “${await ev(() => SSD.S.project && SSD.S.project.name)}”, dialogs: ${await ev(() => [...document.querySelectorAll('.dlg h2, .dlg header')].map(h => h.textContent).join(' | '))}`); } await sleep(800);
 }
 const setStep = async (k) => { await P.click(`#steps .stp[data-step="${k}"]`); await sleep(600); };
 const ui = (m) => ev((m) => SSD.setUI(m), m);
@@ -77,7 +77,7 @@ async function addFloorUI() { const n0 = await ev(() => SSD.floors().length); aw
 
 // ---------- LOAD ----------
 await t('Load', 'Fresh load in a clean browser profile', 'App opens, welcome screen credits Brad Hall, no errors', async () => {
-  await openApp(); const info = await ev(() => ({title:document.title, ver: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '?', welcome: !!document.querySelector('.welcome'), credit: document.body.innerText.includes('Brad Hall')}));
+  await openApp(); const info = await ev(async () => ({title:document.title, ver: (window.SSD && SSD.APP_VERSION) || await fetch('sw.js').then(r => r.text()).then(t => 'sw ' + ((t.match(/ssd-static-v\d+/) || ['?'])[0])).catch(() => '?'), welcome: !!document.querySelector('.welcome'), credit: document.body.innerText.includes('Brad Hall')}));
   ENV.appVersion = info.ver; must(/Security Site Designer/.test(info.title), 'title ' + info.title); must(info.welcome, 'no welcome screen'); must(info.credit, 'creator credit missing');
   return `v${info.ver}, “${info.title}”, welcome shown, creator credit present`;
 });
@@ -175,6 +175,14 @@ await t('Design', 'Undo and Redo the wiring', 'Ctrl+Z removes the cables, Ctrl+Y
   must(c1 < c0 && c2 === c0, `cables ${c0} → ${c1} → ${c2}`); return `cables ${c0} → undo ${c1} → redo ${c2}`;
 });
 
+await t('Design', 'Build Ready dashboard agrees with the plan', 'Verdict, readiness %, 7-stage pipeline and per-floor scale shown; top-bar button shows the same %', async () => {
+  must(await ev(() => !!SSD.openBuildReady), 'Build Ready dashboard is not in this build'); await P.click('#readyBtn'); await P.waitForSelector('#brVerdict', {timeout:5000});
+  const r = await ev(() => ({v:document.querySelector('#brVerdict').textContent, pct:SSD.readiness(), stages:[...document.querySelectorAll('#brPipeline .sstage')].map(x => x.dataset.stage + ':' + x.className.replace('sstage ', '')), scale:[...document.querySelectorAll('#scaleTable tbody tr')].map(r => r.children[1].textContent + ' / ' + r.children[4].textContent.trim())}));
+  must(r.stages.length === 7 && r.stages.includes('powered:ok') && r.stages.includes('recorded:ok'), JSON.stringify(r.stages)); must(r.scale.some(x => /Two-point/.test(x) && /valid/.test(x)), JSON.stringify(r.scale));
+  await P.keyboard.press('Escape'); await sleep(900); const btn = (await P.textContent('#readyBtn .cnt')).trim(); must(btn === r.pct + '%', `button ${btn} vs ${r.pct}%`);
+  return `“${r.v}” · ${r.pct}% · ${r.stages.join(' ')}`;
+});
+
 // ---------- QUOTE ----------
 await t('Quote', 'Typed prices save at once and Tab moves to the next box', 'Essentials 9,500 and Recommended 12,500 stored; checklist ticks', async () => {
   await setStep(3); await P.click('#left [data-price=essentials]'); await P.keyboard.type('9500', {delay:40}); await P.keyboard.press('Tab'); await P.keyboard.type('12500', {delay:40}); await P.keyboard.press('Tab'); await sleep(700);
@@ -232,7 +240,7 @@ await t('Persistence', 'Project file opens in a brand-new browser profile', 'Imp
   must(projectFile, 'no project file exported earlier'); const a = await state(); const {ctx, page} = await newCtx(); const keep = [P, CTX]; P = page; CTX = ctx;
   try { await openApp(); await closeWelcome(); await P.click('#brand'); await P.waitForSelector('#dash:not([hidden])');
     await chooser(() => P.click('#dash >> text=Import project'), path.join(OUT, 'exports', `${CH}-${projectFile.name}`)); await P.waitForFunction((n) => SSD.S.project && SSD.S.project.name.startsWith(n), MAIN, {timeout:20000}); await sleep(1200);
-    const b = await state(); for (const k of ['rooms', 'cams', 'devs', 'cables', 'calibrated', 'ftPerPx', 'prices']) must(a[k] === b[k], `${k}: ${a[k]} vs ${b[k]}`); return `imported “${b.name}”: ${b.rooms} rooms, ${b.devs} devices, ${b.cables} cables, ${b.ftPerPx} ft/px`;
+    const b = await state(); for (const k of ['rooms', 'cams', 'devs', 'cables', 'scales', 'prices']) must(a[k] === b[k], `${k}: ${a[k]} vs ${b[k]}`); return `imported “${b.name}”: ${b.rooms} rooms, ${b.devs} devices, ${b.cables} cables · ${b.scales}`;
   } finally { await ctx.close(); [P, CTX] = keep; }
 });
 
@@ -250,6 +258,11 @@ await t('Admin', 'Settings: company and designer survive a reload', 'Saved value
 await t('Admin', 'Save a version and see it in Version history', 'Ctrl+S saves a named version that is listed', async () => {
   await P.keyboard.press('Control+s'); await sleep(800); if (await P.isVisible('.dlg input')) { await P.fill('.dlg input', 'QA checkpoint'); await P.keyboard.press('Enter'); await sleep(800); }
   await P.click('.mode[data-mode=reports]'); await sleep(500); await P.click('.subtab:text("Version history")'); await sleep(600); const rows = await P.$$eval('#sheet table tbody tr', r => r.length); must(rows >= 1, 'no versions'); return `${rows} version(s) listed`;
+});
+await t('Admin', '“What changed?” compares the saved version with now', 'Moving a camera 12 ft after saving shows “… moved 12 ft”', async () => {
+  must(await ev(() => !!SSD.openVersionCompare), 'version compare is not in this build'); const cam = await ev(() => { const c = Object.values(SSD.S.project.objects).find(o => o.t === 'dev' && SSD.kindOf(o).cat === 'camera'); SSD.tx('Move camera', () => SSD.updObj(c.id, {x:c.x + 12})); return c.name; }); await sleep(500);
+  await P.click('.mode[data-mode=reports]'); await sleep(400); await P.click('.subtab:text("Version history")'); await sleep(500); await P.click('#sheet [data-compare] >> nth=0'); await P.waitForSelector('#compareDlg'); const txt = await P.textContent('#compareDlg'); await P.keyboard.press('Escape');
+  must(txt.includes(cam + ' moved 12'), txt.slice(0, 200)); await P.keyboard.press('Control+z'); await sleep(400); return txt.replace(/\s+/g, ' ').slice(0, 140);
 });
 await t('Admin', 'Dashboard: duplicate, archive, restore, delete (disposable copy only)', 'Copy appears, archives, restores, deletes; original untouched', async () => {
   const name = (await state()).name; await P.click('#brand'); await P.waitForSelector('#dash:not([hidden])'); await sleep(600);
@@ -312,9 +325,21 @@ await t('Plan import', 'Drag-and-drop and paste a large (8000×6000) image', 'Bo
   await ev(async () => { const c = document.createElement('canvas'); c.width = 900; c.height = 600; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 900, 600); g.strokeRect(50, 50, 800, 500); const blob = await new Promise(r => c.toBlob(r, 'image/png')); const dt = new DataTransfer(); dt.items.add(new File([blob], 'image.png', {type:'image/png'})); document.dispatchEvent(new ClipboardEvent('paste', {clipboardData:dt, bubbles:true})); });
   await P.waitForFunction(() => SSD.curFloor().bg && /Pasted/.test(SSD.curFloor().bg.source), null, {timeout:20000}); return `dropped ${(size / 1048576).toFixed(1)} MB image in ${(ms / 1000).toFixed(1)} s; pasted screenshot imported`;
 });
+await t('Calibration', 'Design Check flags work on an uncalibrated floor', 'A room on an uncalibrated plan → “plan scale not set” warning with a Set the scale fix', async () => {
+  await ev(() => { const f = SSD.S.floorId; SSD.tx('Draw room', () => SSD.addObj({t:'room', floor:f, name:'QA room', pts:[[10, 10], [40, 10], [40, 30], [10, 30]], props:{}})); }); await sleep(700);
+  const i = await ev(() => { const x = SSD.freshIssues().find(i => /plan scale not set/.test(i.msg)); return x ? {msg:x.msg, sev:x.sev, acts:SSD.issueActions(x).map(a => a[0])} : null; }); must(i && i.acts.includes('Set the scale'), 'no scale warning: ' + JSON.stringify(i));
+  const foot = (await P.textContent('#sbIssues')).trim(); must(!/clean|No problems/.test(foot), 'footer says ' + foot); return `${i.sev}: ${i.msg} · footer “${foot}”`;
+});
 await t('Persistence', 'Imported floors survive a reload', 'Every floor and its plan are still there', async () => {
   await sleep(1500); const a = (await state()).floors; await P.reload(); await P.waitForFunction(() => window.SSD && SSD.S.project, null, {timeout:60000}); await sleep(1500); const b = (await state()).floors;
   must(JSON.stringify(a) === JSON.stringify(b), `${a} vs ${b}`); return b.join(', ');
+});
+
+await t('Design', 'Medical building type: exam and break rooms are privacy areas', 'Wizard preset → Exam/Break rooms “privacy”, Reception at recognition detail; auto-design skips privacy rooms', async () => {
+  await closeWelcome(); await P.click('#brand'); await P.waitForSelector('#dash:not([hidden])'); await P.click('#dash >> text=New project'); await P.fill('.dlg input[aria-label="Project name"]', QA('Clinic preset')); must(await P.isVisible('#wizPreset'), 'no building type in this build');
+  await P.selectOption('#wizPreset', 'medical'); await P.click('.dlg footer >> text=Create project'); await P.waitForFunction(() => SSD.S.project.settings.preset === 'medical', null, {timeout:15000});
+  const r = await ev(async () => { const f = SSD.S.floorId; const R = (name, x) => SSD.addObj({t:'room', floor:f, name, pts:[[x, 0], [x + 20, 0], [x + 20, 20], [x, 20]], props:{}}); SSD.tx('Rooms', () => { R('Exam 1', 0); R('Break Room', 22); R('Reception', 44); R('Hall', 66); }); await SSD.autoDesignFloor({outside:false}); const rooms = Object.values(SSD.S.project.objects).filter(o => o.t === 'room'); const cams = Object.values(SSD.S.project.objects).filter(o => SSD.isCam(o)); return {need:Object.fromEntries(rooms.map(o => [o.name, SSD.roomNeed(o).need + '/' + SSD.roomLevel(o)])), inPrivacy:cams.filter(c => rooms.some(r => SSD.roomNeed(r).need === 'privacy' && SSD.G.inPoly([c.x, c.y], r.pts))).length, cams:cams.length}; });
+  must(/^privacy/.test(r.need['Exam 1']) && /^privacy/.test(r.need['Break Room']) && r.need['Reception'] === 'required/recognition', JSON.stringify(r.need)); must(r.cams > 0 && r.inPrivacy === 0, JSON.stringify(r)); return JSON.stringify(r.need) + ` · ${r.cams} cameras, 0 in privacy rooms`;
 });
 
 // ---------- RESPONSIVE ----------
