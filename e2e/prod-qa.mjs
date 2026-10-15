@@ -364,6 +364,20 @@ await t('Design', 'Medical building type: exam and break rooms are privacy areas
   must(/^privacy/.test(r.need['Exam 1']) && /^privacy/.test(r.need['Break Room']) && r.need['Reception'] === 'required/recognition', JSON.stringify(r.need)); must(r.cams > 0 && r.inPrivacy === 0, JSON.stringify(r)); return JSON.stringify(r.need) + ` · ${r.cams} cameras, 0 in privacy rooms`;
 });
 
+await t('Design', 'Doors: single and double, flip the swing and the hinge', 'Door tool places a single and a double door on drawn walls; Flip swing / Flip hinge / Double change the door and Undo reverses', async () => {
+  must(await ev(() => !!SSD.doorAction), 'door controls are not in this build'); await newProject(QA('Doors')); await setStep(1); await P.click('#ezRooms'); await sleep(200);
+  await ev(() => { SSD.S.view = {x:300, y:200, z:12}; SSD.requestDraw(); }); const [ax, ay] = await toScreen([0, 0]), [bx, by] = await toScreen([40, 30]);
+  await P.mouse.move(ax, ay); await P.mouse.down(); await P.mouse.move((ax + bx) / 2, (ay + by) / 2, {steps:4}); await P.mouse.move(bx, by, {steps:4}); await P.mouse.up(); await P.keyboard.press('Escape'); await sleep(300);
+  if (await P.isVisible('#right .ezphead button[aria-label=Close]')) await P.click('#right .ezphead button[aria-label=Close]');
+  await P.click('#ezAddDoor'); await clickWorld([12, 1]); await P.click('#doDouble'); await clickWorld([40, 15]); await P.keyboard.press('Escape'); await sleep(300);
+  let d = await ev(() => Object.values(SSD.S.project.objects).filter(o => o.t === 'door').map(o => ({id:o.id, dbl:!!o.double, w:o.w, flip:!!o.flip, hinge:o.hinge || 'L', wall:!!o.wallId})));
+  must(d.length === 2 && !d[0].dbl && d[1].dbl && d[1].w === 6 && d.every(x => x.wall), JSON.stringify(d));
+  await ev((id) => SSD.focusObj(id), d[0].id); await P.waitForSelector('#doorCtl'); await P.click('#doorCtl [data-door=swing]'); await P.click('#doorCtl [data-door=hinge]'); await sleep(200);
+  const f = await ev((id) => { const o = SSD.S.project.objects[id]; return [!!o.flip, o.hinge]; }, d[0].id); must(f[0] !== d[0].flip && f[1] !== d[0].hinge, 'flip did not change the door ' + JSON.stringify(f));
+  await P.keyboard.press('Control+z'); await P.keyboard.press('Control+z'); await sleep(200); const u = await ev((id) => { const o = SSD.S.project.objects[id]; return [!!o.flip, o.hinge || 'L']; }, d[0].id); must(u[0] === d[0].flip && u[1] === d[0].hinge, 'undo ' + JSON.stringify(u));
+  return `single + double placed on walls; swing ${d[0].flip ? 'out' : 'in'}→${f[0] ? 'out' : 'in'}, hinge ${d[0].hinge}→${f[1]}; undo restored`;
+});
+
 // ---------- RESPONSIVE ----------
 for (const [w, h, touch] of [[390, 844, true], [768, 1024, true], [1024, 768, false]]) {
   await t('Responsive', `${w} px wide`, 'No sideways scroll; steps, top bar and dialogs fit; nothing clipped', async () => {

@@ -192,8 +192,8 @@ kbd{font:11px var(--f-mono); padding:1px 4px; border:1px solid var(--line); bord
 #cv .hit{stroke:transparent; stroke-linecap:round}
 #cv .hitfill{fill:transparent}
 #cv .room{fill:var(--roomfill); stroke:none}
-#cv .roomlbl{fill:var(--roomtxt); font:600 12px var(--f-cond); letter-spacing:.03em; stroke-width:3px}
-#cv .roomdim{fill:var(--roomtxt); opacity:.8; font:9.5px var(--f-mono); stroke-width:3px}
+#cv .roomlbl{fill:var(--roomtxt); font:700 12.5px var(--f-cond); letter-spacing:.03em; stroke-width:3px}
+#cv .roomdim{fill:var(--roomtxt); opacity:.8; font:10.5px var(--f-mono); stroke-width:3px}
 #cv.zoomed-out .roomdim,#cv.small .roomdim{display:none}
 #cv .shape .roomlbl{font-size:1.6px; stroke-width:.2px}
 #cv .clbl{display:none} #cv.zoomed-in .clbl,#cv .obj.selected .clbl,#cv .cable:hover .clbl{display:inline}
@@ -854,6 +854,16 @@ label.ezcard{cursor:pointer}
 .rvname, .rvceil, .rvacts{display:flex; gap:6px; align-items:center} .rvname .field{flex:1}
 @media (max-width:760px){ .rvrow{grid-template-columns:1fr} }
 .refsheets{margin:10px 0; display:grid; gap:4px} .refrow{display:grid; grid-template-columns:auto 1fr 90px; gap:8px; align-items:center; font-size:12.5px}
+/* door controls */
+.doorctl{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0 8px} .doorctl .seg, .tooloptsbar .seg{display:inline-flex} .doorctl .seg .btn, .tooloptsbar .seg .btn{border-radius:0} .doorctl .seg .btn:first-child, .tooloptsbar .seg .btn:first-child{border-radius:8px 0 0 8px} .doorctl .seg .btn:last-child, .tooloptsbar .seg .btn:last-child{border-radius:0 8px 8px 0} .doorctl .seg .btn + .btn, .tooloptsbar .seg .btn + .btn{margin-left:-1px}
+.doorctl .btn.on, .tooloptsbar .btn.on{background:var(--accent-bg); border-color:var(--accent); color:var(--fg); font-weight:700}
+.tooloptsbar{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); z-index:40; display:flex; gap:8px; align-items:center; padding:6px 10px; background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,.18); max-width:calc(100vw - 24px); flex-wrap:wrap} .tooloptsbar .note{font-size:11.5px}
+.ghostdoor .swing{stroke:var(--accent); stroke-width:.12; fill:none} .ghostdoor.nowall{opacity:.45}
+@media (max-width:600px){ .tooloptsbar .note{display:none} }
+/* dragging on the plan or across the tool chrome never paints a text selection over the app */
+#top, #toolstrip, #modes, #steps, #cv, #floattb, .ftabs, #status, #quickbar, .ezcard, .eztile, .btn, .tbtn, .mode, .stp{-webkit-user-select:none; user-select:none}
+@media (max-width:600px){ #toasts .toast:not(:last-child){display:none} }
+@media (max-width:430px){ #top{gap:4px; padding-left:6px; padding-right:6px} #top .tb-right{gap:4px} body.easy #steps{gap:3px} body.easy #steps .stp{padding:0 3px} #scoreChip{padding:0 6px; gap:3px} #saveStatus{display:none} #exportBtn{padding:0 9px} #proToggle{padding:0 8px} }
 </style>
 <div id="app">
   <header id="top"></header>
@@ -1103,7 +1113,7 @@ function estimatePrice(part) { if (!part) return null; if (EST_PRICE_BY_PART[par
 
 // Security Site Designer — created by Brad Hall. Copyright (c) 2026 Brad Hall. All rights reserved.
 const APP_CREATOR = {name:'Brad Hall', year:2026};
-const APP_VERSION = '3.12';
+const APP_VERSION = '3.13';
 // ===== UTILITIES =====
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -1925,13 +1935,15 @@ function drawRoom(o) {
   g.append(lab);
   return g;
 }
+// door geometry in the door's own frame: x along the wall (centre 0), y across it; swing side = flip, hinge end = hinge ('R' mirrors)
+function doorLeaves(o) { const w = o.w || (o.double ? 6 : 3); const s = o.flip ? -1 : 1; const hx = o.hinge === 'R' ? -1 : 1; const arc = (cx, r, a0, a1) => { const pts = []; for (let k = 0; k <= 12; k++) { const a = a0 + (a1 - a0) * k / 12; pts.push([cx + Math.cos(a) * r, Math.sin(a) * r * s]); } return pts; };
+  if (o.double) return [{hinge:[-w/2, 0], open:[-w/2, s * w/2], arc:arc(-w/2, w/2, Math.PI/2, 0)}, {hinge:[w/2, 0], open:[w/2, s * w/2], arc:arc(w/2, w/2, Math.PI/2, Math.PI)}];
+  const L = {hinge:[-w/2, 0], open:[-w/2, s * w], arc:arc(-w/2, w, Math.PI/2, 0)}; if (hx < 0) { const m = (q) => [-q[0], q[1]]; return [{hinge:m(L.hinge), open:m(L.open), arc:L.arc.map(m)}]; } return [L]; }
+function doorWorld(o, q) { const a = (o.rot || 0) * DEG; return [o.x + q[0] * Math.cos(a) - q[1] * Math.sin(a), o.y + q[0] * Math.sin(a) + q[1] * Math.cos(a)]; }
 function drawDoor(o) {
-  const g = sv('g', {transform:`translate(${o.x} ${o.y}) rotate(${o.rot||0})`}); const w = o.w || 3; const s = o.flip ? -1 : 1; const th = 0.7;
+  const g = sv('g', {transform:`translate(${o.x} ${o.y}) rotate(${o.rot||0})`}); const w = o.w || (o.double ? 6 : 3); const s = o.flip ? -1 : 1; const th = 0.7;
   g.append(sv('rect', {x:-w/2, y:-th/2, width:w, height:th, class:'gap'}));
-  if (o.double) {
-    g.append(sv('path', {d:`M ${-w/2} 0 L ${-w/2} ${s*w/2} A ${w/2} ${w/2} 0 0 ${s>0?0:1} 0 0`, class:'swing'}));
-    g.append(sv('path', {d:`M ${w/2} 0 L ${w/2} ${s*w/2} A ${w/2} ${w/2} 0 0 ${s>0?1:0} 0 0`, class:'swing'}));
-  } else g.append(sv('path', {d:`M ${-w/2} 0 L ${-w/2} ${s*w} A ${w} ${w} 0 0 ${s>0?0:1} ${w/2} 0`, class:'swing'}));
+  for (const L of doorLeaves(o)) g.append(sv('path', {d:`M ${L.hinge[0]} ${L.hinge[1]} L ${L.open[0]} ${L.open[1]} ` + L.arc.map(q => `L ${q[0].toFixed(3)} ${q[1].toFixed(3)}`).join(' '), class:'swing'}));
   g.append(sv('rect', {x:-w/2, y:-0.6, width:w, height:1.2, class:'hitfill'}));
   const acc = Object.values(objs()).some(d => d.t === 'dev' && d.doorId === o.id);
   const lab = sv('g', {class:'doorlbl' + (acc ? ' acc' : ''), transform:`rotate(${-(o.rot||0)})`});
@@ -2306,6 +2318,7 @@ function setTool(name, opt={}) {
   let label = TOOL_LABELS[name] || name; if (name === 'place') { const p = prod(S.placeProduct); label = 'Place ' + (p ? (KINDS[p.kind]||{}).label : 'device'); } if (name === 'shape') label = 'Draw ' + (SHAPE_LABELS[S.shapeKind] || 'shape'); if (name === 'cable') label = 'Cable · ' + (CABLE_TYPES[S.cableType]||{}).label;
   const hint = TOOL.hint ? TOOL.hint() : ''; setToolHint(name === 'select' ? '' : label, hint);
   requestDraw();
+  try { refreshEmptyState(); } catch (e) {} // the start card must never sit on top of a drawing tool
 }
 function cancelTool() { if (TOOL && TOOL.cancel && TOOL.busy && TOOL.busy()) { TOOL.cancel(); requestDraw(); return true; } if (S.tool !== 'select') { setTool('select'); return true; } return false; }
 const SHAPE_LABELS = {rect:'rectangle', poly:'polygon', boundary:'property boundary', building:'building outline', trench:'trench path', line:'polyline', cloud:'revision cloud'};
@@ -2331,7 +2344,7 @@ TOOLS.select = {
       if (e.altKey && movable.length) { // alt-drag duplicates
         const copies = duplicateSelection(0, true); this.drag = {type:'move', ids:copies, live: liveBegin(copies), start:p, anchor: anchorOf(objs()[copies[0]]), dup:true}; return;
       }
-      if (movable.length) this.drag = {type:'move', ids:movable, live: liveBegin(movable), start:p, anchor: anchorOf(objs()[id]), primary:id};
+      if (movable.length) { this.drag = {type:'move', ids:movable, live: liveBegin(movable), start:p, anchor: anchorOf(objs()[id]), primary:id}; try { this.drag.links = structureLinks(movable); } catch (err) { console.warn(err); } }
       return;
     }
     if (!e.shiftKey) { if (S.sel.size) { S.sel.clear(); onSelectionChanged(); } }
@@ -2345,7 +2358,9 @@ TOOLS.select = {
       let dx = sp.p[0] - d.anchor[0], dy = sp.p[1] - d.anchor[1];
       const cur = anchorOf(objs()[d.ids[0]]); const orig0 = anchorOf(d.live.orig.get(d.ids[0])); const ddx = (orig0[0] + dx) - cur[0], ddy = (orig0[1] + dy) - cur[1];
       for (const id of d.ids) { const o = objs()[id]; if (o) { moveObjLive(o, ddx, ddy); R.dirty.add(id); } }
-      followCables(d.live, d.ids); d.moved = true; requestDraw();
+      { const o0 = objs()[d.ids[0]]; if (d.ids.length === 1 && o0 && (o0.t === 'door' || o0.t === 'window') && !e.shiftKey) { const nw = nearestWall([o0.x, o0.y], 2.5); const re = !nw && nearestRoomEdge([o0.x, o0.y], 2); if (nw || re) { const q = nw ? nw.q : re.q; const cx = q[0] - o0.x, cy = q[1] - o0.y; o0.x = q[0]; o0.y = q[1]; o0.rot = nw ? Math.atan2(nw.wall.y2 - nw.wall.y1, nw.wall.x2 - nw.wall.x1) / DEG : re.rot; o0.wallId = nw ? nw.wall.id : null; if (d.links) applyLinks(d.live, {extra:d.links.extra, stretch:[]}, cx, cy); } else if (o0.wallId) o0.wallId = null; } } // doors slide along and snap onto walls
+      let carried = []; try { carried = applyLinks(d.live, d.links, ddx, ddy); } catch (err) { console.warn(err); }
+      followCables(d.live, d.ids.concat(carried)); d.moved = true; requestDraw();
       toolPreview(guideNodes(sp.guides)); return;
     }
     if (d.type === 'handle') {
@@ -2353,7 +2368,7 @@ TOOLS.select = {
       if (h === 'rot') { let a = Math.atan2(p[1]-o.y, p[0]-o.x)/DEG; if (!e.shiftKey) a = Math.round(a/ (e.altKey ? 1 : 5)) * (e.altKey ? 1 : 5); o.rot = G.normDeg(a); }
       else if (h === 'fov') { const a = Math.atan2(p[1]-o.y, p[0]-o.x)/DEG; let fov = Math.round(clamp(Math.abs(G.angDiff(a, o.rot)), 1, 179) * 2); const lr = isCam(o) && lensRange(o); if (lr && !e.altKey) fov = clamp(fov, Math.ceil(lr[0]), Math.floor(lr[1])); o.props = {...o.props, hfov: fov}; if (lr) toolPreview([tipNode([o.x, o.y], `${fov}° (lens ${lr[0]}–${lr[1]}°)`, 28)]); }
       else if (h === 'range') { const r = Math.max(2, G.dist(p, [o.x,o.y])); o.props = {...o.props, maxRange: Math.round(r*2)/2}; }
-      else if (h === 'p0' || h === 'p1') { const other = h === 'p0' ? [o.x2,o.y2] : [o.x1,o.y1]; const sp = snapPt(p, {exclude:o.id, from: other, free:e.shiftKey}); if (h === 'p0') { o.x1 = sp.p[0]; o.y1 = sp.p[1]; } else { o.x2 = sp.p[0]; o.y2 = sp.p[1]; } toolPreview([tipNode(sp.p, fmtLen(G.dist(sp.p, other)))].concat(guideNodes(sp.guides))); }
+      else if (h === 'p0' || h === 'p1') { const other = h === 'p0' ? [o.x2,o.y2] : [o.x1,o.y1]; if (o.t === 'wall' && !d.ends) { try { d.ends = endLinks(o, h === 'p0' ? 1 : 2); } catch (err) { d.ends = {pts:[], opens:[]}; } } const sp = snapPt(p, {exclude:o.id, from: other, free:e.shiftKey}); if (h === 'p0') { o.x1 = sp.p[0]; o.y1 = sp.p[1]; } else { o.x2 = sp.p[0]; o.y2 = sp.p[1]; } if (o.t === 'wall' && d.ends) try { applyEndLinks(d.live, o, d.ends, sp.p); } catch (err) { console.warn(err); } toolPreview([tipNode(sp.p, fmtLen(G.dist(sp.p, other)))].concat(guideNodes(sp.guides))); }
       else if (h[0] === 'v') { const i = +h.slice(1); const sp = snapPt(p, {exclude:o.id, devices: o.t === 'cable' && (i === 0 || i === o.pts.length-1), free:e.shiftKey}); const pts = o.pts.slice(); pts[i] = sp.p; o.pts = pts; if (o.t === 'cable' && (i === 0 || i === o.pts.length-1)) { o[i === 0 ? 'from' : 'to'] = sp.kind === 'dev' ? sp.ref : null; } toolPreview(guideNodes(sp.guides)); }
       else if (h[0] === 'm') { const i = +h.slice(1); if (!d.inserted) { const pts = o.pts.slice(); pts.splice(i, 0, p); o.pts = pts; d.inserted = true; d.h = 'v' + i; } }
       else if (h === 'dw') { const w = Math.max(1, G.dist(p, [o.x,o.y]) * 2); o.w = Math.round(w*2)/2; }
@@ -2631,6 +2646,7 @@ function selObjs() { return [...S.sel].map(id => objs()[id]).filter(Boolean); }
 function deleteSelection() {
   const list = selObjs().filter(o => !o.locked); if (!list.length) return;
   const ids = new Set(list.map(o => o.id));
+  for (const o of Object.values(objs())) if ((o.t === 'door' || o.t === 'window') && o.wallId && ids.has(o.wallId)) ids.add(o.id); // a wall takes its openings with it
   tx('Delete ' + describeSel([...ids]), () => {
     for (const id of ids) delObj(id);
     for (const o of Object.values(objs())) { // detach references
@@ -2987,7 +3003,7 @@ function updateQuickBar() {
   qb.innerHTML = '';
   const B = (label, fn, cls='') => el('button', {class:'btn ' + cls, text:label, onclick:fn});
   if (o.t === 'door') {
-    qb.append(el('span', {class:'ttl', text:o.name}), B('+ Reader', () => quickAddDoorItem(o.id, 'reader')), B('+ Maglock', () => quickAddDoorItem(o.id, 'maglock')), B('+ Strike', () => quickAddDoorItem(o.id, 'strike')), B('+ REX', () => quickAddDoorItem(o.id, 'rexpir')), B('+ Contact', () => quickAddDoorItem(o.id, 'contact')),
+    qb.append(el('span', {class:'ttl', text:o.name}), B(o.double ? 'Single' : 'Double', () => doorAction(o, 'double')), B('⇅ Swing', () => doorAction(o, 'swing')), o.double ? '' : B('⇄ Hinge', () => doorAction(o, 'hinge')), B('+ Reader', () => quickAddDoorItem(o.id, 'reader')), B('+ Maglock', () => quickAddDoorItem(o.id, 'maglock')), B('+ Strike', () => quickAddDoorItem(o.id, 'strike')), B('+ REX', () => quickAddDoorItem(o.id, 'rexpir')), B('+ Contact', () => quickAddDoorItem(o.id, 'contact')),
       B('Complete door ▾', (e) => { const r = e.currentTarget.getBoundingClientRect(); popMenu(r.left, r.bottom + 4, DOOR_TEMPLATES.concat(S.project.doorTemplates||[]).map(t => ({label:t.name, sub: t.items.map(i => KINDS[i[0]].abbr).join(' · '), fn:() => applyDoorTemplate(o.id, t.id)}))); }, 'primary'));
   } else if (isCam(o)) {
     qb.append(el('span', {class:'ttl', text:o.name}), B('⟲ 15°', () => rotateSelection(-15)), B('⟳ 15°', () => rotateSelection(15)), B('Narrower', () => setCamFov(o, -10)), B('Wider', () => setCamFov(o, 10)), B('Duplicate', () => duplicateSelection()), B('Connect…', () => { S.cableType = 'CAT6'; setTool('cable'); TOOLS.cable.pts = [[o.x,o.y]]; TOOLS.cable.from = o.id; }));
@@ -3347,7 +3363,7 @@ let PROPS_LIVE = null;
 function renderRight() {
   const Rp = $('#right'); if (!Rp || !S.project) return; Rp.innerHTML = '';
   const sel = selObjs();
-  if (isEasy()) { $('#app').classList.toggle('ezright', sel.length > 0 && !['bom','reports'].includes(S.mode)); if (!sel.length) return; return renderEasyRight(Rp, sel); }
+  if (isEasy()) { const drawing = innerWidth < 900 && S.tool && S.tool !== 'select'; $('#app').classList.toggle('ezright', sel.length > 0 && !drawing && !['bom','reports'].includes(S.mode)); if (!sel.length) return; return renderEasyRight(Rp, sel); } // on phones the item sheet stays down while you keep drawing
   const head = el('div', {class:'phead'}); const body = el('div', {class:'pbody props'}); Rp.append(head, body);
   if (!sel.length) { head.append(el('h2', {text:'Floor & project'})); body.append(floorProps()); return; }
   if (sel.length > 1) { head.append(el('h2', {text:`${sel.length} objects selected`})); body.append(bulkProps(sel)); if (sel.filter(o => o.t === 'dev').length > 1 && !S.readOnly) body.append(el('div', {class:'qa', style:'margin:8px 12px'}, [el('button', {class:'btn sm', id:'saveAsmBtn', text:'Save as assembly…', onclick:() => promptSaveAssembly()})])); return; }
@@ -3469,7 +3485,8 @@ function switchPortsView(s) {
 }
 function doorProps(o) {
   const f = el('div'); const parts = doorParts(o.id); const g = buildGraph();
-  f.append(F('Door ID', bind(o, 'name', 'text', {label:'Rename door'})), F('Door name', bind(o, 'props.label', 'text', {label:'Door name', placeholder:'Main entry'})), F('Width', bind(o, 'w', 'len', {label:'Door width'})), F('Double door', bind(o, 'double', 'bool', {label:'Double door'})), F('Swing side', bind(o, 'flip', 'bool', {label:'Flip swing'})), F('Cameras see through', bind(o, 'glass', 'bool', {label:'Door visibility', after:() => { invalidateOcc(o.floor); for (const c of onFloor(o.floor).filter(isCam)) R.dirty.add(c.id); }})));
+  f.append(grp('Door', [doorControls(o)]));
+  f.append(F('Door ID', bind(o, 'name', 'text', {label:'Rename door'})), F('Door name', bind(o, 'props.label', 'text', {label:'Door name', placeholder:'Main entry'})), F('Width', bind(o, 'w', 'len', {label:'Door width'})), F('Cameras see through', bind(o, 'glass', 'bool', {label:'Door visibility', after:() => { invalidateOcc(o.floor); for (const c of onFloor(o.floor).filter(isCam)) R.dirty.add(c.id); }})));
   const role = (r) => parts.filter(p => kindOf(p).role === r);
   const reader = role('reader')[0], lock = role('lock')[0], rex = role('rex')[0], contact = role('contact')[0];
   const ctl = reader && findUp(g, reader.id, x => isRole(x,'controller'), 3); const ps = lock && findUp(g, lock.id, x => isRole(x,'power') || isRole(x,'controller'), 3);
@@ -4331,7 +4348,7 @@ async function boot() {
   exposeTestHooks();
 }
 function exposeTestHooks() {
-  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {exportProposal, parseScale, classifySheet, readSheet, openPlanSetImport, runPlanSetImport, openPlanSetReport, openRoomReview, approveRoom, draftRooms, roomIsDraft, nameFromLabels, roomLabelsFor, applyTypedScale, openTypedScale, scaleChecks, privacyByRule, askPrivacyApproval, privacyReviewLines, draftReasons, refSheetsEl, autoFindRooms, assetCache, APP_VERSION, exportScheduleCSV, explainLines, explainSelection, saveVersion, openSettings, systemStatus, statusLine, openBuildReady, readiness, readyVerdict, scaleRecord, diffProjects, openVersionCompare, markApproved, confirmApproval, PRESETS, applyPreset, roomLevel, presetLevel, setContrast, isCam, bandwidthReport, scaleIssues, updateReadyBtn, importPDF, PLAN_MAX_MB, openCalibrateDialog, planInput, issueActions, issueKey, acceptIssue, unacceptIssue, openReviewFixes, proposeFixes, signoffProblems, setInstall, instOf, logExport, traceLine, sha256Hex, prodStatus, prodOptionLabel, hitStack, freshIssues, renderReports, audit, connectivityIssues, renderRight, layerFor, startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
+  window.__sym = symbolSVG; window.__KINDS = KINDS; window.SSD = {applyDoorTemplate, toast, doorAction, DOOROPT, doorLeaves, doorWorld, setDoorWidth, exportProposal, parseScale, classifySheet, readSheet, openPlanSetImport, runPlanSetImport, openPlanSetReport, openRoomReview, approveRoom, draftRooms, roomIsDraft, nameFromLabels, roomLabelsFor, applyTypedScale, openTypedScale, scaleChecks, privacyByRule, askPrivacyApproval, privacyReviewLines, draftReasons, refSheetsEl, autoFindRooms, assetCache, APP_VERSION, exportScheduleCSV, explainLines, explainSelection, saveVersion, openSettings, systemStatus, statusLine, openBuildReady, readiness, readyVerdict, scaleRecord, diffProjects, openVersionCompare, markApproved, confirmApproval, PRESETS, applyPreset, roomLevel, presetLevel, setContrast, isCam, bandwidthReport, scaleIssues, updateReadyBtn, importPDF, PLAN_MAX_MB, openCalibrateDialog, planInput, issueActions, issueKey, acceptIssue, unacceptIssue, openReviewFixes, proposeFixes, signoffProblems, setInstall, instOf, logExport, traceLine, sha256Hex, prodStatus, prodOptionLabel, hitStack, freshIssues, renderReports, audit, connectivityIssues, renderRight, layerFor, startTour, openPalette, dialog, renderEasyRight: typeof renderEasyRight !== 'undefined' ? renderEasyRight : null, roomCoverage, roomNeed, coverageSummary, coverageText, coverTarget, openCoverageDetails, projectHealth, openHealth, preflight, preflightOn, assumptionsLines, looseDevices, floorScale, scaleSanity, planWidthFt, planFacts, maybeRemindBackup, downloadBackup, siteGeoStatus, openGeoNeeded, markProposalSent, ezLiveUpdate, softRenderLeft, applyCalibration, PRESS, BACKUP_NAG, fixEverything, lensMath, lensMatches, openLensCalc, deviceLabelText, qrModules, qrCanvas, exportDeviceLabels, vmsRows, exportVMSList, micFor, soundsOn, setSounds, funSound, toolboxTools, openToolbox, needLib, PRODUCTS, QUOTE_DEFAULTS, DORI, checkBadges, loadBadges, badgeEvent, openBadges, BADGES, badgeRank, snapPlanPhoto, isTouchDevice, updateTrophyChip, bomOn, setBomOn, exportAsBuiltPDF, brandInfo, runDemo, DEMO, updateScoreChip, pickCameras, openCameraPicker, openSiteWalk, surveyLines, exportSpecSheets, estimateCSVRows, exportEstimateCSV, loadAssemblies, saveAssemblyFromSelection, placeAssembly, useAssembly, buildDXF, exportDXF, getLook, setLook, undoToast, openWelcome, ezChecklist, ezNextAction, markApproved, changeOrder, exportChangeOrder, openPresent, closePresent, presentGo, PRESENT, upsRuntime, siteLoadW, openUPSDialog, APP_CREATOR, G, switchFloor, redrawAll, renderLeft, EASY, setUI, setStep, isEasy, openCompare, camSpecs, buildKML, exportKML, toggleFav, isFav, markupPhoto, attachCustomerOptions, resolutionPreview, setMapLocation, designScore, autoDesignFloor, wireItUp, autoFindRooms, quoteOptions, buildQuote, scopeOfWork, addTemplateToFloor, conduitFill, fireBattery:(id) => fireBattery(objs()[id]), nacCircuits:(id) => nacCircuits(objs()[id]), wirelessLink:(id) => wirelessLink(objs()[id]), imageFloor: async (url, ftPerPx, w, h) => { const key = await putAsset(url); const f = addFloor(null, 'Image plan'); tx('Plan image', () => { touchMeta(); floorById(f.id).bg = {asset:key, w, h, ftPerPx, x:0, y:0, rot:0, opacity:1, locked:true, gray:false, contrast:100, crop:{l:0,t:0,r:0,b:0}}; floorById(f.id).calibrated = true; }); switchFloor(f.id); return f.id; }, adviseAt:(p) => adviseAtTest(p), advisorPlace:(i) => placeOption(i), advisorOpts:() => ADVISOR.opts, ADVISOR, detectRoomAt, advisorMask, S, tx, addObj, updObj, delObj, objs, runDesignCheck, buildBOM, setMode, setTool, undo, redo, focusObj, cableCalc, camParams, openProject, saveNow, DB, parseLen, fmtLen, TOOLS, autoRoute, toScreen, toWorld, zoomToFit, floors, onFloor, curFloor, newProject, buildTemplate, coverageAnalysis, visPoly, kindOf, floorById, answerQuestion, prod, requestDraw, onSelectionChanged, pickPlanFile, getAsset}; // test hooks
   if (typeof TEAM !== 'undefined') { window.SSD.TEAM = TEAM; window.SSD.mergeProjects = mergeProjects; }
 }
 
@@ -5566,15 +5583,19 @@ function detectRoomAt(M, p) {
   let s = mIdx(M, p); if (s < 0) return null;
   if (!free(s)) { // clicked close to a wall: look for the nearest free cell
     let best = -1, bd = 1e9; const sx = s % W, sy = (s / W) | 0; const R = r * 3; for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) { const x = sx + dx, y = sy + dy; if (x < 0 || y < 0 || x >= W || y >= H) continue; const i = y * W + x; if (free(i) && dx * dx + dy * dy < bd) { bd = dx * dx + dy * dy; best = i; } } if (best < 0) return null; s = best; }
-  const reg = new Uint8Array(W * H); const q = new Int32Array(W * H); let qh = 0, qt = 0; q[qt++] = s; reg[s] = 1; let n = 0; let leak = false;
-  while (qh < qt) { const i = q[qh++]; n++; const x = i % W, y = (i / W) | 0; if (x === 0 || y === 0 || x === W - 1 || y === H - 1) { leak = true; break; }
+  if (M.seen && M.seen[s]) return null; // this area was already explored (another room, or the outside)
+  const reg = new Uint8Array(W * H); const q = new Int32Array(W * H); let qh = 0, qt = 0; q[qt++] = s; reg[s] = 1; let n = 0; let leak = false; let bx0 = W, by0 = H, bx1 = 0, by1 = 0;
+  while (qh < qt) { const i = q[qh++]; n++; const x = i % W, y = (i / W) | 0; if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y; if (x === 0 || y === 0 || x === W - 1 || y === H - 1) { leak = true; break; }
     for (const j of [i - 1, i + 1, i - W, i + W]) if (!reg[j] && free(j)) { reg[j] = 1; q[qt++] = j; } }
+  if (M.seen) for (let k = 0; k < qt; k++) M.seen[q[k]] = 1;
   const areaFt = n * cell * cell; if (leak || n > W * H * 0.5 || areaFt < 12) return null;
-  // grow back by r (stay off the original wall pixels)
-  const dr = distTx(reg, W, H); const grown = new Uint8Array(W * H); let gx0 = W, gy0 = H, gx1 = 0, gy1 = 0;
-  for (let i = 0; i < grown.length; i++) if (dr[i] <= r + 0.5 && !m[i]) { grown[i] = 1; const x = i % W, y = (i / W) | 0; if (x < gx0) gx0 = x; if (y < gy0) gy0 = y; if (x > gx1) gx1 = x; if (y > gy1) gy1 = y; }
-  const poly = traceOutline(grown, W, H, gx0, gy0); if (!poly || poly.length < 3) return null;
-  const world = rdp(poly.map(([x, y]) => [M.x0 + x * cell, M.y0 + y * cell]), Math.max(0.35, cell * 1.6));
+  // grow back by r (stay off the original wall pixels) — only inside the room's own box, not the whole sheet
+  const pad = r + 3; const cx0 = Math.max(0, bx0 - pad), cy0 = Math.max(0, by0 - pad), cx1 = Math.min(W - 1, bx1 + pad), cy1 = Math.min(H - 1, by1 + pad); const CW = cx1 - cx0 + 1, CH = cy1 - cy0 + 1;
+  const sub = new Uint8Array(CW * CH); for (let y = cy0; y <= cy1; y++) for (let x = cx0; x <= cx1; x++) sub[(y - cy0) * CW + (x - cx0)] = reg[y * W + x];
+  const dr = distTx(sub, CW, CH); const grown = new Uint8Array(CW * CH); let gy0 = CH;
+  for (let yy = 0; yy < CH; yy++) for (let xx = 0; xx < CW; xx++) { const k = yy * CW + xx; if (dr[k] <= r + 0.5 && !m[(yy + cy0) * W + xx + cx0]) { grown[k] = 1; if (yy < gy0) gy0 = yy; } }
+  const poly = traceOutline(grown, CW, CH, 0, gy0); if (!poly || poly.length < 3) return null;
+  const world = rdp(poly.map(([x, y]) => [M.x0 + (x + cx0) * cell, M.y0 + (y + cy0) * cell]), Math.max(0.35, cell * 1.6));
   if (world.length < 3 || G.area(world) < 10) return null;
   return {pts:world, area:G.area(world)};
 }
@@ -6001,7 +6022,7 @@ function ezStep1() {
   if (fl && fl.bg && !all.some(o => o.t === 'room')) out.push(ezCard({ic:'target', title:'✨ Find the rooms on my plan', text: fl.bg.labels && fl.bg.labels.length ? 'Reads the walls and the room names printed on the drawing' : 'Reads the walls in your drawing and outlines every room', onclick:autoFindRooms, id:'ezFindRooms'}));
   if (all.some(o => o.t === 'room')) { const nd = draftRooms(S.floorId).length; out.push(ezCard({ic:'room', title: nd ? `Review ${nd} draft room${nd > 1 ? 's' : ''}` : 'Rooms reviewed ✓', text: nd ? 'Check each outline, name, number and ceiling against the drawing' : 'Edit names, numbers and ceilings any time', onclick:() => openRoomReview(S.floorId), primary:!!nd && !needsScale, id:'ezReviewRooms', badge: nd ? String(nd) : null})); }
   { const rs = refSheetsEl(fl); if (rs) out.push(rs); } if ((S.project.imports || []).length) out.push(el('button', {class:'btn sm ghost', id:'ezImportReport', html:icon('file') + 'Plan set import report', onclick:() => openImportHistory()}));
-  out.push(el('div', {class:'ezmini'}, [el('button', {class:'btn sm ghost', html:icon('wall') + 'Draw walls', onclick:() => { if (S.mode === 'site') setMode('floor'); setTool('wall'); }}), el('button', {class:'btn sm ghost', html:icon('door') + 'Add doors', onclick:() => { if (S.mode === 'site') setMode('floor'); setTool('door'); }}), el('button', {class:'btn sm ghost', html:icon('plus') + 'Add a floor', onclick:() => { const f = addFloor(null); if (f) switchFloor(f.id); }})]));
+  out.push(el('div', {class:'ezmini'}, [el('button', {class:'btn sm ghost', html:icon('wall') + 'Draw walls', onclick:() => { if (S.mode === 'site') setMode('floor'); setTool('wall'); }}), el('button', {class:'btn sm ghost', id:'ezAddDoor', html:icon('door') + 'Add doors', onclick:() => { if (S.mode === 'site') setMode('floor'); DOOROPT.double = false; setTool('door'); }}), el('button', {class:'btn sm ghost', id:'ezAddDouble', html:icon('door') + 'Double doors', onclick:() => { if (S.mode === 'site') setMode('floor'); DOOROPT.double = true; setTool('door'); }}), el('button', {class:'btn sm ghost', html:icon('plus') + 'Add a floor', onclick:() => { const f = addFloor(null); if (f) switchFloor(f.id); }})]));
   out.push(hasPlan ? ezNext('Next: add devices', () => setStep(2)) : el('p', {class:'note ezfoot', text:'No plan? You can still skip ahead and place cameras on a blank grid.'}), hasPlan ? null : el('button', {class:'btn ghost', text:'Skip — I’ll place devices on a blank grid', onclick:() => setStep(2)}));
   return out.filter(Boolean);
 }
@@ -6105,14 +6126,15 @@ function addTemplateToFloor(kind) {
 async function autoFindRooms() {
   const t = toast('Reading your plan…', '', 60000); try {
     const M = await advisorMask(S.floorId); if (!M || !M.fromImage && !M.hasWalls) { t.remove(); return toast('No walls found to read. Upload a floor plan or draw walls first.', 'warn'); }
-    const found = []; const step = Math.max(4, Math.min(M.W, M.H) * M.cell / 40);
+    const found = []; const step = Math.max(4, Math.min(M.W, M.H) * M.cell / 40); M.seen = new Uint8Array(M.W * M.H); let tick = Date.now();
     for (let y = M.y0 + step / 2; y < M.y0 + M.H * M.cell; y += step) for (let x = M.x0 + step / 2; x < M.x0 + M.W * M.cell; x += step) {
       const p = [x, y]; if (found.some(r => G.inPoly(p, r.pts))) continue; const i = mIdx(M, p); if (i < 0 || M.m[i]) continue;
       const r = detectRoomAt(M, p); if (!r || r.area < 25 || r.area > 40000) continue; const c = G.centroid(r.pts); if (found.some(f => G.inPoly(c, f.pts))) continue;
       const bb = G.bbox(r.pts); if (found.some(f => { const q = G.bbox(f.pts); const ix = Math.max(0, Math.min(bb.x1, q.x1) - Math.max(bb.x0, q.x0)), iy = Math.max(0, Math.min(bb.y1, q.y1) - Math.max(bb.y0, q.y0)); return ix * iy > 0.85 * Math.min(bb.w * bb.h, q.w * q.h); })) continue; // the same room traced twice
       if (inTitleBlock(S.floorId, c)) continue; found.push(r);
-      if (found.length > 80) break; await new Promise(res => setTimeout(res, 0));
+      if (found.length > 80) break; if (Date.now() - tick > 60) { await new Promise(res => setTimeout(res, 0)); tick = Date.now(); const sp = t.querySelector('span'); if (sp) sp.textContent = `Reading your plan… ${found.length} room${found.length === 1 ? '' : 's'} so far`; }
     }
+    M.seen = null;
     t.remove(); if (!found.length) return toast('Couldn’t find closed rooms on this plan. Draw them with “Draw rooms” instead.', 'warn', 5000);
     let named = 0; tx('Find rooms', () => { found.forEach((r, i) => { const pts = r.pts.map(q => [+q[0].toFixed(2), +q[1].toFixed(2)]); const lab = nameFromLabels(roomLabelsFor(S.floorId, pts)); if (lab.name) named++;
       addObj({t:'room', floor:S.floorId, pts, name: lab.name ? lab.name + (lab.no ? ' ' + lab.no : '') : 'Room ' + (i + 1), props:{review:'draft', auto:true, conf:roomConfidence(pts, lab), roomNo:lab.no || null, srcLabel:lab.name || null}}); }); });
@@ -6160,7 +6182,14 @@ function wireItUp() {
   if (!devs.some(o => kindOf(o).cat !== 'site')) return toast('Add some devices first.', 'warn');
   // where the equipment goes: an existing switch/rack/IDF, an IT/storage room, else the middle of the building
   const anchor = devs.find(o => isRole(o, 'switch') || o.kind === 'rack' || o.kind === 'idf' || o.kind === 'mdf' || isRole(o, 'nvr'));
-  let at; if (anchor) at = [anchor.x, anchor.y]; else { const r = all.find(o => o.t === 'room' && /idf|mdf|telecom|server|it\b|electric|storage|closet|mech/i.test(o.name || '')); if (r) at = G.centroid(r.pts); else { const pts = devs.map(o => [o.x, o.y]); const bb = G.bbox(pts); at = [(bb.x0 + bb.x1) / 2, (bb.y0 + bb.y1) / 2]; } }
+  let at; if (anchor) at = [anchor.x, anchor.y]; else {
+    // equipment goes in a back corner of an IT/storage room — or of the room in the middle — clear of walls, doors and cameras, never on a wall line
+    const rooms = all.filter(o => o.t === 'room' && o.pts && o.pts.length > 2); const it = rooms.find(o => /idf|mdf|telecom|server|it\b|electric|storage|closet|mech|equip/i.test(o.name || ''));
+    const pts = devs.map(o => [o.x, o.y]); const bb = G.bbox(pts); const mid = [(bb.x0 + bb.x1) / 2, (bb.y0 + bb.y1) / 2];
+    const r = it || rooms.find(o => G.inPoly(mid, o.pts)) || rooms.slice().sort((a, b) => G.area(b.pts) - G.area(a.pts))[0];
+    if (r) { const rb = G.bbox(r.pts); const ins = Math.min(3, rb.w / 4, rb.h / 4); const corners = [[rb.x0 + ins, rb.y0 + ins], [rb.x1 - ins - 7.8, rb.y0 + ins], [rb.x0 + ins, rb.y1 - ins - 2.6], [rb.x1 - ins - 7.8, rb.y1 - ins - 2.6]].filter(q => G.inPoly(q, r.pts));
+      const clear = (q) => Math.min(...all.filter(o => o.t === 'door' || isCam(o)).map(o => G.dist(q, [o.x, o.y])), 99); at = corners.sort((a, b) => clear(b) - clear(a))[0] || G.centroid(r.pts); }
+    else at = mid; }
   const made = [], grown = []; let cables = 0; const linked = (a, b) => neighbors(g, a.id).some(n => n.id === b.id);
   tx('Wire it all up', () => {
     const near = (k) => [at[0] + (k % 4) * 2.6, at[1] + Math.floor(k / 4) * 2.6]; // equipment stacked in a tight 4-wide block
@@ -6228,7 +6257,7 @@ function renderEasyRight(Rp, sel) {
     }
     body.append(photosGroup(o), F('Notes', bind(o, 'props.notes', 'textarea', {label:'Notes', placeholder:'Install notes for the tech — talk or type'})));
   } else if (o.t === 'door') {
-    const parts = doorParts(o.id); body.append(F('Name', bind(o, 'name', 'text', {label:'Rename door'})), el('p', {class:'note', text: parts.length ? `${o.template || 'Secured'} · ${parts.length} devices` : 'Not secured yet.'}));
+    const parts = doorParts(o.id); body.append(F('Name', bind(o, 'name', 'text', {label:'Rename door'})), doorControls(o), el('p', {class:'note', text: parts.length ? `${o.template || 'Secured'} · ${parts.length} devices` : 'Not secured yet.'}));
     body.append(el('div', {class:'ezgrid one'}, [['std-ext','Card reader door'], ['strike-reader','Card reader + strike'], ['exit-only','Exit only (alarmed)'], ['wireless','Wireless lock']].map(([id, l]) => ezCard({ic:'door', title:l, onclick:() => { applyDoorTemplate(o.id, id); renderEasyRight(Rp, selObjs()); }}))));
   } else if (o.t === 'room') {
     const c = coverageAnalysis(o.floor, S.overlay.level || 'detection', [o.id]);
@@ -6238,7 +6267,7 @@ function renderEasyRight(Rp, sel) {
 }
 
 // re-draw the step panel as the design changes (score, tips, prices) — never while the user is typing in it
-const ezRefresh = debounce(() => { if (!isEasy() || !S.project || EASY.step === 1 && S.tool === 'room') return; const ae = document.activeElement; if (ae && ae.closest && ae.closest('#left') && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return; EASY.scoreCache = null; renderLeft(); $$('#steps .stp').forEach(b => b.classList.toggle('done', stepDone(+b.dataset.step))); }, 700);
+const ezRefresh = debounce(() => { if (!isEasy() || !S.project) return; if (EASY.step === 1 && S.tool === 'room') { try { ezLiveUpdate(); } catch (e) {} return; } const ae = document.activeElement; if (ae && ae.closest && ae.closest('#left') && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return; EASY.scoreCache = null; renderLeft(); $$('#steps .stp').forEach(b => b.classList.toggle('done', stepDone(+b.dataset.step))); }, 700);
 changeHooks.push(() => ezRefresh());
 // "Proposal sent" is recorded only by a real proposal: the proposal PDF or a customer link. Design exports never count.
 function markProposalSent(how) { tx('Proposal sent', () => { touchMeta(); S.project.quoteSent = Date.now(); S.project.quoteSentBy = how; }); try { checkBadges(); } catch (e) {} if (isEasy()) softRenderLeft(); }
@@ -6246,7 +6275,7 @@ function markProposalSent(how) { tx('Proposal sent', () => { touchMeta(); S.proj
 function ezLiveUpdate() {
   if (!isEasy()) return; const body = $('#left .ezpanel'); if (!body) return; EASY.scoreCache = null;
   const old = body.querySelector('.ezcheck-list'); let list = []; try { list = ezChecklist(EASY.step); } catch (e) {}
-  if (old) { const done = list.filter(x => x[1]).length; old.setAttribute('aria-label', `Step ${EASY.step}: ${done} of ${list.length} done`); old.replaceChildren(...list.map(([t, ok]) => el('span', {class:'ezchk' + (ok ? ' ok' : ''), role:'listitem', text:(ok ? '✓ ' : '') + t}))); }
+  if (old) { const done = list.filter(x => x[1]).length; const keep = old.querySelector('#ezNextHint'); old.setAttribute('aria-label', `Step ${EASY.step}: ${done} of ${list.length} done`); old.replaceChildren(...list.map(([t, ok]) => el('span', {class:'ezchk' + (ok ? ' ok' : ''), role:'listitem', text:(ok ? '✓ ' : '') + t})), ...(keep ? [keep] : [])); } // keep the “Next:” hint that lives in this row
   const hint = $('#ezNextHint'); if (hint) { try { const [, label] = ezNextAction(EASY.step); hint.textContent = 'Next: ' + label; } catch (e) {} }
   const np = $('#ezNoPrice'); if (np && quoteOptions().some(o => o.Q.priced)) np.remove();
   $$('#steps .stp').forEach(b => b.classList.toggle('done', stepDone(+b.dataset.step)));
@@ -6638,7 +6667,7 @@ function buildDXF(fid = S.floorId) {
   for (const o of onFloor(fid)) {
     if (o.t === 'wall') { line(LAY.wall, [o.x1, o.y1], [o.x2, o.y2]); n++; }
     else if (o.t === 'room' && o.pts && o.pts.length > 2) { poly(LAY.room, o.pts, true); const c = G.centroid(o.pts); if (o.name) text(LAY.room, c, 1.2, o.name); n++; }
-    else if (o.t === 'door') { const r = (o.w || 3); const a = (o.rot || 0) * DEG; line(LAY.door, [o.x, o.y], [o.x + Math.cos(a) * r, o.y + Math.sin(a) * r]); if (o.name) text(LAY.door, [o.x + 0.5, o.y - 0.5], 0.6, o.name); n++; }
+    else if (o.t === 'door') { for (const L of doorLeaves(o)) { line(LAY.door, doorWorld(o, L.hinge), doorWorld(o, L.open)); poly(LAY.door, L.arc.map(q => doorWorld(o, q)), false); } if (o.name) text(LAY.door, [o.x + 0.5, o.y - 0.5], 0.6, o.name); n++; }
     else if (o.t === 'cable' && o.pts && o.pts.length > 1) { poly(LAY.cable, o.pts, false); n++; }
     else if (o.t === 'text' && o.text) { text(LAY.text, [o.x, o.y], 1, o.text); n++; }
     else if (o.t === 'dev') { const L = LAY[(KINDS[o.kind] || {}).cat] || 'SSD-NETWORK'; circle(L, [o.x, o.y], 0.75); text(L, [o.x + 1, o.y - 1], 0.7, o.name || o.kind);
@@ -7656,6 +7685,120 @@ function draftReasons() { const R_ = []; for (const f of planFloors().filter(f =
 
 // a construction sheet's title block (right-hand strip / bottom band) is not a room
 function inTitleBlock(fid, w) { const f = floorById(fid); const bg = f && f.bg; if (!bg || !bg.pdf || !bg.pdf.sheet) return false; const px = (w[0] - bg.x) / bg.ftPerPx, py = (w[1] - bg.y) / bg.ftPerPx; return px > bg.w * 0.7 || py > bg.h * 0.85; }
+
+// ===== DOORS: single or double, swing in/out, hinge left/right — while placing and after =====
+const DOOROPT = {double:false, hinge:'L'}; // what the door tool places next
+// mirror the devices on a door (reader, REX, contact…) so they stay on the right side after a flip
+function mirrorDoorParts(door, mx, my) {
+  const a = (door.rot || 0) * DEG, ca = Math.cos(a), sa = Math.sin(a);
+  for (const p of doorParts(door.id)) {
+    const dx = p.x - door.x, dy = p.y - door.y; let lx = dx * ca + dy * sa, ly = -dx * sa + dy * ca; lx *= mx; ly *= my;
+    let th = (p.rot || 0) - (door.rot || 0); if (my < 0) th = -th; if (mx < 0) th = 180 - th;
+    updObj(p.id, {x: door.x + lx * ca - ly * sa, y: door.y + lx * sa + ly * ca, rot: ((th + (door.rot || 0)) % 360 + 360) % 360});
+  }
+}
+function doorAction(o, what) {
+  if (!o || o.t !== 'door') return; const lbl = {swing:'Flip door swing', hinge:'Flip door hinge', double:o.double ? 'Make single door' : 'Make double door'}[what];
+  tx(lbl, () => {
+    if (what === 'swing') { updObj(o.id, {flip:!o.flip}); mirrorDoorParts(o, 1, -1); }
+    else if (what === 'hinge') { updObj(o.id, {hinge: o.hinge === 'R' ? 'L' : 'R'}); mirrorDoorParts(o, -1, 1); }
+    else if (what === 'double') { const dbl = !o.double; const w = o.w || 3; updObj(o.id, {double:dbl, w: dbl ? Math.max(w * 2, 6) : Math.max(3, Math.round(w / 2 * 2) / 2)}); }
+  });
+  invalidateOcc(o.floor); requestDraw(); try { renderRight(); } catch (e) {} try { updateQuickBar(); } catch (e) {}
+  toast(lbl.replace('Flip door', 'Flipped the').replace('Make ', 'Now a ') + (what === 'swing' ? ' — it now opens to the other side' : what === 'hinge' ? ' — hinges are on the other end' : ''), '', 2200);
+}
+function setDoorWidth(o, w) { if (!o || !(w > 0)) return; tx('Door width', () => updObj(o.id, {w})); invalidateOcc(o.floor); requestDraw(); try { renderRight(); } catch (e) {} }
+const DOOR_WIDTHS = (dbl) => dbl ? [[5, "5'0\" pair"], [6, "6'0\" pair"], [8, "8'0\" pair"]] : [[3, "3'0\""], [3.5, "3'6\""], [4, "4'0\""]];
+// the buttons shown wherever a door is selected
+function doorControls(o, {compact=false} = {}) {
+  const w = o.w || (o.double ? 6 : 3);
+  return el('div', {class:'doorctl', id:'doorCtl'}, [
+    el('div', {class:'seg', role:'group', 'aria-label':'Door type'}, [el('button', {class:'btn sm' + (!o.double ? ' on' : ''), 'data-door':'single', 'aria-pressed':String(!o.double), text:'Single', onclick:() => { if (o.double) doorAction(o, 'double'); }}), el('button', {class:'btn sm' + (o.double ? ' on' : ''), 'data-door':'double', 'aria-pressed':String(!!o.double), text:'Double', onclick:() => { if (!o.double) doorAction(o, 'double'); }})]),
+    el('button', {class:'btn sm', 'data-door':'swing', title:'Open to the other side of the wall', html:'⇅ Flip swing', onclick:() => doorAction(o, 'swing')}),
+    el('button', {class:'btn sm', 'data-door':'rotate', title:'Turn the door a quarter turn', html:'⟳ 90°', onclick:() => { tx('Rotate door', () => { updObj(o.id, {rot:((o.rot || 0) + 90) % 360}); for (const p of doorParts(o.id)) { const a = 90 * DEG; const dx = p.x - o.x, dy = p.y - o.y; updObj(p.id, {x:o.x + dx * Math.cos(a) - dy * Math.sin(a), y:o.y + dx * Math.sin(a) + dy * Math.cos(a), rot:((p.rot || 0) + 90) % 360}); } }); requestDraw(); try { renderRight(); } catch (e) {} }}),
+    o.double ? null : el('button', {class:'btn sm', 'data-door':'hinge', title:'Move the hinges to the other end', html:'⇄ Flip hinge', onclick:() => doorAction(o, 'hinge')}),
+    compact ? null : el('div', {class:'seg', role:'group', 'aria-label':'Door width'}, DOOR_WIDTHS(o.double).map(([v, l]) => el('button', {class:'btn sm' + (Math.abs(w - v) < 0.01 ? ' on' : ''), 'data-dw':String(v), text:l, onclick:() => setDoorWidth(o, v)}))),
+  ].filter(Boolean));
+}
+// door tool: live preview shows the real door — swing follows the side of the wall your pointer is on
+function doorToolOptsBar() {
+  let bar = $('#doorOpts'); if (!bar) { bar = el('div', {id:'doorOpts', class:'tooloptsbar', role:'toolbar', 'aria-label':'Door options'}); document.body.append(bar); }
+  bar.replaceChildren(el('b', {text:'Door:'}), el('div', {class:'seg'}, [el('button', {class:'btn sm' + (!DOOROPT.double ? ' on' : ''), id:'doSingle', text:'Single', onclick:() => { DOOROPT.double = false; doorToolOptsBar(); }}), el('button', {class:'btn sm' + (DOOROPT.double ? ' on' : ''), id:'doDouble', text:'Double', onclick:() => { DOOROPT.double = true; doorToolOptsBar(); }})]),
+    DOOROPT.double ? null : el('button', {class:'btn sm', id:'doHinge', text:`⇄ Hinge ${DOOROPT.hinge === 'R' ? 'right' : 'left'}`, onclick:() => { DOOROPT.hinge = DOOROPT.hinge === 'R' ? 'L' : 'R'; doorToolOptsBar(); }}),
+    el('span', {class:'note', text:'Swing opens toward the side your pointer is on · 2 = single/double · X = hinge · Esc = done'}));
+  bar.hidden = false; return bar;
+}
+function hideDoorOpts() { const b = $('#doorOpts'); if (b) b.hidden = true; }
+// with a plan image there may be no wall objects — then doors line up with the nearest room edge
+function nearestRoomEdge(p, maxD = 3) { let best = null; for (const r of onFloor().filter(o => o.t === 'room' && o.pts && o.pts.length > 2)) for (let i = 0; i < r.pts.length; i++) { const a = r.pts[i], b = r.pts[(i + 1) % r.pts.length]; const dx = b[0] - a[0], dy = b[1] - a[1]; const L2 = dx * dx + dy * dy || 1; const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L2)); const q = [a[0] + dx * t, a[1] + dy * t]; const d = Math.hypot(p[0] - q[0], p[1] - q[1]); if (d <= maxD && (!best || d < best.d)) best = {d, q, rot:Math.atan2(dy, dx) / DEG}; } return best; }
+(function upgradeDoorTool() {
+  const T = TOOLS.door; const base0 = T.pos; const base = {pos(p) { const q = base0.call(this, p); if (q.wall) return q; const e = nearestRoomEdge(p); return e ? {p:e.q, rot:e.rot, wall:null, edge:true} : q; }, down:T.down};
+  // which side of the wall is the pointer on → that is the swing side
+  const sideOf = (p, q) => { const a = q.rot * DEG; return (-(p[0] - q.p[0]) * Math.sin(a) + (p[1] - q.p[1]) * Math.cos(a)) < 0; };
+  T.hint = () => 'Click a wall to place a door. It opens toward the side your pointer is on. Pick Single or Double and the hinge side in the bar below.';
+  T.start = function () { doorToolOptsBar(); };
+  T.end = function () { hideDoorOpts(); }; T.cancel = function () {};
+  T.key = function (e) { if (e.ctrlKey || e.metaKey || e.altKey) return false; const k = e.key.toLowerCase(); if (k === '2') { DOOROPT.double = !DOOROPT.double; doorToolOptsBar(); this.redraw && this.redraw(); return true; } if (k === 'x') { DOOROPT.hinge = DOOROPT.hinge === 'R' ? 'L' : 'R'; doorToolOptsBar(); this.redraw && this.redraw(); return true; } return false; };
+  T.move = function (e, p) { const q = base.pos.call(this, p); this.last = [e, p]; this.redraw = () => this.move(...this.last); const fake = {x:q.p[0], y:q.p[1], rot:q.rot, w: DOOROPT.double ? 6 : 3, double:DOOROPT.double, hinge:DOOROPT.hinge, flip:sideOf(p, q), name:''};
+    const g = sv('g', {class:'ghostopen ghostdoor' + (q.wall || q.edge ? '' : ' nowall')}); const dg = drawDoor(fake); const lbl = dg.querySelector('.doorlbl'); if (lbl) lbl.remove(); g.append(dg); toolPreview([g, tipNode(q.p, q.wall || q.edge || !onFloor().some(x => x.t === 'wall') ? (DOOROPT.double ? 'Double door' : 'Door') + ' — click to place' : 'Move onto a wall', -18)]); };
+  T.down = function (e, p) {
+    const q = base.pos.call(this, p); if (!q.wall && !e.shiftKey && onFloor().some(x => x.t === 'wall')) { toast('Click on a wall to place the door — it snaps to the wall. Hold Shift to place it unattached.', 'warn', 4500); return; }
+    let o; tx(DOOROPT.double ? 'Place double door' : 'Place door', () => { o = addObj({t:'door', floor:S.floorId, x:q.p[0], y:q.p[1], rot:q.rot, w: DOOROPT.double ? 6 : 3, double:DOOROPT.double, hinge: DOOROPT.double ? undefined : DOOROPT.hinge, flip:sideOf(p, q), wallId:q.wall, name:nextName('door', 'door')}); });
+    S.sel = new Set([o.id]); onSelectionChanged(); try { funSound('pop'); } catch (err) {} if (!q.wall && !q.edge) toast(`Placed ${o.name} — use Rotate 90° if it needs to turn, or drag it onto a wall or room edge to line it up.`, '', 4500);
+  };
+})();
+
+// ===== WALLS, ROOMS AND DOORS MOVE TOGETHER =====
+// Dragging a wall carries its doors and windows and stretches the walls and room corners joined to it.
+// Dragging a room carries the walls drawn around it (when no other room shares them) with their doors.
+// Dragging a door carries its reader, lock, REX and contact. Deleting a wall removes the openings in it.
+const NEAR_PT = 0.08;
+const samePt = (a, b) => Math.abs(a[0] - b[0]) < NEAR_PT && Math.abs(a[1] - b[1]) < NEAR_PT;
+function structureLinks(ids) {
+  const set = new Set(ids); const all = Object.values(objs()); const fl = new Set(ids.map(id => objs()[id] && objs()[id].floor));
+  const on = all.filter(o => fl.has(o.floor));
+  // a room brings its own walls along
+  for (const r of ids.map(id => objs()[id]).filter(o => o && o.t === 'room' && o.pts && o.pts.length > 2)) {
+    const edges = r.pts.map((p, i) => [p, r.pts[(i + 1) % r.pts.length]]);
+    const ew = on.filter(w => w.t === 'wall' && !set.has(w.id) && edges.some(([a, b]) => (samePt([w.x1, w.y1], a) && samePt([w.x2, w.y2], b)) || (samePt([w.x1, w.y1], b) && samePt([w.x2, w.y2], a))));
+    const shared = ew.some(w => on.some(r2 => r2.t === 'room' && r2.id !== r.id && !set.has(r2.id) && r2.pts && r2.pts.some(q => samePt(q, [w.x1, w.y1])) && r2.pts.some(q => samePt(q, [w.x2, w.y2]))));
+    if (!shared && !ew.some(w => w.locked)) for (const w of ew) set.add(w.id);
+  }
+  const walls = [...set].map(id => objs()[id]).filter(o => o && o.t === 'wall');
+  const wallIds = new Set(walls.map(w => w.id));
+  for (const o of on) if ((o.t === 'door' || o.t === 'window') && wallIds.has(o.wallId)) set.add(o.id);
+  for (const o of on) if (o.t === 'dev' && o.doorId && set.has(o.doorId)) set.add(o.id);
+  const extra = [...set].filter(id => !ids.includes(id) && objs()[id] && !objs()[id].locked);
+  // joined corners stretch
+  const ends = []; for (const w of walls) ends.push([w.x1, w.y1], [w.x2, w.y2]);
+  const stretch = [];
+  for (const o of on) { if (set.has(o.id) || o.locked) continue;
+    if (o.t === 'wall') { if (ends.some(q => samePt(q, [o.x1, o.y1]))) stretch.push({id:o.id, k:1}); if (ends.some(q => samePt(q, [o.x2, o.y2]))) stretch.push({id:o.id, k:2}); }
+    else if (o.t === 'room' && o.pts) o.pts.forEach((q, i) => { if (ends.some(e => samePt(e, q))) stretch.push({id:o.id, i}); }); }
+  return {extra, stretch};
+}
+function applyLinks(live, links, dx, dy) {
+  if (!links || (!dx && !dy)) return [];
+  for (const id of links.extra) { const o = objs()[id]; if (!o) continue; liveTouch(live, id); moveObjLive(o, dx, dy); R.dirty.add(id); }
+  for (const s of links.stretch) { const o = objs()[s.id]; if (!o) continue; liveTouch(live, s.id);
+    if (s.k === 1) { o.x1 += dx; o.y1 += dy; } else if (s.k === 2) { o.x2 += dx; o.y2 += dy; } else { const pts = o.pts.slice(); pts[s.i] = [pts[s.i][0] + dx, pts[s.i][1] + dy]; o.pts = pts; } R.dirty.add(s.id); }
+  if (links.extra.length || links.stretch.length) invalidateOcc();
+  return links.extra;
+}
+// dragging one end of a wall: corners joined there follow, openings slide to stay on the wall
+function endLinks(w, k) { const q = k === 1 ? [w.x1, w.y1] : [w.x2, w.y2]; const on = onFloor(w.floor); const out = [];
+  for (const o of on) { if (o.id === w.id || o.locked) continue; if (o.t === 'wall') { if (samePt(q, [o.x1, o.y1])) out.push({id:o.id, k:1}); if (samePt(q, [o.x2, o.y2])) out.push({id:o.id, k:2}); } else if (o.t === 'room' && o.pts) o.pts.forEach((p, i) => { if (samePt(p, q)) out.push({id:o.id, i}); }); }
+  const L = Math.hypot(w.x2 - w.x1, w.y2 - w.y1) || 1; const opens = on.filter(o => (o.t === 'door' || o.t === 'window') && o.wallId === w.id).map(o => ({id:o.id, t:((o.x - w.x1) * (w.x2 - w.x1) + (o.y - w.y1) * (w.y2 - w.y1)) / (L * L)}));
+  return {pts:out, opens};
+}
+function applyEndLinks(live, w, links, p) {
+  for (const s of links.pts) { const o = objs()[s.id]; if (!o) continue; liveTouch(live, s.id); if (s.k === 1) { o.x1 = p[0]; o.y1 = p[1]; } else if (s.k === 2) { o.x2 = p[0]; o.y2 = p[1]; } else { const pts = o.pts.slice(); pts[s.i] = [p[0], p[1]]; o.pts = pts; } R.dirty.add(s.id); }
+  const rot = Math.atan2(w.y2 - w.y1, w.x2 - w.x1) / DEG;
+  for (const op of links.opens) { const o = objs()[op.id]; if (!o) continue; liveTouch(live, op.id); const nx = w.x1 + (w.x2 - w.x1) * op.t, ny = w.y1 + (w.y2 - w.y1) * op.t; const dx = nx - o.x, dy = ny - o.y; const dr = rot - (o.rot || 0);
+    o.x = nx; o.y = ny; o.rot = rot; R.dirty.add(op.id);
+    for (const part of Object.values(objs()).filter(x => x.doorId === op.id)) { liveTouch(live, part.id); const a = dr * DEG; const rx = part.x + dx - nx, ry = part.y + dy - ny; part.x = nx + rx * Math.cos(a) - ry * Math.sin(a); part.y = ny + rx * Math.sin(a) + ry * Math.cos(a); part.rot = ((part.rot || 0) + dr + 360) % 360; R.dirty.add(part.id); } }
+  invalidateOcc();
+}
 
 // ===== START (after every module has loaded) =====
 boot().catch(e => { console.error(e); const l = $('#loading'); if (l) l.textContent = 'The designer could not start: ' + e.message; });
