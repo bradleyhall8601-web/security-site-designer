@@ -1,0 +1,13 @@
+Cable ID,Source,Destination,Cable Type,Measured (ft),Vertical (ft),Service Loop (ft),Waste %,Calculated (ft),Floor,Path,Notes
+CAM-001,CAM-001,SW-01,CAT6,54.8,10.0,10.0,10,82.3,Building A · Floor 1,,
+CAM-002,CAM-002,SW-01,CAT6,54.7,10.0,10.0,10,82.2,Building A · Floor 1,,
+CAM-003,CAM-003,SW-01,CAT6,48.2,10.0,10.0,10,75.0,Building A · Floor 1,,
+CAM-004,CAM-004,SW-01,CAT6,58.2,10.0,10.0,10,86.1,Building A · Floor 1,,
+CAM-005,CAM-005,SW-01,CAT6,58.2,10.0,10.0,10,86.1,Building A · Floor 1,,
+CAM-006,CAM-006,SW-01,CAT6,51.4,10.0,10.0,10,78.6,Building A · Floor 1,,
+CAM-007,CAM-007,SW-01,CAT6,51.4,10.0,10.0,10,78.6,Building A · Floor 1,,
+CAM-008,CAM-008,SW-01,CAT6,105.1,10.0,10.0,10,137.7,Building A · Floor 1,,
+CAM-009,CAM-009,SW-01,CAT6,105.1,10.0,10.0,10,137.7,Building A · Floor 1,,
+CAM-010,CAM-010,SW-01,CAT6,111.9,10.0,10.0,10,145.1,Building A · Floor 1,,
+CAM-011,CAM-011,SW-01,CAT6,111.9,10.0,10.0,10,145.1,Building A · Floor 1,,
+CBL-001,NVR-01,SW-01,CAT6,2.6,10.0,10.0,10,24.9,Building A · Floor 1,,

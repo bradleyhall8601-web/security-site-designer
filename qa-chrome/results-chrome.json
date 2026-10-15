@@ -1,0 +1,657 @@
+{
+ "env": {
+  "browser": "chrome",
+  "version": "155.0.8059.80",
+  "headed": true,
+  "os": "Windows_NT 10.0.26100 x64",
+  "node": "v20.20.2",
+  "url": "https://bradleyhall8601-web.github.io/security-site-designer/",
+  "started": "2026-10-15T16:32:59.729Z",
+  "appVersion": "3.13",
+  "finished": "2026-10-15T16:35:25.725Z"
+ },
+ "total": 59,
+ "pass": 59,
+ "fail": 0,
+ "results": [
+  {
+   "area": "Load",
+   "name": "Fresh load in a clean browser profile",
+   "expected": "App opens, welcome screen credits Brad Hall, no errors",
+   "observed": "v3.13, “Riverbend Medical Office (example) — Security Site Designer”, welcome shown, creator credit present",
+   "pass": true,
+   "ms": 9251,
+   "evidence": "shots/chrome-01.png"
+  },
+  {
+   "area": "Load",
+   "name": "Installable app: manifest and offline start",
+   "expected": "Manifest valid; service worker takes control; app reopens with the network off",
+   "observed": "manifest “Security Site Designer”, 4 icons; reopened offline from the service worker",
+   "pass": true,
+   "ms": 2598,
+   "evidence": "shots/chrome-02.png"
+  },
+  {
+   "area": "Project setup",
+   "name": "Create a project from the welcome screen",
+   "expected": "Wizard creates the named project and opens step 1",
+   "observed": "project open on step 1",
+   "pass": true,
+   "ms": 2692,
+   "evidence": "shots/chrome-03.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "Cancelling the file window changes nothing",
+   "expected": "No plan, no new floor",
+   "observed": "file window opened (click 1), cancelled, floors unchanged: Outdoor site, Floor 1",
+   "pass": true,
+   "ms": 919,
+   "evidence": "shots/chrome-04.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "Upload a PNG plan with the mouse",
+   "expected": "Real file window opens; plan shows; scale reported as NOT set",
+   "observed": "opened on click 1; “Plan: plan.png · 1200×800 px image · Plan scale NOT set — distances and coverage are unverified”",
+   "pass": true,
+   "ms": 947,
+   "evidence": "shots/chrome-05.png"
+  },
+  {
+   "area": "Calibration",
+   "name": "Before calibration nothing claims the scale is set",
+   "expected": "“Scale set” unticked; health says NOT set",
+   "observed": "checklist ✓Plan added ○Scale set ○Rooms reviewed",
+   "pass": true,
+   "ms": 120,
+   "evidence": "shots/chrome-06.png"
+  },
+  {
+   "area": "Calibration",
+   "name": "Bad distances are refused; Cancel leaves it uncalibrated",
+   "expected": "0, -5 and “abc” rejected with a message; Cancel → still uncalibrated",
+   "observed": "0: Enter a distance such as 25' or 7.6 m× · -5: Enter a distance such as 25' or 7.6 m× · abc: Enter a distance such as 25' or 7.6 m×",
+   "pass": true,
+   "ms": 2439,
+   "evidence": "shots/chrome-07.png"
+  },
+  {
+   "area": "Calibration",
+   "name": "Two-point calibration (100 ft) is saved with its source",
+   "expected": "Scale = 0.1 ft/px, plan 120 ft wide, history recorded, “Scale set” ticked",
+   "observed": "0.1000 ft/px, plan 120.0 ft wide, source two-point; facts “Plan: plan.png · 1200×800 px image · Set by two-point calibration (100 ft between two points, 10/15/2026) · 120 ft × 80.0 ft”",
+   "pass": true,
+   "ms": 1567,
+   "evidence": "shots/chrome-08.png"
+  },
+  {
+   "area": "Calibration",
+   "name": "A second known dimension confirms the scale",
+   "expected": "Measuring the 60 ft side gives ≈0% error; the scale record reads “valid”",
+   "observed": "error 0.00% · Valid",
+   "pass": true,
+   "ms": 913,
+   "evidence": "shots/chrome-09.png"
+  },
+  {
+   "area": "Calibration",
+   "name": "An absurd distance is flagged and can be undone",
+   "expected": "100,000 ft → warning; Undo restores 0.1 ft/px",
+   "observed": "warned: “Building A · Floor 1 comes out 120,000 ft wide — check the distance (feet, not inches?)×”; health=warn; undo → 0.1000 ft/px",
+   "pass": true,
+   "ms": 1967,
+   "evidence": "shots/chrome-10.png"
+  },
+  {
+   "area": "Design",
+   "name": "Find the rooms on the plan",
+   "expected": "Rooms are outlined from the drawing",
+   "observed": "2 rooms: Room 1 2921 sf, Room 2 2921 sf · drafts reviewed and approved in the review queue",
+   "pass": true,
+   "ms": 1563,
+   "evidence": "shots/chrome-11.png"
+  },
+  {
+   "area": "Design",
+   "name": "Place a camera by hand",
+   "expected": "Camera tile → click in a room places one camera with feedback",
+   "observed": "cameras 0 → 1",
+   "pass": true,
+   "ms": 2653,
+   "evidence": "shots/chrome-12.png"
+  },
+  {
+   "area": "Design",
+   "name": "Auto-design places cameras without claiming the system is wired",
+   "expected": "Cameras added; “Everything wired” stays unticked until cables exist",
+   "observed": "cameras 1 → 11, 11 not yet wired; checklist {\"Devices placed\":true,\"Rooms covered\":true,\"Everything wired\":false,\"Design Check clean\":false}; 2 of 2 required rooms at ≥90% coverage — see every room →",
+   "pass": true,
+   "ms": 2350,
+   "evidence": "shots/chrome-13.png"
+  },
+  {
+   "area": "Design",
+   "name": "Wire it all up adds the switch, recorder and every cable",
+   "expected": "No loose devices; ≥1 PoE switch, ≥1 NVR; every camera recorded",
+   "observed": "12 cables, 1 switch, 1 NVR, 0 loose; check 0 errors / 0 warnings; checklist {\"Devices placed\":true,\"Rooms covered\":true,\"Everything wired\":true,\"Design Check clean\":true}",
+   "pass": true,
+   "ms": 1696,
+   "evidence": "shots/chrome-14.png"
+  },
+  {
+   "area": "Design",
+   "name": "Undo and Redo the wiring",
+   "expected": "Ctrl+Z removes the cables, Ctrl+Y puts them back, panels agree",
+   "observed": "cables 12 → undo 0 → redo 12",
+   "pass": true,
+   "ms": 1574,
+   "evidence": "shots/chrome-15.png"
+  },
+  {
+   "area": "Design",
+   "name": "Build Ready dashboard agrees with the plan",
+   "expected": "Verdict, readiness %, 7-stage pipeline and per-floor scale shown; top-bar button shows the same %",
+   "observed": "“Yes — every build check passes” · 79% · placed:ok coverage:ok powered:ok networked:ok recorded:ok cables:ok check:ok",
+   "pass": true,
+   "ms": 1086,
+   "evidence": "shots/chrome-16.png"
+  },
+  {
+   "area": "Quote",
+   "name": "Typed prices save at once and Tab moves to the next box",
+   "expected": "Essentials 9,500 and Recommended 12,500 stored; checklist ticks",
+   "observed": "prices {\"essentials\":9500,\"recommended\":12500}",
+   "pass": true,
+   "ms": 1912,
+   "evidence": "shots/chrome-17.png"
+  },
+  {
+   "area": "Export",
+   "name": "Proposal PDF (customer-facing; checked first)",
+   "expected": "Preflight lists what is missing, then the PDF downloads with name and size shown",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-proposal.pdf 130 KB; no preflight blockers",
+   "pass": true,
+   "ms": 1890,
+   "evidence": "shots/chrome-18.png"
+  },
+  {
+   "area": "Export",
+   "name": "QR device labels and VMS camera list",
+   "expected": "Both download with their names shown",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-device-qr-labels.pdf 1011 KB · QA-chrome-20261015T1632-Main-workflow-vms-camera-list.csv 11 cameras",
+   "pass": true,
+   "ms": 1164,
+   "evidence": "shots/chrome-19.png"
+  },
+  {
+   "area": "Reports",
+   "name": "Design check, cable schedule and bandwidth agree with the plan",
+   "expected": "Counts in each report equal the project state",
+   "observed": "0 check rows, 12 cable rows, 10.4 TB storage — all match",
+   "pass": true,
+   "ms": 3303,
+   "evidence": "shots/chrome-20.png"
+  },
+  {
+   "area": "Export",
+   "name": "PNG",
+   "expected": "Downloads with its name and size shown; file opens as png",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-Floor-1.png · 984.9 KB",
+   "pass": true,
+   "ms": 1116,
+   "evidence": "shots/chrome-21.png"
+  },
+  {
+   "area": "Export",
+   "name": "JPG",
+   "expected": "Downloads with its name and size shown; file opens as jpg",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-Floor-1.jpg · 398.4 KB",
+   "pass": true,
+   "ms": 736,
+   "evidence": "shots/chrome-22.png"
+  },
+  {
+   "area": "Export",
+   "name": "SVG",
+   "expected": "Downloads with its name and size shown; file opens as text",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-Floor-1.svg · 105.3 KB",
+   "pass": true,
+   "ms": 591,
+   "evidence": "shots/chrome-23.png"
+  },
+  {
+   "area": "Export",
+   "name": "Schedules (Excel)",
+   "expected": "Downloads with its name and size shown; file opens as zip",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-schedules.xlsx · 49.0 KB",
+   "pass": true,
+   "ms": 534,
+   "evidence": "shots/chrome-24.png"
+  },
+  {
+   "area": "Export",
+   "name": "Project file",
+   "expected": "Downloads with its name and size shown; file opens as text",
+   "observed": "QA-chrome-20261015T1632-Main-workflow.securitysite.json · 26.5 KB",
+   "pass": true,
+   "ms": 545,
+   "evidence": "shots/chrome-25.png"
+  },
+  {
+   "area": "Export",
+   "name": "Cables CSV",
+   "expected": "Downloads with its name and size shown; file opens as text",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-cables-schedule.csv · 1.0 KB",
+   "pass": true,
+   "ms": 1001,
+   "evidence": "shots/chrome-26.png"
+  },
+  {
+   "area": "Export",
+   "name": "Devices CSV",
+   "expected": "Downloads with its name and size shown; file opens as text",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-devices-schedule.csv · 1.4 KB",
+   "pass": true,
+   "ms": 764,
+   "evidence": "shots/chrome-27.png"
+  },
+  {
+   "area": "Export",
+   "name": "Doors CSV",
+   "expected": "Downloads with its name and size shown; file opens as text",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-doors-schedule.csv · 0.1 KB",
+   "pass": true,
+   "ms": 424,
+   "evidence": "shots/chrome-28.png"
+  },
+  {
+   "area": "Export",
+   "name": "CAD (DXF)",
+   "expected": "Downloads with its name and size shown; file opens as text",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-Building-A-Floor-1.dxf · 10.4 KB",
+   "pass": true,
+   "ms": 546,
+   "evidence": "shots/chrome-29.png"
+  },
+  {
+   "area": "Export",
+   "name": "Spec sheets PDF",
+   "expected": "Downloads with its name and size shown; file opens as pdf",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-spec-sheets.pdf · 21.9 KB",
+   "pass": true,
+   "ms": 513,
+   "evidence": "shots/chrome-30.png"
+  },
+  {
+   "area": "Export",
+   "name": "Google Earth (KML)",
+   "expected": "KML downloads (site location) or the app asks for the location first",
+   "observed": "asked for location (“Address entered · not on the map yet”), then QA-chrome-20261015T1632-Main-workflow.kml",
+   "pass": true,
+   "ms": 2384,
+   "evidence": "shots/chrome-31.png"
+  },
+  {
+   "area": "Export",
+   "name": "PDF drawing set",
+   "expected": "Preflight (if anything fails) → multi-sheet PDF with name and size shown",
+   "observed": "QA-chrome-20261015T1632-Main-workflow-drawings-revA.pdf · 2 sheets · 431 KB",
+   "pass": true,
+   "ms": 7965,
+   "evidence": "shots/chrome-32.png"
+  },
+  {
+   "area": "Persistence",
+   "name": "Reload keeps plan, scale, rooms, devices, cables and prices",
+   "expected": "Same state after a full page reload",
+   "observed": "id=py0ai3wpl5o · name=QA chrome 20261015T1632 Main workflow · floors=[\"Outdoor site\",\"Floor 1+plan\"] · rooms=2 · cams=11 · devs=13 · cables=12 · scales=Outdoor site:-:- Floor 1:cal:0.100000 · prices={\"essentials\":9500,\"recommended\":12500} · reopened on Floor 1 (was on Outdoor site)",
+   "pass": true,
+   "ms": 3300,
+   "evidence": "shots/chrome-33.png"
+  },
+  {
+   "area": "Persistence",
+   "name": "Back / forward returns to the same project",
+   "expected": "Leave the site, press Back, the same project reopens",
+   "observed": "reopened “QA chrome 20261015T1632 Main workflow” with 13 devices",
+   "pass": true,
+   "ms": 1573,
+   "evidence": "shots/chrome-34.png"
+  },
+  {
+   "area": "Persistence",
+   "name": "Project file opens in a brand-new browser profile",
+   "expected": "Import the exported file → same rooms, devices, cables, calibration",
+   "observed": "imported “QA chrome 20261015T1632 Main workflow”: 2 rooms, 13 devices, 12 cables · Outdoor site:-:- Floor 1:cal:0.100000",
+   "pass": true,
+   "ms": 3626,
+   "evidence": "shots/chrome-35.png"
+  },
+  {
+   "area": "Admin",
+   "name": "Rename the project",
+   "expected": "New name saved and shown on the dashboard",
+   "observed": "renamed",
+   "pass": true,
+   "ms": 1263,
+   "evidence": "shots/chrome-36.png"
+  },
+  {
+   "area": "Admin",
+   "name": "Settings: company and designer survive a reload",
+   "expected": "Saved values come back after reload and appear on the health check",
+   "observed": "company + designer persisted",
+   "pass": true,
+   "ms": 2514,
+   "evidence": "shots/chrome-37.png"
+  },
+  {
+   "area": "Admin",
+   "name": "Save a version and see it in Version history",
+   "expected": "Ctrl+S saves a named version that is listed",
+   "observed": "1 version(s) listed",
+   "pass": true,
+   "ms": 2030,
+   "evidence": "shots/chrome-38.png"
+  },
+  {
+   "area": "Admin",
+   "name": "“What changed?” compares the saved version with now",
+   "expected": "Moving a camera 12 ft after saving shows “… moved 12 ft”",
+   "observed": "“Manual save” (Oct 15, 4:34 PM) compared with the design now.CAM-001 moved 12.0 ft",
+   "pass": true,
+   "ms": 1953,
+   "evidence": "shots/chrome-39.png"
+  },
+  {
+   "area": "Admin",
+   "name": "Dashboard: duplicate, archive, restore, delete (disposable copy only)",
+   "expected": "Copy appears, archives, restores, deletes; original untouched",
+   "observed": "duplicate → archive → restore → delete all worked; original kept",
+   "pass": true,
+   "ms": 6966,
+   "evidence": "shots/chrome-40.png"
+  },
+  {
+   "area": "Keyboard",
+   "name": "Command palette: Ctrl+K, type, Enter, Escape",
+   "expected": "Palette opens focused, runs “Project health”, Escape closes it",
+   "observed": "palette → health → closed",
+   "pass": true,
+   "ms": 1031,
+   "evidence": "shots/chrome-41.png"
+  },
+  {
+   "area": "Keyboard",
+   "name": "Dialogs keep Tab inside and give focus back on close",
+   "expected": "40 Tab presses stay inside Settings; Escape returns focus to the Settings button",
+   "observed": "focus trapped and restored",
+   "pass": true,
+   "ms": 516,
+   "evidence": "shots/chrome-42.png"
+  },
+  {
+   "area": "Keyboard",
+   "name": "Shortcuts: C camera tool, Esc cancel, ? help",
+   "expected": "Each shortcut acts",
+   "observed": "C → place, Esc → select, ? → shortcuts",
+   "pass": true,
+   "ms": 1309,
+   "evidence": "shots/chrome-43.png"
+  },
+  {
+   "area": "Accessibility",
+   "name": "Every visible button and field has a name",
+   "expected": "No unnamed buttons, inputs or selects on the main screen",
+   "observed": "all named",
+   "pass": true,
+   "ms": 75,
+   "evidence": "shots/chrome-44.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "A broken PDF shows an error and leaves the floor untouched",
+   "expected": "Error message; no plan, no extra floor",
+   "observed": "said: Unable to load this floor plan. Try exporting the plan as a PNG or a different PDF version.×",
+   "pass": true,
+   "ms": 3798,
+   "evidence": "shots/chrome-45.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "An unsupported file type is refused",
+   "expected": "Message; nothing imported",
+   "observed": "Unsupported file. Use PDF, PNG, JPG or SVG.×",
+   "pass": true,
+   "ms": 1092,
+   "evidence": "shots/chrome-46.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "Multi-page PDF → one floor per page; importing again adds no duplicates",
+   "expected": "Every page listed; 3 pages → Floor 1, Floor 2, Roof; report accounts for every page; second import reuses them",
+   "observed": "floors: Outdoor site, Floor 1+plan, Floor 2+plan, Roof+plan · 3 source pages · 3 imported · 0 skipped · 0 failed — every page accounted for",
+   "pass": true,
+   "ms": 3267,
+   "evidence": "shots/chrome-47.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "A 71-page construction set: every page reconciled, sheet numbers kept",
+   "expected": "71 pages listed with sheet numbers; floor plans → floors, ceiling/power/telecom → overlays, rest skipped; report totals 71",
+   "observed": "71 pages in the set · 1 as floors · 4 as reference overlays · 0 as the site plan · 66 skipped → 71 source pages · 5 imported · 66 skipped · 0 failed — every page accounted for in 4.0 s · floor “A1.1 Floor Plan” with overlays A2.1 Reflected Ceiling Plan, E1.1 Power Plan, M1.1 Mechanical Plan, T1.1 Telecom Plan · JS heap 15 MB",
+   "pass": true,
+   "ms": 5634,
+   "evidence": "shots/chrome-48.png"
+  },
+  {
+   "area": "Design",
+   "name": "Rooms found on a construction sheet take the printed names and stay drafts until reviewed",
+   "expected": "Exam 1 101, Restroom 104 … named from the drawing; checklist not ticked; review queue approves them",
+   "observed": "9 rooms: Exam 1 101, Exam 2 102, Procedure 103, Restroom 104, Staff Break 105, Corridor, Waiting 106, Optical 107, Business Office 108 · 0 left to review by hand",
+   "pass": true,
+   "ms": 2591,
+   "evidence": "shots/chrome-49.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "DXF (CAD) plan gets its scale from the file",
+   "expected": "Vector plan; scale reported as from the CAD units",
+   "observed": "From the CAD file’s units",
+   "pass": true,
+   "ms": 6773,
+   "evidence": "shots/chrome-50.png"
+  },
+  {
+   "area": "Plan import",
+   "name": "Drag-and-drop and paste a large (8000×6000) image",
+   "expected": "Both import; app stays responsive; a 20 MB-class file is handled",
+   "observed": "dropped 23.2 MB image in 1.2 s; pasted screenshot imported",
+   "pass": true,
+   "ms": 15378,
+   "evidence": "shots/chrome-51.png"
+  },
+  {
+   "area": "Calibration",
+   "name": "Design Check flags work on an uncalibrated floor",
+   "expected": "A room on an uncalibrated plan → “plan scale not set” warning with a Set the scale fix",
+   "observed": "warning: Building A · A1.1 Floor Plan: plan scale not set — distances, coverage and cable lengths are estimates · footer “2 warnings”",
+   "pass": true,
+   "ms": 780,
+   "evidence": "shots/chrome-52.png"
+  },
+  {
+   "area": "Persistence",
+   "name": "Imported floors survive a reload",
+   "expected": "Every floor and its plan are still there",
+   "observed": "Outdoor site, Floor 1+plan, Floor 2+plan, Roof+plan, Floor 4, A1.1 Floor Plan+plan, Floor 6+plan, Floor 7+plan, Floor 8+plan",
+   "pass": true,
+   "ms": 3170,
+   "evidence": "shots/chrome-53.png"
+  },
+  {
+   "area": "Design",
+   "name": "Medical building type: exam and break rooms are privacy areas",
+   "expected": "Wizard preset → Exam/Break rooms “privacy”, Reception at recognition detail; auto-design skips privacy rooms",
+   "observed": "{\"Exam 1\":\"privacy/detection\",\"Break Room\":\"privacy/detection\",\"Reception\":\"required/recognition\",\"Hall\":\"required/detection\"} · 2 cameras, 0 in privacy rooms",
+   "pass": true,
+   "ms": 602,
+   "evidence": "shots/chrome-54.png"
+  },
+  {
+   "area": "Design",
+   "name": "Doors: single and double, flip the swing and the hinge",
+   "expected": "Door tool places a single and a double door on drawn walls; Flip swing / Flip hinge / Double change the door and Undo reverses",
+   "observed": "single + double placed on walls; swing in→out, hinge L→R; undo restored",
+   "pass": true,
+   "ms": 4343,
+   "evidence": "shots/chrome-55.png"
+  },
+  {
+   "area": "Responsive",
+   "name": "390 px wide",
+   "expected": "No sideways scroll; steps, top bar and dialogs fit; nothing clipped",
+   "observed": "no sideways scroll, 3 steps visible, dialog fits",
+   "pass": true,
+   "ms": 3354,
+   "evidence": "shots/chrome-56.png"
+  },
+  {
+   "area": "Responsive",
+   "name": "768 px wide",
+   "expected": "No sideways scroll; steps, top bar and dialogs fit; nothing clipped",
+   "observed": "no sideways scroll, 3 steps visible, dialog fits, 1 controls under 24 px",
+   "pass": true,
+   "ms": 3685,
+   "evidence": "shots/chrome-57.png"
+  },
+  {
+   "area": "Responsive",
+   "name": "1024 px wide",
+   "expected": "No sideways scroll; steps, top bar and dialogs fit; nothing clipped",
+   "observed": "no sideways scroll, 3 steps visible, dialog fits, 1 controls under 24 px",
+   "pass": true,
+   "ms": 3389,
+   "evidence": "shots/chrome-58.png"
+  },
+  {
+   "area": "Admin",
+   "name": "Delete the disposable QA projects created by this run",
+   "expected": "Only projects named “QA <browser> <run>” are removed",
+   "observed": "deleted 4, left 1 other project(s) alone",
+   "pass": true,
+   "ms": 76,
+   "evidence": "shots/chrome-59.png"
+  }
+ ],
+ "exports": [
+  {
+   "label": "Proposal PDF",
+   "name": "QA-chrome-20261015T1632-Main-workflow-proposal.pdf",
+   "size": 133263,
+   "kind": "pdf",
+   "toastShowsName": true
+  },
+  {
+   "label": "QR labels PDF",
+   "name": "QA-chrome-20261015T1632-Main-workflow-device-qr-labels.pdf",
+   "size": 1035509,
+   "kind": "pdf",
+   "toastShowsName": true
+  },
+  {
+   "label": "VMS list CSV",
+   "name": "QA-chrome-20261015T1632-Main-workflow-vms-camera-list.csv",
+   "size": 1351,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "PNG",
+   "name": "QA-chrome-20261015T1632-Main-workflow-Floor-1.png",
+   "size": 1008538,
+   "kind": "png",
+   "toastShowsName": true
+  },
+  {
+   "label": "JPG",
+   "name": "QA-chrome-20261015T1632-Main-workflow-Floor-1.jpg",
+   "size": 407964,
+   "kind": "jpg",
+   "toastShowsName": true
+  },
+  {
+   "label": "SVG",
+   "name": "QA-chrome-20261015T1632-Main-workflow-Floor-1.svg",
+   "size": 107819,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "Schedules (Excel)",
+   "name": "QA-chrome-20261015T1632-Main-workflow-schedules.xlsx",
+   "size": 50211,
+   "kind": "zip",
+   "toastShowsName": true
+  },
+  {
+   "label": "Project file",
+   "name": "QA-chrome-20261015T1632-Main-workflow.securitysite.json",
+   "size": 27087,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "Cables CSV",
+   "name": "QA-chrome-20261015T1632-Main-workflow-cables-schedule.csv",
+   "size": 1031,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "Devices CSV",
+   "name": "QA-chrome-20261015T1632-Main-workflow-devices-schedule.csv",
+   "size": 1428,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "Doors CSV",
+   "name": "QA-chrome-20261015T1632-Main-workflow-doors-schedule.csv",
+   "size": 59,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "CAD (DXF)",
+   "name": "QA-chrome-20261015T1632-Main-workflow-Building-A-Floor-1.dxf",
+   "size": 10659,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "Spec sheets PDF",
+   "name": "QA-chrome-20261015T1632-Main-workflow-spec-sheets.pdf",
+   "size": 22469,
+   "kind": "pdf",
+   "toastShowsName": true
+  },
+  {
+   "label": "KML",
+   "name": "QA-chrome-20261015T1632-Main-workflow.kml",
+   "size": 1361,
+   "kind": "text",
+   "toastShowsName": true
+  },
+  {
+   "label": "Drawing set PDF",
+   "name": "QA-chrome-20261015T1632-Main-workflow-drawings-revA.pdf",
+   "size": 441633,
+   "kind": "pdf",
+   "toastShowsName": true
+  }
+ ],
+ "consoleErrors": []
+}
