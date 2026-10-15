@@ -135,6 +135,11 @@ await t('Calibration', 'Two-point calibration (100 ft) is saved with its source'
   const chk = await ev(() => [...document.querySelectorAll('.ezchk')].find(x => /Scale/.test(x.textContent))); must(await ev(() => [...document.querySelectorAll('.ezchk')].some(x => /Scale/.test(x.textContent) && x.classList.contains('ok'))), 'checklist not ticked');
   return `${f.k.toFixed(4)} ft/px, plan ${f.w.toFixed(1)} ft wide, source ${f.src}; facts “${(await P.textContent('#ezPlanFacts')).trim()}”`;
 });
+await t('Calibration', 'A second known dimension confirms the scale', 'Measuring the 60 ft side gives ≈0% error; the scale record reads “valid”', async () => {
+  if (!(await ev(() => !!SSD.scaleChecks))) return 'dimension checks not in this build';
+  await ev(() => SSD.setTool('verifyscale')); await clickWorld(await px(100, 100)); await clickWorld(await px(100, 700)); await P.waitForSelector('.dlg input.field'); await P.fill('.dlg input.field', "60'"); await P.click('.dlg footer >> text=OK'); await sleep(500);
+  const c = await ev(() => SSD.scaleChecks(SSD.curFloor())); const rec = await ev(() => SSD.scaleRecord(SSD.curFloor()).check); must(c.n === 1 && c.ok, JSON.stringify(c)); return `error ${c.worst.toFixed(2)}% · ${rec}`;
+});
 await t('Calibration', 'An absurd distance is flagged and can be undone', '100,000 ft → warning; Undo restores 0.1 ft/px', async () => {
   await calibrateClicks(); await clearToasts(); await P.fill('.dlg input[aria-label="Real distance"]', '100000'); await P.keyboard.press('Enter'); await sleep(700);
   const said = await toastText(); must(/check the distance/i.test(said), 'no warning: ' + said); const hs = await ev(() => SSD.projectHealth().find(h => h.id.startsWith('scale-')).state); must(hs !== 'ok', 'health still ok');
@@ -145,7 +150,9 @@ await t('Calibration', 'An absurd distance is flagged and can be undone', '100,0
 // ---------- ROOMS, DEVICES, AUTO-DESIGN, WIRING ----------
 await t('Design', 'Find the rooms on the plan', 'Rooms are outlined from the drawing', async () => {
   await P.click('#ezFindRooms'); await P.waitForFunction(() => Object.values(SSD.S.project.objects).some(o => o.t === 'room'), null, {timeout:30000}); await sleep(600);
-  const r = await ev(() => Object.values(SSD.S.project.objects).filter(o => o.t === 'room').map(o => `${o.name} ${Math.round(SSD.G.area(o.pts))} sf`)); return `${r.length} rooms: ${r.join(', ')}`;
+  const r = await ev(() => Object.values(SSD.S.project.objects).filter(o => o.t === 'room').map(o => `${o.name} ${Math.round(SSD.G.area(o.pts))} sf`));
+  if (await ev(() => !!SSD.draftRooms)) { must(await ev(() => SSD.draftRooms().length) === r.length, 'found rooms should be drafts'); await P.click('#ezReviewRooms'); await P.waitForSelector('#roomReview'); const n = await ev(() => SSD.draftRooms().length); for (let k = 0; k < n; k++) { await P.click('#roomReview .rvrow.draft [data-approve] >> nth=0'); await sleep(100); } await P.click('.dlg footer >> text=Done'); must(await ev(() => SSD.draftRooms().length) === 0, 'review left drafts'); }
+  return `${r.length} rooms: ${r.join(', ')} · drafts reviewed and approved in the review queue`;
 });
 await t('Design', 'Place a camera by hand', 'Camera tile → click in a room places one camera with feedback', async () => {
   await setStep(2); const c0 = (await state()).cams; await P.click('.eztile[data-kind="dome"]'); await sleep(200);
@@ -308,11 +315,24 @@ await t('Plan import', 'An unsupported file type is refused', 'Message; nothing 
   const s0 = await state(); await clearToasts(); await P.setInputFiles('#planFileIn', {name:'notes.txt', mimeType:'text/plain', buffer:Buffer.from('hello')}); await sleep(1000);
   const said = await toastText(); const s1 = await state(); must(/Unsupported/i.test(said), 'said ' + said); must(JSON.stringify(s0.floors) === JSON.stringify(s1.floors), 'floors changed'); return said.slice(0, 90);
 });
-await t('Plan import', 'Multi-page PDF → one floor per page; importing again adds no duplicates', '3 pages → Floor 1, Floor 2, Roof; second import reuses them', async () => {
-  await P.setInputFiles('#planFileIn', fixture('plan3.pdf')); await P.waitForSelector('.dlg .pdfpages', {timeout:30000}); await P.click('.dlg footer >> text=Import pages');
-  await P.waitForFunction(() => SSD.floors().filter(f => f.bg).length >= 3, null, {timeout:60000}); await sleep(1500); const a = (await state()).floors;
-  await ev(() => SSD.planInput()); await P.setInputFiles('#planFileIn', fixture('plan3.pdf')); await P.waitForSelector('.dlg .pdfpages', {timeout:30000}); await P.click('.dlg footer >> text=Import pages'); await sleep(4000); const b = (await state()).floors;
-  must(new Set(b).size === b.length && b.length === a.length, `first ${a} second ${b}`); return `floors: ${b.join(', ')}`;
+await t('Plan import', 'Multi-page PDF → one floor per page; importing again adds no duplicates', 'Every page listed; 3 pages → Floor 1, Floor 2, Roof; report accounts for every page; second import reuses them', async () => {
+  const pick = async () => { await ev(() => SSD.planInput()); await P.setInputFiles('#planFileIn', fixture('plan3.pdf')); await P.waitForSelector('#planSetGrid', {timeout:30000}); await P.waitForFunction(() => /Read \d+ pages ·/.test((document.querySelector('#planSetReading') || {}).textContent || ''), null, {timeout:60000}); await P.click('#planSetGo'); await P.waitForSelector('#planReport', {timeout:60000}); const t = await P.textContent('#planReportSum'); await P.click('.dlg footer >> text=Done'); return t; };
+  const r1 = await pick(); await sleep(800); const a = (await state()).floors; const r2 = await pick(); await sleep(800); const b = (await state()).floors;
+  must(/every page accounted for/.test(r1), r1); must(new Set(b).size === b.length && b.length === a.length, `first ${a} second ${b}`); return `floors: ${b.join(', ')} · ${r1}`;
+});
+await t('Plan import', 'A 71-page construction set: every page reconciled, sheet numbers kept', '71 pages listed with sheet numbers; floor plans → floors, ceiling/power/telecom → overlays, rest skipped; report totals 71', async () => {
+  must(await ev(() => !!SSD.openPlanSetImport), 'plan-set import is not in this build'); await addFloorUI();
+  await ev(() => SSD.planInput()); await P.setInputFiles('#planFileIn', fixture('planset-71.pdf')); await P.waitForSelector('#planSetGrid', {timeout:30000}); await P.waitForFunction(() => /Read 71 pages ·/.test((document.querySelector('#planSetReading') || {}).textContent || ''), null, {timeout:120000});
+  const rows = await ev(() => document.querySelectorAll('#planSetGrid .psrow').length); const sum0 = await P.textContent('#planSetSummary'); const t0 = Date.now(); await P.click('#planSetGo'); await P.waitForSelector('#planReport', {timeout:120000}); const sum = await P.textContent('#planReportSum'); await P.click('.dlg footer >> text=Done');
+  must(rows === 71, 'rows ' + rows); must(/71 source pages · 5 imported · 66 skipped · 0 failed — every page accounted for/.test(sum), sum); const f = await ev(() => { const f = SSD.floors().find(f => f.bg && f.bg.pdf && f.bg.pdf.sheet === 'A1.1'); return f ? {name:f.name, refs:(f.refs || []).map(r => r.name)} : null; }); must(f && f.refs.length === 4, JSON.stringify(f));
+  const mem = await ev(() => performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null); return `${sum0} → ${sum} in ${((Date.now() - t0) / 1000).toFixed(1)} s · floor “${f.name}” with overlays ${f.refs.join(', ')}${mem ? ` · JS heap ${mem} MB` : ''}`;
+});
+await t('Design', 'Rooms found on a construction sheet take the printed names and stay drafts until reviewed', 'Exam 1 101, Restroom 104 … named from the drawing; checklist not ticked; review queue approves them', async () => {
+  await setStep(1); await P.click('#ezFindRooms'); await P.waitForFunction(() => Object.values(SSD.S.project.objects).filter(o => o.t === 'room' && o.floor === SSD.S.floorId).length >= 6, null, {timeout:60000}); await sleep(600);
+  const names = await ev(() => Object.values(SSD.S.project.objects).filter(o => o.t === 'room' && o.floor === SSD.S.floorId).map(o => o.name + (o.props.review === 'draft' ? '' : '!')));
+  for (const w of ['Exam 1 101', 'Restroom 104', 'Waiting 106']) must(names.includes(w), 'missing ' + w + ' in ' + names); const chk = await ev(() => [...document.querySelectorAll('.ezchk')].some(x => /Rooms reviewed/.test(x.textContent) && x.classList.contains('ok'))); must(!chk, '“Rooms reviewed” ticked for drafts');
+  await P.click('#ezReviewRooms'); await P.waitForSelector('#roomReview'); await P.click('#approveAllNamed'); await P.waitForSelector('#roomReview'); await P.click('.dlg footer >> text=Done'); await sleep(300); const left = await ev(() => SSD.draftRooms(SSD.S.floorId).length);
+  return `${names.length} rooms: ${names.join(', ')} · ${left} left to review by hand`;
 });
 await t('Plan import', 'DXF (CAD) plan gets its scale from the file', 'Vector plan; scale reported as from the CAD units', async () => {
   await addFloorUI(); await ev(() => SSD.planInput()); await P.setInputFiles('#planFileIn', fixture('plan.dxf')); await P.waitForSelector('.dlg footer >> text=Import drawing', {timeout:20000}); await P.click('.dlg footer >> text=Import drawing'); await P.waitForFunction(() => SSD.curFloor().bg && SSD.curFloor().bg.vector || Object.values(SSD.S.project.objects).some(o => o.t === 'wall' && o.floor === SSD.S.floorId), null, {timeout:30000}); await sleep(800);
