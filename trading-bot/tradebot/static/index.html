@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TradeBot Dashboard</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#15181d;--mute:#5d6673;--line:#e2e5ea;--accent:#2557d6;--good:#14804a;--bad:#c4322b;--warn:#a86400;--chip:#eef1f6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1216;--card:#171b21;--ink:#e8ebf0;--mute:#9aa4b2;--line:#2a3039;--accent:#6c95ff;--good:#3ccf86;--bad:#ff6b63;--warn:#f0b54a;--chip:#222833}}
+:root[data-theme="dark"]{--bg:#0f1216;--card:#171b21;--ink:#e8ebf0;--mute:#9aa4b2;--line:#2a3039;--accent:#6c95ff;--good:#3ccf86;--bad:#ff6b63;--warn:#f0b54a;--chip:#222833}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 12px}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--chip);color:var(--mute);font-size:13px;margin-left:6px}
+.chip.live{background:var(--bad);color:#fff}.chip.paper{background:var(--accent);color:#fff}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.stat span{color:var(--mute);font-size:13px}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.mute{color:var(--mute)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}
+.scroll{overflow-x:auto}
+button,select,input{max-width:100%;font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px}
+button{cursor:pointer}button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button.danger{color:var(--bad)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+svg{width:100%;height:220px;display:block}
+pre{white-space:pre-wrap;margin:0;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+details summary{cursor:pointer;font-weight:600}
+.banner{border-left:4px solid var(--warn);padding:10px 14px;background:var(--card);border-radius:8px;margin-bottom:14px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>TradeBot <span id="mode" class="chip">…</span><span id="paused" class="chip" hidden>paused</span></h1>
+      <div class="mute" id="sub">Loading…</div></div>
+    <div class="row">
+      <button id="btn-pause">Pause new trades</button>
+      <button id="btn-step">Run a check now</button>
+      <button id="btn-closeall" class="danger">Close all</button>
+      <button id="btn-theme" title="Switch theme">◐</button>
+    </div>
+  </header>
+
+  <div class="banner">No profit is promised. Results below include fees and slippage. Backtest a strategy, paper trade it, and only trade money you can afford to lose.</div>
+  <div class="banner" id="halt" hidden></div>
+
+  <div class="grid">
+    <div class="card stat"><span>Equity</span><b id="equity">–</b></div>
+    <div class="card stat"><span>Since start</span><b id="ret">–</b></div>
+    <div class="card stat"><span>Cash</span><b id="cash">–</b></div>
+    <div class="card stat"><span>Closed trades · win rate</span><b id="wins">–</b></div>
+    <div class="card stat"><span>Realized P&amp;L</span><b id="pnl">–</b></div>
+  </div>
+
+  <div class="card"><h2>Equity</h2><svg id="eq-chart" role="img" aria-label="Equity over time"></svg></div>
+
+  <div class="card"><h2>Open positions</h2><div class="scroll"><table id="pos"></table></div></div>
+  <div class="card"><h2>Latest signals</h2><div class="scroll"><table id="sig"></table></div></div>
+  <div class="card"><h2>Recent trades</h2><div class="scroll"><table id="fills"></table></div></div>
+
+  <div class="card">
+    <h2>Backtest</h2>
+    <div class="row">
+      <input id="bt-symbol" placeholder="BTC/USD" size="10" aria-label="Market">
+      <select id="bt-strategy" aria-label="Strategy"></select>
+      <input id="bt-bars" type="number" value="2000" min="100" max="20000" step="100" aria-label="Candles">
+      <button id="bt-run" class="primary">Run backtest</button>
+    </div>
+    <p class="mute" id="bt-desc"></p>
+    <div id="bt-out" hidden>
+      <div class="grid" id="bt-stats"></div>
+      <svg id="bt-chart" role="img" aria-label="Backtest equity"></svg>
+      <p id="bt-verdict"></p>
+    </div>
+  </div>
+
+  <div class="card"><h2>Learn</h2>
+    <details><summary>How this bot works</summary><pre id="l-how"></pre></details><br>
+    <details><summary>Why “Smart Scaling” / martingale loses</summary><pre id="l-mart"></pre></details><br>
+    <details><summary>How to spot a fake “AI trading bot”</summary><pre id="l-flags"></pre></details>
+  </div>
+  <div class="card"><h2>Activity log</h2><pre id="events" class="mute"></pre></div>
+</div>
+<script>
+(function(){
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  var token=new URLSearchParams(location.search).get('token')||store.get('tb_token')||'';
+  var theme=store.get('tb_theme'); if(theme) document.documentElement.dataset.theme=theme;
+  var $=function(id){return document.getElementById(id)};
+  var money=function(n){return n==null?'–':Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})};
+  var pct=function(n){return n==null?'–':(n>=0?'+':'')+(n*100).toFixed(2)+'%'};
+  var cls=function(n){return n>0?'good':n<0?'bad':''};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var when=function(ms){return new Date(ms).toLocaleString()};
+
+  function api(path,opts){
+    opts=opts||{};opts.headers=opts.headers||{};
+    if(token) opts.headers.Authorization='Bearer '+token;
+    if(opts.method==='POST') opts.headers['X-Tradebot']='1';
+    return fetch(path,opts).then(function(r){
+      if(r.status===401){var t=prompt('Dashboard token (WEB_TOKEN):');if(t){token=t;store.set('tb_token',t);return api(path,opts)}}
+      return r.json().then(function(d){if(!r.ok) throw new Error(d.detail||r.statusText);return d});
+    });
+  }
+
+  function line(svg,points,color){
+    svg=$(svg);var w=svg.clientWidth||800,h=220,p=8;
+    if(!points.length){svg.innerHTML='<text x="10" y="30" fill="currentColor" opacity=".6">No data yet</text>';return}
+    var ys=points.map(function(x){return x[1]}),min=Math.min.apply(null,ys),max=Math.max.apply(null,ys);
+    if(max===min){max+=1;min-=1}
+    var xs=function(i){return p+(w-2*p)*(points.length===1?0:i/(points.length-1))};
+    var yv=function(v){return h-p-(h-2*p)*(v-min)/(max-min)};
+    var d=points.map(function(pt,i){return (i?'L':'M')+xs(i).toFixed(1)+' '+yv(pt[1]).toFixed(1)}).join(' ');
+    svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    svg.innerHTML='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2"/>'+
+      '<text x="'+(w-p)+'" y="16" text-anchor="end" font-size="12" fill="currentColor" opacity=".6">'+money(max)+'</text>'+
+      '<text x="'+(w-p)+'" y="'+(h-12)+'" text-anchor="end" font-size="12" fill="currentColor" opacity=".6">'+money(min)+'</text>';
+  }
+  var accent=function(){return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()};
+
+  var paused=false;
+  function refresh(){
+    api('/api/status').then(function(s){
+      paused=s.paused;
+      $('mode').textContent=s.mode.toUpperCase();$('mode').className='chip '+s.mode;
+      $('paused').hidden=!s.paused;$('btn-pause').textContent=s.paused?'Resume new trades':'Pause new trades';
+      $('sub').textContent=s.exchange+' · '+(s.data_source==='synthetic'?'synthetic practice data':'real prices')+' · '+s.strategy_title+' · '+s.symbols.join(', ')+' · '+s.timeframe;
+      $('equity').textContent=money(s.equity);$('cash').textContent=money(s.cash);
+      $('ret').textContent=pct(s.return);$('ret').className=cls(s.return);
+      $('wins').textContent=s.stats.closed_trades+' · '+(s.stats.win_rate*100).toFixed(0)+'%';
+      $('pnl').textContent=money(s.stats.realized_pnl);$('pnl').className=cls(s.stats.realized_pnl);
+      $('halt').hidden=!s.halted;$('halt').textContent=s.halted?'Kill switch: '+s.halted+' (Telegram /resetrisk to clear)':'';
+      $('pos').innerHTML='<tr><th>Market</th><th>Size</th><th>Entry</th><th>Stop</th><th>Now</th><th>P&amp;L</th><th></th></tr>'+
+        (s.positions.length?s.positions.map(function(p){return '<tr><td>'+esc(p.symbol)+'</td><td>'+p.qty.toPrecision(6)+'</td><td>'+money(p.entry)+'</td><td>'+money(p.stop)+'</td><td>'+money(p.price)+'</td><td class="'+cls(p.unrealized)+'">'+money(p.unrealized)+'</td><td><button data-close="'+esc(p.symbol)+'">Close</button></td></tr>'}).join(''):'<tr><td colspan="7" class="mute">No open positions</td></tr>');
+      var sig=Object.keys(s.signals);
+      $('sig').innerHTML='<tr><th>Market</th><th>Price</th><th>Signal</th><th>Why</th></tr>'+
+        (sig.length?sig.map(function(k){var g=s.signals[k];return '<tr><td>'+esc(k)+'</td><td>'+money(g.price)+'</td><td class="'+(g.action==='buy'?'good':g.action==='sell'?'bad':'mute')+'">'+g.action.toUpperCase()+'</td><td>'+esc(g.reason)+'</td></tr>'}).join(''):'<tr><td colspan="4" class="mute">Waiting for the first check</td></tr>')+
+        Object.keys(s.errors).map(function(k){return '<tr><td>'+esc(k)+'</td><td colspan="3" class="warn">'+esc(s.errors[k])+'</td></tr>'}).join('');
+    }).catch(function(e){$('sub').textContent='Error: '+e.message});
+    api('/api/equity').then(function(rows){line('eq-chart',rows.map(function(r){return [r.ts,r.equity]}),accent())});
+    api('/api/fills?limit=30').then(function(rows){
+      $('fills').innerHTML='<tr><th>Time</th><th>Side</th><th>Market</th><th>Size</th><th>Price</th><th>Fee</th><th>P&amp;L</th><th>Why</th></tr>'+
+        (rows.length?rows.map(function(f){return '<tr><td>'+when(f.ts)+'</td><td class="'+(f.side==='buy'?'good':'bad')+'">'+f.side.toUpperCase()+'</td><td>'+esc(f.symbol)+'</td><td>'+f.qty.toPrecision(6)+'</td><td>'+money(f.price)+'</td><td>'+money(f.fee)+'</td><td class="'+cls(f.pnl)+'">'+(f.pnl==null?'':money(f.pnl))+'</td><td>'+esc(f.reason)+'</td></tr>'}).join(''):'<tr><td colspan="8" class="mute">No trades yet</td></tr>');
+    });
+    api('/api/events?limit=30').then(function(rows){$('events').textContent=rows.map(function(e){return when(e.ts)+'  '+e.text.replace(/\n/g,' · ')}).join('\n')||'Nothing yet'});
+  }
+
+  document.addEventListener('click',function(e){
+    var sym=e.target.getAttribute&&e.target.getAttribute('data-close');
+    if(sym&&confirm('Close '+sym+' at market now?')) api('/api/close?symbol='+encodeURIComponent(sym),{method:'POST'}).then(refresh).catch(function(x){alert(x.message)});
+  });
+  $('btn-pause').onclick=function(){api(paused?'/api/resume':'/api/pause',{method:'POST'}).then(refresh)};
+  $('btn-step').onclick=function(){this.disabled=true;var b=this;api('/api/step',{method:'POST'}).then(refresh).catch(function(x){alert(x.message)}).finally(function(){b.disabled=false})};
+  $('btn-closeall').onclick=function(){if(confirm('Close every open position at market now?')) api('/api/closeall',{method:'POST'}).then(refresh)};
+  $('btn-theme').onclick=function(){var dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme: dark)').matches);var t=dark?'light':'dark';document.documentElement.dataset.theme=t;store.set('tb_theme',t);refresh()};
+
+  var strategies=[];
+  fetch('/api/strategies').then(function(r){return r.json()}).then(function(list){
+    strategies=list;$('bt-strategy').innerHTML=list.map(function(s){return '<option value="'+s.name+'">'+esc(s.title)+'</option>'}).join('');
+    $('bt-desc').textContent=list[0]?list[0].description:'';
+  });
+  $('bt-strategy').onchange=function(){var s=strategies.filter(function(x){return x.name===this.value},this)[0];$('bt-desc').textContent=s?s.description:''};
+  $('bt-run').onclick=function(){
+    var b=this;b.disabled=true;b.textContent='Running…';
+    var q='?strategy='+$('bt-strategy').value+'&bars='+$('bt-bars').value+($('bt-symbol').value?'&symbol='+encodeURIComponent($('bt-symbol').value):'');
+    api('/api/backtest'+q).then(function(r){
+      $('bt-out').hidden=false;
+      var items=[['Return',pct(r.total_return),cls(r.total_return)],['Buy & hold',pct(r.buy_hold_return),cls(r.buy_hold_return)],['Max drawdown',(r.max_drawdown*100).toFixed(1)+'%',''],['Sharpe',r.sharpe.toFixed(2),''],['Trades',r.trades,''],['Win rate',(r.win_rate*100).toFixed(1)+'%',''],['Profit factor',r.profit_factor==null?'∞':r.profit_factor.toFixed(2),''],['Fees paid',money(r.fees_paid),'']];
+      $('bt-stats').innerHTML=items.map(function(i){return '<div class="card stat"><span>'+i[0]+'</span><b class="'+i[2]+'">'+i[1]+'</b></div>'}).join('');
+      line('bt-chart',r.equity_curve,accent());
+      $('bt-verdict').textContent=r.symbol+' · '+r.candles+' candles ('+r.data_source+' data) · '+r.verdict;
+    }).catch(function(x){alert(x.message)}).finally(function(){b.disabled=false;b.textContent='Run backtest'});
+  };
+  fetch('/api/learn').then(function(r){return r.json()}).then(function(l){$('l-how').textContent=l.how_it_works;$('l-mart').textContent=l.martingale;$('l-flags').textContent=l.red_flags});
+
+  refresh();setInterval(refresh,15000);
+})();
+</script>
+</body>
+</html>

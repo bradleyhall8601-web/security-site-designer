@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tradebot"
+version = "1.0.0"
+description = "Honest all-in-one trading bot: backtests, paper trading, optional live trading, Telegram bot and web dashboard."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+  "ccxt>=4.3",
+  "python-telegram-bot>=21.0",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "httpx>=0.27"]
+
+[project.scripts]
+tradebot = "tradebot.cli:main"
+
+[tool.setuptools]
+packages = ["tradebot"]
+
+[tool.setuptools.package-data]
+tradebot = ["static/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

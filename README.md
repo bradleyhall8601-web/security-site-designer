@@ -16,4 +16,5 @@ Install it as an app from that link (Chrome/Edge: *Install app*; iPhone/iPad: Sh
 
 - `web/` — the app, published to GitHub Pages on every push (`.github/workflows/pages.yml`).
 - `e2e/` — live-site browser QA: `prod-qa.mjs` runs the full user and admin workflow (project setup, plan import, calibration, design, wiring, quote, every export, persistence, admin, keyboard, accessibility, responsive widths) against the deployed site using disposable QA projects only.
+- `trading-bot/` — TradeBot, a separate all-in-one trading bot (backtests, paper and live trading, Telegram bot, web dashboard). See [trading-bot/README.md](trading-bot/README.md).
 - `.github/workflows/browser-qa.yml` — after every deploy, runs that workflow on Windows in current stable **Google Chrome** and **Microsoft Edge**, and publishes the results, screenshots and every exported file to the `qa-results` branch.

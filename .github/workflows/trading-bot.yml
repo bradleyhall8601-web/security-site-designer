@@ -1,0 +1,18 @@
+# Runs the trading bot's test suite whenever trading-bot/ changes.
+name: Trading bot tests
+on:
+  push: { paths: ["trading-bot/**", ".github/workflows/trading-bot.yml"] }
+  pull_request: { paths: ["trading-bot/**"] }
+  workflow_dispatch: {}
+permissions: { contents: read }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: trading-bot } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest -q
+      - run: python -m tradebot backtest --synthetic --strategy all --bars 3000
